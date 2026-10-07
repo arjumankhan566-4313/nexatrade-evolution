@@ -194,6 +194,12 @@ export default function AffiliatePage() {
 
         <style>{`
           .affiliate { display: grid; gap: 16px; max-width: 700px; }
+          .perk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+          .perk { padding: 18px; display: grid; gap: 8px; border-radius: 14px; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+          .perk:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
+          .perk-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: rgba(245, 197, 66, 0.12); border: 1px solid rgba(245, 197, 66, 0.35); color: var(--gold-1); }
+          .perk strong { font-size: 14.5px; }
+          .perk span { font-size: 12.5px; line-height: 1.6; color: var(--muted); }
           .app-form { display: grid; gap: 14px; }
           .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
           @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
