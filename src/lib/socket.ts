@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 // Same-origin by default: the Vite dev server proxies /socket.io to the API.
 // VITE_API_URL overrides this when the API is deployed on a separate origin.
-export const socket = io(import.meta.env.VITE_API_URL ?? '/', {
+export const socket = io(import.meta.env['VITE_API_URL'] ?? '/', {
   path: '/socket.io',
   transports: ['websocket', 'polling'],
   autoConnect: true,
@@ -16,7 +16,7 @@ export const socket = io(import.meta.env.VITE_API_URL ?? '/', {
  * lifecycle and must `disconnect()` it.
  */
 export function createSocket() {
-  return io(import.meta.env.VITE_API_URL ?? '/', {
+  return io(import.meta.env['VITE_API_URL'] ?? '/', {
     path: '/socket.io',
     transports: ['websocket', 'polling'],
     autoConnect: true,
