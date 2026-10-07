@@ -14,7 +14,7 @@ import {
   useRouter,
   useRouterState,
 } from '@tanstack/react-router';
-import { forwardRef, type CSSProperties, type MouseEventHandler, type ReactNode } from 'react';
+import { forwardRef, useCallback, type CSSProperties, type MouseEventHandler, type ReactNode } from 'react';
 
 export const Outlet = TanOutlet;
 
@@ -68,13 +68,20 @@ export function Navigate({ to, replace }: { to: string; replace?: boolean }) {
 export function useNavigate() {
   const navigate = tanUseNavigate();
   const router = useRouter();
-  return (to: string | number, options?: { replace?: boolean; state?: unknown }) => {
-    if (typeof to === 'number') {
-      router.history.go(to);
-      return;
-    }
-    void navigate({ to: to as never, replace: options?.replace });
-  };
+  // MUST stay referentially stable: callers put this in useEffect deps
+  // (e.g. the dashboard auth guard). A fresh closure per render re-ran the
+  // guard every render, and while signed out it navigated to /login in a
+  // loop — React's "Maximum update depth exceeded".
+  return useCallback(
+    (to: string | number, options?: { replace?: boolean; state?: unknown }) => {
+      if (typeof to === 'number') {
+        router.history.go(to);
+        return;
+      }
+      void navigate({ to: to as never, replace: options?.replace });
+    },
+    [navigate, router],
+  );
 }
 
 export function useLocation() {
