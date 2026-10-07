@@ -28,9 +28,12 @@ function formatCountdown(ms: number): string {
 
 export default function GamificationSection() {
   const reduceMotion = useReducedMotion();
-  const [remaining, setRemaining] = useState(() => nextRoundAt(Date.now()) - Date.now());
+  // Starts null so server and client render identically; the real clock only
+  // ticks after hydration (SSR would otherwise mismatch by a second).
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
+    setRemaining(nextRoundAt(Date.now()) - Date.now());
     const timer = window.setInterval(() => {
       setRemaining(nextRoundAt(Date.now()) - Date.now());
     }, 1000);
