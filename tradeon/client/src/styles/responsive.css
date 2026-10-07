@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Mobile-first responsive layer — trade terminal · dashboard · admin · auth.
+
+   Loaded LAST (main.tsx) so it only tightens the surfaces below it: nothing
+   here changes colour, layout direction or business behaviour, it fixes the
+   things that break on a phone — undersized tap targets, iOS input zoom,
+   missing safe-area padding and wide fixed-height blocks.
+
+   Breakpoints (mobile-first: phone is the default, larger screens opt in):
+     ≤ 480px  small phone        ≤ 767px  phone
+     ≤ 900px  tablet portrait    ≤1023px  tablet landscape
+     ≥1600px  large / ultrawide desktop
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Touch viewport basics ───────────────────────────────────────────────── */
+html {
+  /* Never let iOS re-scale text when the device rotates. */
+  -webkit-text-size-adjust: 100%;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
+/* ── Tap targets ──────────────────────────────────────────────────────────
+   WCAG 2.5.5 / Apple HIG: 44px. Applied by viewport width OR coarse pointer,
+   so the tablet and phone layouts are correct even when the pointer type is
+   reported as fine (emulators, hybrid laptops). */
+@media (max-width: 900px), (pointer: coarse) {
+  .chdr__icon,
+  .chdr__signin,
+  .chdr__cta,
+  .chdr__account-btn,
+  .chdr__tab-main,
+  .chdr__tab-x,
+  .chtools__btn,
+  .chart-tf-btn,
+  .chart-tool-btn,
+  .chart-market-btn,
+  .mkt__close,
+  .mkt__star,
+  .nx-bell-btn,
+  .nxt-chip,
+  .nxt-expiry__opt,
+  .nxt-expiry-trigger,
+  .nxt-exp__cell,
+  .nxt-exp__tab,
+  .nxt-exp__close,
+  .nxt-btn,
+  .nxt-amount__step,
+  .nxt-sheet-head,
+  .dash-rail-toggle,
+  .dash-mobile-menu,
+  .dash-nav-item,
+  .dash-bottom-item,
+  .mode-switch button,
+  .account-balance-btn,
+  .terminal-bell-btn,
+  .terminal-deposit-btn,
+  .terminal-withdraw-link,
+  .nt-item,
+  .nt-footbtn,
+  .nt-close,
+  .nt-collapse,
+  .nt-top-actions button,
+  .admin-password-toggle,
+  .auth-card button,
+  .auth-card input,
+  .apex-btn {
+    min-height: 44px;
+  }
+
+  /* Inline text links need the target applied through their own display. */
+  .nxt-panel__foot a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Square controls also need the horizontal target. */
+  .chdr__icon,
+  .chtools__btn,
+  .mkt__close,
+  .mkt__star,
+  .nx-bell-btn,
+  .nxt-amount__step,
+  .nxt-exp__close,
+  .nt-close,
+  .dash-rail-toggle,
+  .admin-password-toggle {
+    min-width: 44px;
+  }
+
+  /* Kill the 300ms tap delay and accidental double-tap zoom on controls. */
+  button,
+  [role='button'],
+  a,
+  input,
+  select,
+  summary {
+    touch-action: manipulation;
+  }
+
+  /* The landing footer links are inline text (~16px tall) — give them a
+     thumb-sized target without changing how the row reads. */
+  .apex-space footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ── Form fields: never below 16px on a touch screen ──────────────────────
+   iOS Safari zooms the whole page whenever a focused field renders text under
+   16px, and often leaves it stuck zoomed — which is exactly what makes a form
+   read as "broken" on a phone. The dashboard, KYC, admin and landing fields
+   all sit at 12–14.5px, so every field tap re-scaled the page. This is a floor
+   for touch devices only: a mouse-and-keyboard desktop keeps its original
+   sizes. */
+@media (max-width: 900px), (pointer: coarse) {
+  .input,
+  .select,
+  textarea.input,
+  .legacy-page .input,
+  .legacy-page select.input,
+  .legacy-page textarea.input,
+  .nt-body .input,
+  .nt-body textarea.input,
+  .nt-body .admin-risk .input,
+  .combo-search input,
+  .auth-card input,
+  .auth-card select,
+  .nt-login .input,
+  .ticket-amount-control input,
+  .apex-space input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  .apex-space textarea {
+    font-size: 16px;
+  }
+
+  /* Full-width entry fields also need a real touch height. */
+  .apex-space input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  .apex-space textarea {
+    min-height: 44px;
+  }
+}
+
+/* ── Trading surface on a phone ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* The OHLC crosshair readout is a full line of text: beside the price axis
+     it would run off the left edge, so it moves under the price pill. */
+  .chart-crosshair-readout {
+    right: auto;
+    left: 8px;
+    top: 36px;
+    font-size: 10px;
+  }
+
+  .chart-canvas-wrap .chart-toolbar {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .chart-market-btn__text strong { max-width: 120px; }
+
+  /* The floating tool column keeps clear of the top bar and the sheet handle. */
+  .chtools { max-height: calc(100% - 132px); }
+}
+
+/* ── Phone: dense labels ────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Dense 12px labels stay legible on a phone without reflowing the layout. */
+  .nxt-field__label,
+  .nxt-expiry-trigger small,
+  .nxt-asset__price {
+    font-size: 12px;
+  }
+}
+
+/* ── Landscape phone: keep the panel geometry sane (a 88dvh sheet in
+      landscape is taller than the viewport is) ───────────────────────────── */
+@media (max-width: 900px) and (max-height: 500px) {
+  .nxw__panel {
+    height: min(94dvh, 420px);
+  }
+}
+
+/* ── Safe areas for the fixed bars that touch the screen edge ───────────── */
+.dash-bottom-nav,
+.nxw__panel,
+.nt-side,
+.mkt__panel {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Ultrawide / large desktop ──────────────────────────────────────────── */
+@media (min-width: 1600px) {
+  /* Give the ticket a touch more room so the chart keeps a comfortable
+     plot width next to it instead of stretching thin candles. */
+  .nxw__body {
+    grid-template-columns: minmax(0, 1fr) 400px;
+  }
+}

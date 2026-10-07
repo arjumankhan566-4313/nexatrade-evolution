@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect x="1" y="1" width="62" height="62" rx="16" fill="#0E1419" stroke="#1c2a35" stroke-width="1.5"/>
+  <!-- T bar (sharp edges) -->
+  <rect x="6" y="10" width="24" height="7" fill="#10d77a"/>
+  <!-- T stem -->
+  <rect x="14.5" y="17" width="7" height="30" fill="#10d77a"/>
+  <!-- O ring, gap at 3 o'clock -->
+  <path d="M 59.3 35.1 A 12 12 0 1 1 59.3 26.9" stroke="#10d77a" stroke-width="7" stroke-linecap="round"/>
+</svg>

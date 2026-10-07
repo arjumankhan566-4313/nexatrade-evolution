@@ -1,0 +1,48 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "JWT_SECRET",
+      "description": "HS256 signing secret for session JWTs (any random 32+ char string). Required for auth to function securely.",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "SUPER_ADMIN_PASSWORD",
+      "description": "Owner password for the admin portal at /nexa-admin-portal/login (email arjumankhan181@gmail.com). At least 12 chars. Optional in dev (falls back to AdminPassword123!); required for real deployments.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "DATABASE_URL",
+      "description": "PostgreSQL connection string for V2 (Neon/Supabase/RDS), with the existing NexaTrade schema. Required by v2-api; only the legacy web service supports embedded PGlite without it.",
+      "requiredAtBoot": true
+    },
+    {
+      "name": "FINNHUB_API_KEY",
+      "description": "Optional — improves forex/commodity/stock live quotes. Crypto uses Binance public WebSocket (no key).",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "POLYGON_API_KEY",
+      "description": "Optional — alternative market data provider for forex/stocks.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "NOWPAYMENTS_API_KEY",
+      "description": "Optional — enables automatic crypto deposit invoices via nowpayments.io.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "NOWPAYMENTS_IPN_SECRET",
+      "description": "Optional — IPN secret for nowpayments.io payment webhooks.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "NEXT_PUBLIC_GA_ID",
+      "description": "Google Analytics 4 Measurement ID (format: G-XXXXXXXXXX). Create one at analytics.google.com → Admin → Create Account/Property → Data Stream (Web). Empty = GA disabled. This is a public ID visible in client-side code, not a private secret.",
+      "requiredAtBoot": false
+    }
+  ]
+}
