@@ -31,3 +31,8 @@
 
 ## পরবর্তী (ইউজার চাইলে)
 - [ ] হোস্টিং/পাবলিশ — ইউজার এখন চায় না
+
+## All-device responsive pass ✅ (2026-10-07)
+- Verified /, /login, /register, /chart, /dashboard, /wallet, /history, /kyc, /admin at 390/820/1366/1920px — zero horizontal overflow.
+- Fixed wallet on phones: balance cards stack 1-col (≤640px), mode switch + rails stack (≤480px), min-width:0 guards stop panel/tab overflow.
+- Fixed landing header: Sign in / Create account no longer wrap on phones (whitespace-nowrap).
