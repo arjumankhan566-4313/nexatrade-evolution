@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from '@/tradeon-client/lib/nextDynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Handshake, Clock, XCircle } from 'lucide-react';
+import { Handshake, Clock, XCircle, Percent, Repeat, Zap } from 'lucide-react';
 
 // Recharts analytics chart is lazy-loaded off the initial Affiliate bundle.
 const ReferralChart = dynamic(() => import('@/tradeon-client/components/charts/ReferralChart'), {
@@ -86,7 +86,21 @@ export default function AffiliatePage() {
     return (
       <div className="affiliate">
         {msg && <div className={`alert alert-${msg.kind === 'ok' ? 'ok' : 'error'}`}>{msg.text}</div>}
-        
+
+        <div className="perk-grid">
+          {[
+            { icon: Percent, title: '40% commission', text: 'Earn on every deposit your referrals make — one of the highest rates in the industry.' },
+            { icon: Repeat, title: 'Lifetime earnings', text: 'Your referral link is yours forever. Every trader you bring keeps earning for you.' },
+            { icon: Zap, title: 'Fast weekly payouts', text: 'Commissions settle weekly to your real balance — withdraw anytime after KYC.' },
+          ].map(({ icon: Icon, title, text }) => (
+            <div key={title} className="glass perk">
+              <div className="perk-icon"><Icon size={18} /></div>
+              <strong>{title}</strong>
+              <span>{text}</span>
+            </div>
+          ))}
+        </div>
+
         <section className="glass" style={{ padding: 28, maxWidth: 600 }}>
           <div className="badge badge-gold" style={{ marginBottom: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <Handshake size={14} /> Affiliate Partner Program
