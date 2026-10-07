@@ -1,0 +1,92 @@
+/** Legacy portal controllers, on the existing V2 database and Express transport. */
+import { Router } from 'express';
+import { GET as marketCandles } from '../admin/routes/marketCandles.js';
+import * as dashboard from '../admin/routes/dashboard.js';
+import * as overview from '../admin/routes/overview.js';
+import * as settings from '../admin/routes/settings.js';
+import * as users from '../admin/routes/users.js';
+import * as user from '../admin/routes/user.js';
+import * as assets from '../admin/routes/assets.js';
+import * as asset from '../admin/routes/asset.js';
+import * as transactions from '../admin/routes/transactions.js';
+import * as transaction from '../admin/routes/transaction.js';
+import * as payments from '../admin/routes/payments.js';
+import * as payment from '../admin/routes/payment.js';
+import * as gateway from '../admin/routes/gateway.js';
+import * as kyc from '../admin/routes/kyc.js';
+import * as kycReview from '../admin/routes/kycReview.js';
+import * as kycFile from '../admin/routes/kycFile.js';
+import * as affiliate from '../admin/routes/affiliate.js';
+import * as affiliateApplications from '../admin/routes/affiliateApplications.js';
+import * as affiliatePayout from '../admin/routes/affiliatePayout.js';
+import * as tournaments from '../admin/routes/tournaments.js';
+import * as tournament from '../admin/routes/tournament.js';
+import * as tiers from '../admin/routes/tiers.js';
+import * as tier from '../admin/routes/tier.js';
+import * as fraud from '../admin/routes/fraud.js';
+import * as logs from '../admin/routes/logs.js';
+import * as dbHealth from '../admin/routes/dbHealth.js';
+import * as performance from '../admin/routes/performance.js';
+
+export const adminPortalRouter = Router();
+adminPortalRouter.get('/dashboard', dashboard.GET);
+adminPortalRouter.get('/overview', overview.GET);
+adminPortalRouter.get('/settings', settings.GET);
+adminPortalRouter.patch('/settings', settings.PATCH);
+adminPortalRouter.get('/users', users.GET);
+adminPortalRouter.get('/users/:id', user.GET);
+adminPortalRouter.patch('/users/:id', user.PATCH);
+adminPortalRouter.delete('/users/:id', user.DELETE);
+adminPortalRouter.get('/assets', assets.GET);
+adminPortalRouter.post('/assets', assets.POST);
+adminPortalRouter.patch('/assets/:symbol', asset.PATCH);
+adminPortalRouter.delete('/assets/:symbol', asset.DELETE);
+adminPortalRouter.get('/transactions', transactions.GET);
+adminPortalRouter.patch('/transactions/:id', transaction.PATCH);
+adminPortalRouter.get('/payments', payments.GET);
+adminPortalRouter.post('/payments', payments.POST);
+adminPortalRouter.patch('/payments/:id', payment.PATCH);
+adminPortalRouter.delete('/payments/:id', payment.DELETE);
+adminPortalRouter.get('/gateway', gateway.GET);
+adminPortalRouter.post('/gateway', gateway.POST);
+adminPortalRouter.patch('/gateway', gateway.PATCH);
+adminPortalRouter.delete('/gateway', gateway.DELETE);
+adminPortalRouter.get('/kyc/file', kycFile.GET);
+adminPortalRouter.get('/kyc', kyc.GET);
+adminPortalRouter.patch('/kyc/:id', kycReview.PATCH);
+adminPortalRouter.get('/affiliate', affiliate.GET);
+adminPortalRouter.patch('/affiliate', affiliate.PATCH);
+adminPortalRouter.get('/affiliate/applications', affiliateApplications.GET);
+adminPortalRouter.patch('/affiliate/applications', affiliateApplications.PATCH);
+adminPortalRouter.patch('/affiliate/payouts/:id', affiliatePayout.PATCH);
+adminPortalRouter.get('/tournaments', tournaments.GET);
+adminPortalRouter.post('/tournaments', tournaments.POST);
+adminPortalRouter.get('/tournaments/:id', tournament.GET);
+adminPortalRouter.patch('/tournaments/:id', tournament.PATCH);
+adminPortalRouter.delete('/tournaments/:id', tournament.DELETE);
+adminPortalRouter.get('/tiers', tiers.GET);
+adminPortalRouter.post('/tiers', tiers.POST);
+adminPortalRouter.patch('/tiers/:id', tier.PATCH);
+adminPortalRouter.delete('/tiers/:id', tier.DELETE);
+adminPortalRouter.get('/fraud', fraud.GET);
+adminPortalRouter.get('/logs', logs.GET);
+adminPortalRouter.delete('/logs', logs.DELETE);
+
+// Existing legacy read-only candle endpoint used by TradingActivity.
+export const adminMarketRouter = Router();
+adminMarketRouter.get('/market/candles', marketCandles);
+
+// Database Health & Control Center
+adminPortalRouter.get('/db-health', dbHealth.GET);
+adminPortalRouter.post('/db-health/action', dbHealth.POST);
+adminPortalRouter.get('/db-health/audit', dbHealth.GET_AUDIT);
+
+// Performance & Speed Control Center
+adminPortalRouter.get('/performance', performance.GET);
+adminPortalRouter.get('/performance/history', performance.GET_HISTORY);
+adminPortalRouter.post('/performance/action', performance.POST_ACTION);
+adminPortalRouter.get('/performance/audit', performance.GET_AUDIT);
+adminPortalRouter.get('/performance/auto-optimize', performance.GET_AUTO_OPTIMIZE);
+adminPortalRouter.patch('/performance/auto-optimize', performance.PATCH_AUTO_OPTIMIZE);
+adminPortalRouter.get('/performance/thresholds', performance.GET_THRESHOLDS);
+adminPortalRouter.patch('/performance/thresholds', performance.PATCH_THRESHOLDS);

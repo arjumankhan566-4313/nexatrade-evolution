@@ -1,0 +1,574 @@
+/* ════════════════════════════════════════════════════════════════════════
+   Performance & Speed Control Center — 3D premium visual styles
+   Visually consistent with the Database Health & Control Center.
+   ════════════════════════════════════════════════════════════════════════ */
+
+.admin-perf {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Speed Score Hero ── */
+.perf-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  padding: 24px 28px;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.perf-score-3d {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  transform-style: preserve-3d;
+}
+
+.perf-score-ring {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 12px 40px -8px rgba(0,0,0,0.6),
+    inset 0 2px 4px rgba(255,255,255,0.08),
+    inset 0 -2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.perf-score-ring:hover { transform: scale(1.05) rotateY(5deg); }
+
+.perf-score-inner {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: rgba(8,11,17,0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.perf-score-val {
+  font-size: 36px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.perf-score-label {
+  font-size: 9px;
+  color: var(--dim);
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.perf-hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perf-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.perf-trend.improving { background: rgba(34,197,94,0.12); color: #22c55e; }
+.perf-trend.stable   { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.perf-trend.degrading { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+/* ── Panel Toggle ── */
+.perf-range-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.perf-range-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.perf-range-btn.active {
+  background: rgba(243,186,47,0.1);
+  border-color: rgba(243,186,47,0.4);
+  color: #f3ba2f;
+}
+
+/* ── Metric Grid ── */
+.perf-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  padding: 0 28px 16px;
+}
+
+.perf-metric-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--stroke);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.perf-metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -8px rgba(0,0,0,0.4);
+}
+
+.perf-metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent, #3b82f6);
+  opacity: 0.6;
+}
+
+.perf-metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.perf-metric-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.perf-metric-status {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.perf-metric-status.good { background: rgba(34,197,94,0.15); color: #22c55e; }
+.perf-metric-status.warn { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.perf-metric-status.poor { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+.perf-metric-val {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.perf-metric-sub {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+/* ── Sparkline ── */
+.perf-sparkline {
+  height: 36px;
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.perf-spark-bar {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 1px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.perf-spark-bar:hover { opacity: 1; }
+
+/* ── Section ── */
+.perf-section {
+  padding: 18px 28px;
+  border-top: 1px solid var(--stroke);
+}
+
+.perf-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.perf-section-head h3 {
+  margin: 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Endpoint Table ── */
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.perf-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--stroke);
+}
+
+.perf-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.perf-table tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+.perf-lat-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  min-width: 4px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ── Page Breakdown Heatmap ── */
+.perf-heatmap {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.perf-heat-cell {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  cursor: default;
+  transition: all 0.2s;
+}
+
+.perf-heat-cell:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px -4px rgba(0,0,0,0.4);
+}
+
+.perf-heat-page {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.perf-heat-val {
+  font-size: 18px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.perf-heat-sub {
+  font-size: 10px;
+  color: var(--dim);
+}
+
+/* ── Boost Controls ── */
+.perf-boost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.perf-boost-card {
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--stroke);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.perf-boost-card:hover {
+  background: rgba(34,197,94,0.05);
+  border-color: rgba(34,197,94,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(34,197,94,0.15);
+}
+
+.perf-boost-card.danger:hover {
+  background: rgba(239,68,68,0.05);
+  border-color: rgba(239,68,68,0.3);
+  box-shadow: 0 8px 24px -8px rgba(239,68,68,0.15);
+}
+
+.perf-boost-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  background: rgba(34,197,94,0.1);
+}
+
+.perf-boost-card.danger .perf-boost-icon {
+  background: rgba(239,68,68,0.1);
+}
+
+.perf-boost-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.perf-boost-desc {
+  font-size: 11.5px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+/* ── Auto-Optimize ── */
+.perf-auto-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.perf-auto-info { flex: 1; }
+
+.perf-auto-rules {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perf-auto-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--stroke);
+  font-size: 12.5px;
+}
+
+.perf-auto-rule-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.perf-auto-rule-dot.on { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.perf-auto-rule-dot.off { background: var(--dim); }
+
+/* ── Before/After Comparison ── */
+.perf-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.perf-comp-col {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--stroke);
+}
+
+.perf-comp-col h5 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--dim);
+}
+
+.perf-comp-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.perf-comp-row:last-child { border-bottom: none; }
+
+.perf-comp-delta {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  margin-top: 14px;
+}
+
+.perf-comp-delta.up { background: rgba(34,197,94,0.08); color: #22c55e; }
+.perf-comp-delta.down { background: rgba(239,68,68,0.08); color: #ef4444; }
+.perf-comp-delta.flat { background: rgba(59,130,246,0.08); color: #3b82f6; }
+
+/* ── Toggle Switch (reuse from dbHealth) ── */
+.perf-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.perf-toggle-track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  transition: background 0.2s;
+}
+
+.perf-toggle.on .perf-toggle-track { background: #22c55e; }
+
+.perf-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+.perf-toggle.on .perf-toggle-knob { transform: translateX(20px); }
+
+/* ── Alert Banner ── */
+.perf-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin: 0 28px 16px;
+  font-size: 13px;
+}
+
+.perf-alert.critical {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+}
+
+.perf-alert.warning {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: #f59e0b;
+}
+
+/* ── Audit Log ── */
+.perf-audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.perf-audit-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--stroke);
+  font-size: 12.5px;
+}
+
+.perf-audit-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.perf-audit-badge.success { background: rgba(34,197,94,0.15); color: #22c55e; }
+.perf-audit-badge.failed { background: rgba(239,68,68,0.15); color: #ef4444; }
+.perf-audit-badge.pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+
+/* ── Bottleneck View ── */
+.perf-bottleneck {
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(245,158,11,0.04));
+  border: 1px solid rgba(239,68,68,0.2);
+  margin-top: 14px;
+}
+
+.perf-bottleneck-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.perf-bottleneck-target {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.perf-bottleneck-val {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── 2D Fallback ── */
+@media (prefers-reduced-motion: reduce) {
+  .perf-score-3d, .perf-score-ring { transform: none !important; perspective: none !important; }
+  .perf-metric-card, .perf-boost-card, .perf-heat-cell { transition: none !important; }
+}

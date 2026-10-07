@@ -1,0 +1,198 @@
+# Base44 development environment for NexaTrade.
+# v2-client  — Vite + React SPA dev server, host port 3000 (the preview).
+#              Proxies /api and /socket.io to v2-api so the browser stays
+#              single-origin. This is the active V2 migration surface.
+# v2-api     — Node.js + TypeScript REST/Socket.io API, host port 3101.
+# web        — legacy Next.js dev server + embedded PGlite DB, host port 3100.
+#              Kept for reference; the V2 client is the default preview.
+# v2-postgres— local Postgres for the sandbox so v2-api runs with no external
+#              credentials. A real DATABASE_URL delivered via
+#              /run/base44/app.env (listed LAST) overrides it untouched.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: nexatrade-web
+    working_dir: /app
+    volumes:
+      # Live source — edits in the sandbox appear instantly via Next HMR.
+      - .:/app
+      # Preserve the image-installed node_modules across the bind mount.
+      - /app/node_modules
+      # Keep the Next.js dev build cache out of the repo and persistent.
+      - /app/.next
+    ports:
+      - "3100:3000"
+    environment:
+      # PGlite fallback is disabled when NODE_ENV=production, so keep dev.
+      - NODE_ENV=development
+      # Next.js allowedDevOrigins reads this to permit the preview origin's
+      # HMR / dev-asset requests (see next.config.mjs).
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
+      - PORT=3000
+      # V2 owns the single OTC writer; legacy stays available for reference.
+      - OTC_ENGINE_ENABLED=false
+    env_file:
+      - /run/base44/app.env
+    # Sync the mounted dependency volume with this checkout's lockfile.
+    # `predev` regenerates build info before starting the live source server.
+    command: ["sh", "-ec", "npm ci --no-audit --no-fund && exec npm run dev"]
+    restart: on-failure
+    healthcheck:
+      # /api/health answers 200 even when the DB is still initialising, so it
+      # proves the dev server is compiling and serving real source.
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 6
+
+  # ── NexaTrade V2 migration (platform-v2/) — module-by-module builds ──────
+  # Redis carries the V2 OTC engine's ticks to the Socket.io gateway
+  # (pub/sub + latest-tick cache). Infrastructure only — nothing to edit.
+  v2-redis:
+    image: redis:7-alpine
+    container_name: nexatrade-v2-redis
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Local Postgres for development. Infrastructure only — the schema is created
+  # by the one-shot `v2-db-init` below, never by hand.
+  v2-postgres:
+    image: postgres:16-alpine
+    container_name: nexatrade-v2-postgres
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=nexa
+      - POSTGRES_PASSWORD=nexa_dev_pw
+      - POSTGRES_DB=nexatrade
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - v2-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexa -d nexatrade"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  # One-shot: applies the SAME migrations the legacy app self-applies
+  # (src/lib/db.js `migrate`) and seeds the catalogue/tiers/admin owner, so the
+  # V2 API finds the shared NexaTrade schema. Exits 0 when done.
+  v2-db-init:
+    image: node:22
+    container_name: nexatrade-v2-db-init
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      # Sandbox default (local Postgres) first, real secret last — always wins.
+      - ./.env.base44-defaults
+      - /run/base44/app.env
+    depends_on:
+      v2-postgres:
+        condition: service_healthy
+    command: ["sh", "-ec", "npm ci --no-audit --no-fund && node scripts/init-db.mjs"]
+
+  v2-api:
+    image: node:22
+    container_name: nexatrade-v2-api
+    working_dir: /app
+    volumes:
+      - ./platform-v2/server:/app
+      - /app/node_modules
+    ports:
+      - "3101:4000"
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      # Embedded-preview cookie mode (dev only): SameSite=None; Secure so the
+      # session cookie survives inside the Base44 preview iframe.
+      - PREVIEW_EMBED=1
+      # Allow the sandbox preview origin of the V2 client plus localhost.
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,https://3000-${BASE44_PUBLIC_HOST_SUFFIX}
+      # Live-price pipeline: engine → Redis pub/sub → Socket.io gateway.
+      - REDIS_URL=redis://v2-redis:6379
+      # V2 is the authoritative writer. Legacy web has its engine disabled;
+      # the existing PostgreSQL advisory lock still enforces single leadership.
+      - OTC_ENGINE_ENABLED=true
+      # Cap the V8 old-generation heap so the long-running OTC engine GCs
+      # aggressively instead of accumulating to a 2 GB OOM crash.
+      - NODE_OPTIONS=--max-old-space-size=1024
+    depends_on:
+      v2-redis:
+        condition: service_healthy
+      v2-postgres:
+        condition: service_healthy
+      # The schema must exist before the OTC engine boots, otherwise the
+      # catalogue upsert fails and takes the process down with it.
+      v2-db-init:
+        condition: service_completed_successfully
+    env_file:
+      # Sandbox default (local Postgres) first, platform secrets last — the
+      # user's dashboard DATABASE_URL always overrides the local one.
+      - ./.env.base44-defaults
+      - /run/base44/app.env
+    command: ["sh", "-ec", "npm ci --no-audit --no-fund && exec npm run dev"]
+    restart: on-failure
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "fetch('http://127.0.0.1:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+
+  v2-client:
+    image: node:22
+    container_name: nexatrade-v2-client
+    working_dir: /app
+    volumes:
+      - ./platform-v2/client:/app
+      - ./public:/market-public:ro
+      - /app/node_modules
+    ports:
+      - "3000:5173"
+    depends_on:
+      # Start the dev server only once the API it proxies to is answering:
+      # otherwise the first proxy requests (/api/health, /api/auth/me and the
+      # socket upgrade) run before v2-api listens and log ECONNREFUSED.
+      v2-api:
+        condition: service_healthy
+    environment:
+      # Permits the proxied preview hostname on the Vite dev server.
+      - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS
+      # Vite dev proxy target inside the compose network.
+      - VITE_PROXY_TARGET=http://v2-api:4000
+      # Serve unchanged legacy artwork directly from the checkout.
+      - VITE_PUBLIC_DIR=/market-public
+    command: ["sh", "-ec", "npm ci --no-audit --no-fund && exec npm run dev"]
+    restart: on-failure
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "fetch('http://127.0.0.1:5173/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 6
+
+volumes:
+  # Local development database — never delete it to "refresh" anything; the
+  # one-shot init only ever creates tables that are missing.
+  v2-pgdata:

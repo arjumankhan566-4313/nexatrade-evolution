@@ -1,0 +1,103 @@
+# Market artwork
+
+All assets are served locally; the browser never depends on a third-party logo request.
+
+- Company marks: TradingView public symbol artwork.
+- Crypto marks: spothq/cryptocurrency-icons and ErikThiart/cryptocurrency-icons.
+- Currency flags: flagcdn.com.
+- Expanded index artwork: local flag + chart compositions.
+- Expanded commodity artwork: local SVG illustrations of the underlying commodity.
+- Dark company logos use a neutral light backing so black marks remain visible.
+- Commodity artwork depicts the underlying product (not an unrelated company).
+  Metals use text-free ingots, ore, steel and battery illustrations; no ticker
+  initials or white outer mask. Commodity URLs use `?v=2` to invalidate old art.
+
+## Added source references
+
+- `instrument-AIG.svg`: https://s3-symbol-logo.tradingview.com/american-international-group.svg
+- `instrument-ALL.svg`: https://s3-symbol-logo.tradingview.com/allstate.svg
+- `instrument-AMAT.svg`: https://s3-symbol-logo.tradingview.com/applied-materials.svg
+- `instrument-AMGN.svg`: https://s3-symbol-logo.tradingview.com/amgen.svg
+- `instrument-AMT.svg`: https://s3-symbol-logo.tradingview.com/american-tower.svg
+- `instrument-AXP.svg`: https://s3-symbol-logo.tradingview.com/american-express.svg
+- `instrument-BHP.svg`: https://s3-symbol-logo.tradingview.com/bhp.svg
+- `instrument-BMY.svg`: https://s3-symbol-logo.tradingview.com/bristol-myers-squibb.svg
+- `instrument-C.svg`: https://s3-symbol-logo.tradingview.com/citigroup.svg
+- `instrument-CAT.svg`: https://s3-symbol-logo.tradingview.com/caterpillar.svg
+- `instrument-CL.svg`: https://s3-symbol-logo.tradingview.com/colgate-palmolive.svg
+- `instrument-COP.svg`: https://s3-symbol-logo.tradingview.com/conocophillips.svg
+- `instrument-COST.svg`: https://s3-symbol-logo.tradingview.com/costco-wholesale.svg
+- `instrument-CSCO.svg`: https://s3-symbol-logo.tradingview.com/cisco.svg
+- `instrument-CVS.svg`: https://s3-symbol-logo.tradingview.com/cvs-health.svg
+- `instrument-DHR.svg`: https://s3-symbol-logo.tradingview.com/danaher.svg
+- `instrument-DUK.svg`: https://s3-symbol-logo.tradingview.com/duke-energy.svg
+- `instrument-F.svg`: https://s3-symbol-logo.tradingview.com/ford.svg
+- `instrument-GE.svg`: https://s3-symbol-logo.tradingview.com/general-electric.svg
+- `instrument-GILD.svg`: https://s3-symbol-logo.tradingview.com/gilead.svg
+- `instrument-GM.svg`: https://s3-symbol-logo.tradingview.com/general-motors.svg
+- `instrument-HD.svg`: https://s3-symbol-logo.tradingview.com/home-depot.svg
+- `instrument-HON.svg`: https://s3-symbol-logo.tradingview.com/honeywell.svg
+- `instrument-KMB.svg`: https://s3-symbol-logo.tradingview.com/kimberly-clark.svg
+- `instrument-LLY.svg`: https://s3-symbol-logo.tradingview.com/eli-lilly.svg
+- `instrument-MMM.svg`: https://s3-symbol-logo.tradingview.com/3m.svg
+- `instrument-MO.svg`: https://s3-symbol-logo.tradingview.com/altria.svg
+- `instrument-MRK.svg`: https://s3-symbol-logo.tradingview.com/merck.svg
+- `instrument-MRVL.svg`: https://s3-symbol-logo.tradingview.com/marvell-tech.svg
+- `instrument-MS.svg`: https://s3-symbol-logo.tradingview.com/morgan-stanley.svg
+- `instrument-MNST.svg`: https://s3-symbol-logo.tradingview.com/monster-beverage.svg
+- `instrument-LMT.svg`: https://s3-symbol-logo.tradingview.com/lockheed-martin.svg
+- `instrument-RTX.svg`: https://s3-symbol-logo.tradingview.com/raytheon.svg
+- `coin-bal.png`: https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bal.png
+- `coin-hnt.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/helium.png
+- `coin-ocean.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ocean-protocol.png
+- `coin-dym.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/dymension.png
+- `coin-xmr.png`: https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/xmr.png
+- `coin-xem.png`: https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/xem.png
+- `coin-aergo.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/aergo.png
+- `coin-hifi.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/hifi-finance-new.png
+- `coin-ntrn.png`: https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/neutron.png
+- `coin-waves.png`: https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/waves.png
+- `coin-ast.png`: https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/ast.png
+- `flag-ph.png`: https://flagcdn.com/w80/ph.png
+- `flag-th.png`: https://flagcdn.com/w80/th.png
+- `flag-gr.png`: https://flagcdn.com/w80/gr.png
+- `flag-it.png`: https://flagcdn.com/w80/it.png
+- `flag-ke.png`: https://flagcdn.com/w80/ke.png
+- `flag-ro.png`: https://flagcdn.com/w80/ro.png
+- `flag-ch.png`: https://flagcdn.com/w80/ch.png
+- `flag-cl.png`: https://flagcdn.com/w80/cl.png
+- `flag-pk.png`: https://flagcdn.com/w80/pk.png
+- `flag-sg.png`: https://flagcdn.com/w80/sg.png
+- `flag-cz.png`: https://flagcdn.com/w80/cz.png
+- `flag-ru.png`: https://flagcdn.com/w80/ru.png
+- `flag-nl.png`: https://flagcdn.com/w80/nl.png
+- `flag-se.png`: https://flagcdn.com/w80/se.png
+- `flag-id.png`: https://flagcdn.com/w80/id.png
+- `flag-ie.png`: https://flagcdn.com/w80/ie.png
+- `flag-ca.png`: https://flagcdn.com/w80/ca.png
+- `flag-il.png`: https://flagcdn.com/w80/il.png
+- `flag-kr.png`: https://flagcdn.com/w80/kr.png
+- `flag-hu.png`: https://flagcdn.com/w80/hu.png
+- `flag-tr.png`: https://flagcdn.com/w80/tr.png
+- `flag-ng.png`: https://flagcdn.com/w80/ng.png
+- `flag-cn.png`: https://flagcdn.com/w80/cn.png
+- `flag-eg.png`: https://flagcdn.com/w80/eg.png
+- `flag-pe.png`: https://flagcdn.com/w80/pe.png
+- `flag-jo.png`: https://flagcdn.com/w80/jo.png
+- `flag-in.png`: https://flagcdn.com/w80/in.png
+- `flag-es.png`: https://flagcdn.com/w80/es.png
+- `flag-eu.png`: https://flagcdn.com/w80/eu.png
+- `flag-ae.png`: https://flagcdn.com/w80/ae.png
+- `flag-pl.png`: https://flagcdn.com/w80/pl.png
+- `flag-be.png`: https://flagcdn.com/w80/be.png
+- `flag-br.png`: https://flagcdn.com/w80/br.png
+- `flag-vn.png`: https://flagcdn.com/w80/vn.png
+- `flag-ar.png`: https://flagcdn.com/w80/ar.png
+- `flag-my.png`: https://flagcdn.com/w80/my.png
+- `flag-mx.png`: https://flagcdn.com/w80/mx.png
+- `flag-qa.png`: https://flagcdn.com/w80/qa.png
+- `flag-co.png`: https://flagcdn.com/w80/co.png
+- `flag-sa.png`: https://flagcdn.com/w80/sa.png
+- `flag-tw.png`: https://flagcdn.com/w80/tw.png
+- `flag-za.png`: https://flagcdn.com/w80/za.png
+- `instrument-LOW.svg`: https://s3-symbol-logo.tradingview.com/lowe-s.svg

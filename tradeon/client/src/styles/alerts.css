@@ -1,0 +1,430 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   NexaTrade — GLOBAL ALERT SYSTEM (shared by Admin Panel + User Panel)
+   Blocking Center Modal · Top-center Toast stack · Notification Center (bell)
+
+   Self-contained palette so the visuals are IDENTICAL in both panels no matter
+   which theme scope (.shell / .nt-shell) the host is mounted under.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.nx-modal-backdrop,
+.nx-toast-stack,
+.nx-bell {
+  --nx-gold: #f2b84b;
+  --nx-gold-2: #f2d38a;
+  --nx-cyan: #00f2fe;
+  --nx-emerald: #10b981;
+  --nx-emerald-2: #34d399;
+  --nx-crimson: #f43f5e;
+  --nx-crimson-2: #fb7185;
+  --nx-glass: rgba(16, 22, 34, 0.85);
+  --nx-stroke: rgba(255, 255, 255, 0.1);
+  --nx-text: #e6edf3;
+  --nx-font: var(--font-inter), 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--nx-font);
+  color: var(--nx-text);
+}
+
+/* ─────────────────────────── §3 Blocking Center Modal ─────────────────────── */
+.nx-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.nx-modal {
+  position: relative;
+  width: min(90vw, 448px);
+  min-width: min(320px, 92vw);
+  padding: 26px 24px 24px;
+  text-align: center;
+  border-radius: 18px;
+  border: 1px solid var(--nx-stroke);
+  background: var(--nx-glass);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  color: var(--nx-text);
+}
+.nx-modal-critical {
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 0 60px rgba(244, 63, 94, 0.25), 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.nx-modal-warning {
+  border-color: rgba(242, 184, 75, 0.4);
+  box-shadow: 0 0 60px rgba(242, 184, 75, 0.2), 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.nx-modal-success {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.18), 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.nx-modal-info {
+  border-color: rgba(0, 242, 254, 0.35);
+  box-shadow: 0 0 60px rgba(0, 242, 254, 0.14), 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.nx-modal-x {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.nx-modal-x:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.nx-modal-icon {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  border: 1px solid;
+}
+.nx-modal-icon-critical { color: var(--nx-crimson); border-color: rgba(244, 63, 94, 0.35); background: rgba(244, 63, 94, 0.1); box-shadow: 0 0 34px rgba(244, 63, 94, 0.3); }
+.nx-modal-icon-warning { color: var(--nx-gold); border-color: rgba(242, 184, 75, 0.35); background: rgba(242, 184, 75, 0.1); box-shadow: 0 0 34px rgba(242, 184, 75, 0.25); }
+.nx-modal-icon-success { color: var(--nx-emerald-2); border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 34px rgba(16, 185, 129, 0.25); }
+.nx-modal-icon-info { color: var(--nx-cyan); border-color: rgba(0, 242, 254, 0.3); background: rgba(0, 242, 254, 0.08); box-shadow: 0 0 34px rgba(0, 242, 254, 0.2); }
+.nx-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #fff;
+}
+.nx-modal-msg {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: pre-line;
+}
+.nx-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.nx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 110px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s, opacity 0.15s;
+}
+.nx-btn:hover { transform: translateY(-1px); }
+.nx-btn:active { transform: translateY(0); }
+.nx-btn:focus-visible { outline: 2px solid rgba(0, 242, 254, 0.6); outline-offset: 2px; }
+.nx-btn-ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.72);
+}
+.nx-btn-ghost:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+.nx-btn-gold {
+  background: linear-gradient(135deg, #f2d38a 0%, #f2b84b 45%, #caa153 100%);
+  color: #17130a;
+  box-shadow: 0 8px 26px rgba(242, 184, 75, 0.28);
+}
+.nx-btn-gold:hover { box-shadow: 0 12px 34px rgba(242, 184, 75, 0.42); }
+.nx-btn-crimson {
+  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+  color: #fff;
+  box-shadow: 0 8px 26px rgba(244, 63, 94, 0.3);
+}
+.nx-btn-crimson:hover { box-shadow: 0 12px 34px rgba(244, 63, 94, 0.45); }
+
+/* ─────────────────────────── §4 Toast stack (top-center) ──────────────────── */
+.nx-toast-stack {
+  pointer-events: none;
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  z-index: 998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: min(92vw, 560px);
+  transform: translateX(-50%);
+}
+.nx-toast {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: min(300px, 92vw);
+  max-width: 100%;
+  padding: 10px 10px 11px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--nx-stroke);
+  background: rgba(16, 22, 34, 0.82);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  font-size: 13.5px;
+  line-height: 1.45;
+  overflow: hidden;
+}
+.nx-toast-critical { border-color: rgba(244, 63, 94, 0.45); color: var(--nx-crimson-2); box-shadow: 0 0 40px rgba(244, 63, 94, 0.18), 0 18px 50px rgba(0, 0, 0, 0.5); }
+.nx-toast-warning { border-color: rgba(242, 184, 75, 0.45); color: var(--nx-gold); }
+.nx-toast-success { border-color: rgba(16, 185, 129, 0.45); color: var(--nx-emerald-2); }
+.nx-toast-info { border-color: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.82); }
+.nx-toast-icon { flex-shrink: 0; }
+.nx-toast-body { flex: 1; min-width: 0; display: grid; gap: 1px; text-align: left; }
+.nx-toast-title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px; }
+.nx-toast-msg { font-weight: 500; overflow-wrap: anywhere; }
+.nx-toast-x {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+.nx-toast-x:hover { opacity: 1; background: rgba(255, 255, 255, 0.08); }
+.nx-toast-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.55;
+  transform-origin: left center;
+  animation-name: nxToastBar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes nxToastBar {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+/* ─────────────────────────── §5 Notification Center (bell) ────────────────── */
+.nx-bell { position: relative; display: inline-flex; }
+.nx-bell-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.nx-bell-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.16); }
+.nx-bell-btn[aria-expanded='true'] { background: rgba(255, 255, 255, 0.09); border-color: rgba(0, 242, 254, 0.35); }
+.nx-bell-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--nx-crimson);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  box-shadow: 0 0 0 2px rgba(11, 14, 20, 0.9);
+}
+.nx-bell-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 80;
+  width: min(350px, 88vw);
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 22, 34, 0.94);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  text-align: left;
+}
+.nx-bell-left { right: auto; left: 0; }
+.nx-bell-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.nx-bell-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.2px;
+}
+.nx-bell-title em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--nx-cyan);
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+}
+.nx-bell-tools { display: flex; align-items: center; gap: 10px; font-size: 11.5px; }
+.nx-bell-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nx-bell-tool:hover { color: rgba(255, 255, 255, 0.78); }
+.nx-bell-tool-primary { color: var(--nx-cyan); }
+.nx-bell-tool-primary:hover { color: var(--nx-cyan); text-decoration: underline; }
+.nx-bell-tool:disabled { opacity: 0.35; cursor: default; text-decoration: none; }
+.nx-bell-close {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+.nx-bell-close:hover { color: #fff; background: rgba(255, 255, 255, 0.07); }
+.nx-bell-list { max-height: 360px; overflow-y: auto; padding-top: 4px; }
+.nx-bell-empty {
+  margin: 0;
+  padding: 28px 8px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.nx-note {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 8px 9px 6px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: background 0.15s;
+}
+.nx-note:hover { background: rgba(255, 255, 255, 0.05); }
+.nx-note-unread { background: rgba(255, 255, 255, 0.03); }
+.nx-note-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--nx-cyan);
+  box-shadow: 0 0 8px var(--nx-cyan);
+  visibility: hidden;
+}
+.nx-note-unread .nx-note-dot { visibility: visible; }
+.nx-note-icon { flex-shrink: 0; margin-top: 2px; color: rgba(255, 255, 255, 0.55); }
+.nx-note-critical .nx-note-icon { color: var(--nx-crimson); }
+.nx-note-warning .nx-note-icon { color: var(--nx-gold); }
+.nx-note-success .nx-note-icon { color: var(--nx-emerald-2); }
+.nx-note-info .nx-note-icon { color: var(--nx-cyan); }
+.nx-note-body { flex: 1; min-width: 0; }
+.nx-note-body strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  overflow-wrap: anywhere;
+}
+.nx-note-critical .nx-note-body strong { color: var(--nx-crimson-2); }
+.nx-note-warning .nx-note-body strong { color: var(--nx-gold); }
+.nx-note-success .nx-note-body strong { color: var(--nx-emerald-2); }
+.nx-note-body p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.68);
+  overflow-wrap: anywhere;
+}
+.nx-note-time { display: block; margin-top: 3px; font-size: 10.5px; color: rgba(255, 255, 255, 0.4); }
+.nx-note-x {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.32);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+.nx-note:hover .nx-note-x,
+.nx-note-x:focus-visible { opacity: 1; }
+.nx-note-x:hover { color: rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.08); }
+@media (hover: none) {
+  .nx-note-x { opacity: 1; }
+}
+
+/* ─────────────────────────── mobile ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .nx-toast-stack { top: 10px; width: calc(100vw - 20px); max-width: none; }
+  .nx-toast { min-width: 0; }
+  .nx-modal { padding: 24px 18px 20px; }
+  .nx-modal-actions .nx-btn { flex: 1 1 130px; }
+  .nx-bell-panel { position: fixed; left: 10px; right: 10px; top: 64px; width: auto; }
+  .nx-bell-tools { gap: 8px; font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-toast-bar { animation: none; opacity: 0; }
+}

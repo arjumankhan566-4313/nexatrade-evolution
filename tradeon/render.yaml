@@ -1,0 +1,65 @@
+# NexaTrade — one-click Render blueprint.
+# Deploy: https://render.com/deploy?repo=https://github.com/arjumankhan566-4313/Trading-App
+#
+# Creates the Next.js web service AND a managed PostgreSQL database, and wires
+# DATABASE_URL automatically — no terminal work required.
+services:
+  - type: web
+    name: nexatrade
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22.22.3"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nexatrade-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false          # required: 12+ chars; protected owner stays locked without it
+      - key: ADMIN_EMAIL
+        value: admin@nexatrade.io
+      - key: ADMIN_PASSWORD
+        sync: false          # optional regular admin; must be 12+ characters
+      - key: ADMIN_NAME
+        value: NexaTrade Owner
+      - key: FINNHUB_API_KEY
+        sync: false
+      - key: POLYGON_API_KEY
+        sync: false
+      # Optional live wallet gateway. Without these, the clearly-labelled demo
+      # checkout remains available for end-to-end preview testing.
+      - key: NOWPAYMENTS_API_KEY
+        sync: false
+      - key: NOWPAYMENTS_IPN_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_DEPOSIT_CURRENCY
+        value: usd
+
+  # Settles expired trades every minute (long-running hosts don't get Vercel Cron).
+  - type: cron
+    name: nexatrade-settlement
+    runtime: node
+    plan: free
+    schedule: "* * * * *"
+    buildCommand: npm install
+    startCommand: node scripts/settle-cron.mjs
+    envVars:
+      - key: NEXATRADE_URL
+        value: https://nexatrade.onrender.com
+      - key: CRON_SECRET
+        sync: false
+
+databases:
+  - name: nexatrade-db
+    plan: free
+    databaseName: nexatrade
+    user: nexatrade
