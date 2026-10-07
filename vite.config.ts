@@ -12,4 +12,20 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      proxy: {
+        // TRADEON platform-v2 API (Express server on :4000 in this sandbox).
+        "/api": {
+          target: "http://localhost:4000",
+          changeOrigin: true,
+        },
+        "/socket.io": {
+          target: "http://localhost:4000",
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
+  },
 });

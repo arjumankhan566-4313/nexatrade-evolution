@@ -1,0 +1,803 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Terminal page styles — ported 1:1 from legacy src/styles/trading-workspace.css
+   Layout: left rail (60px) | fluid chart | ticket panel (250px).
+   The market list is NOT part of the layout: the rail's Markets button opens it
+   as a pop-up over the plot (components/Market/MarketSelector + market-selector.css),
+   and picking an instrument closes it. Below 1024px the rail collapses and the
+   four chart controls return to the floating bar.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.terminal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+  min-width: 0;
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.terminal-main {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) 250px;
+  gap: 0;
+  align-items: stretch;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+}
+
+/* ── Left vertical rail (legacy: 60px, #10141a bg) ── */
+.terminal-left-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #10141a;
+  border-right: 1px solid #1a1f26;
+  height: 100%;
+  min-height: 0;
+  /* Visible, not hidden: the rail's timeframe control opens its menu sideways. */
+  overflow: visible;
+  padding: 6px 0;
+  gap: 2px;
+}
+.rail-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.rail-nav-item {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  transition: all 160ms ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rail-nav-item.active {
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.3);
+  color: #f5c542;
+}
+.rail-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+/* ── Rail bottom: the four chart controls, then log out ── */
+.rail-bottom {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0 6px;
+  flex-shrink: 0;
+}
+.rail-divider {
+  width: 22px;
+  height: 1px;
+  background: #232930;
+  margin: 2px 0;
+}
+.rail-logout { color: #ff7a7a; }
+.rail-logout:hover { color: #ff9494; background: rgba(255, 90, 90, 0.1); }
+
+/* The chart controls render like the rail's nav icons; the SAME markup floats
+   over the plot on phones (components/Chart/ChartControls.tsx). */
+.chart-controls--rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.chart-controls--rail .chart-tf-btn,
+.chart-controls--rail .chart-tool-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 9px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  opacity: 1;
+}
+.chart-controls--rail .chart-tf-btn { font-size: 10px; font-weight: 800; letter-spacing: 0.02em; }
+.chart-controls--rail .chart-tf-btn svg { display: none; }
+.chart-controls--rail .chart-tf-btn:hover,
+.chart-controls--rail .chart-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: transparent;
+  color: var(--text);
+}
+.chart-controls--rail .chart-tf-btn.active {
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.3);
+  color: #f5c542;
+}
+.chart-controls--rail .chart-tf-menu {
+  left: 44px;
+  bottom: 0;
+  z-index: 60;
+}
+
+/* ── Chart center ── */
+.chart-center {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  /* Anchors the market pop-up (.mkt, position: absolute; inset: 0). */
+  position: relative;
+}
+.compact-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--stroke);
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-height: 48px;
+  flex-shrink: 0;
+}
+.active-market-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .035);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+  flex-shrink: 0;
+}
+.active-market-trigger:hover {
+  border-color: rgba(245, 197, 66, .65);
+  background: rgba(245, 197, 66, .08);
+}
+.active-market-trigger strong,
+.active-market-trigger small {
+  display: block;
+  white-space: nowrap;
+}
+.active-market-trigger strong { font-size: 13px; line-height: 1.1; }
+.active-market-trigger small { margin-top: 1px; color: #8f9bb0; font-size: 10px; font-weight: 600; }
+.active-market-trigger > svg { margin-left: 2px; color: #f5c542; flex-shrink: 0; }
+
+.chart-canvas-area {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: #0b0e11;
+}
+
+/* ── Candle countdown badge (legacy: MM:SS, left of price badge) ── */
+.candle-countdown {
+  flex-shrink: 0;
+}
+.candle-countdown.urgent {
+  color: #b26b00;
+  animation: countdownPulse 1s ease-in-out infinite;
+}
+@keyframes countdownPulse { 50% { opacity: 0.6; } }
+
+/* ── Floating chart tools bar (bottom-left) — phones only: from 768px up the
+      four controls live at the bottom of the left rail instead ── */
+.chart-tools-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.terminal-mobile-tools { display: none; }
+
+/* Timeframe dropdown */
+.chart-tf-control { position: relative; }
+.chart-tf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 9px;
+  border-radius: 8px;
+  border: 1px solid #1f262e;
+  background: rgba(13, 17, 26, 0.6);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.chart-tf-btn:hover { border-color: rgba(255, 255, 255, 0.2); }
+.chart-tf-btn.active {
+  border-color: rgba(245, 197, 66, 0.35);
+  background: rgba(245, 197, 66, 0.12);
+  color: #f5c542;
+}
+.chart-tf-menu {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #0d1119;
+  border: 1px solid var(--stroke);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  min-width: 220px;
+}
+.chart-tf-opt {
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.chart-tf-opt:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+.chart-tf-opt.active {
+  background: rgba(245, 197, 66, 0.15);
+  color: #f5c542;
+}
+
+/* Chart tool buttons */
+.chart-tool-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #1f262e;
+  background: rgba(13, 17, 26, 0.6);
+  color: #83f0d7;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+.chart-tool-btn:hover { opacity: 1; border-color: rgba(245, 197, 66, 0.35); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RIGHT TRADING PANEL — ported 1:1 from legacy trading-workspace.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+.terminal-ticket {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  background: #1a1f26;
+  border-left: 1px solid #2a2f36;
+  border-radius: 0;
+  width: auto;
+}
+
+/* ── Asset header with payout badge (legacy) ── */
+.ticket-asset-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a2f36;
+  margin-bottom: 8px;
+}
+.ticket-asset-icon { width: 24px; height: 24px; display: grid; place-items: center; flex-shrink: 0; }
+.ticket-asset-info { flex: 1; min-width: 0; }
+.ticket-asset-info strong {
+  font-size: 12px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ticket-payout-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #00b57f;
+  background: rgba(0, 181, 127, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Ticket fields (legacy) ── */
+.ticket-field {
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ticket-field > label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+/* ── Expiry dropdown (legacy TradeExpiry component) ── */
+.expiry-ctrl { position: relative; }
+.expiry-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a2f36;
+  background: #10141a;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.expiry-trigger:hover { border-color: #3a4048; }
+.expiry-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #2a2f36;
+  background: rgba(13, 17, 26, 0.98);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.expiry-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.expiry-tabs button {
+  flex: 1;
+  padding: 7px 4px;
+  border: 0;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+.expiry-tabs button.active {
+  background: rgba(245, 197, 66, 0.16);
+  color: #f5c542;
+}
+.expiry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.expiry-opt {
+  padding: 9px 4px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+  color: #93a0b8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.12s ease;
+}
+.expiry-opt:hover { background: rgba(255, 255, 255, 0.07); color: #e0e4ec; }
+.expiry-opt.active {
+  background: rgba(245, 197, 66, 0.18);
+  color: #f5c542;
+  border-color: rgba(245, 197, 66, 0.4);
+}
+
+/* ── Amount input with - / + (legacy) ── */
+.ticket-amount-control {
+  display: flex;
+  align-items: stretch;
+  border-radius: 8px;
+  border: 1px solid #2a2f36;
+  background: #10141a;
+  overflow: hidden;
+}
+.ticket-amount-control button {
+  width: 36px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ticket-amount-control button:hover { background: rgba(255, 255, 255, 0.1); }
+.ticket-amount-control input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 7px;
+  outline: none;
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+.ticket-amount-control input::-webkit-outer-spin-button,
+.ticket-amount-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* ── Quick stakes ── */
+.ticket-quick-stakes { display: flex; gap: 3px; margin-top: 4px; }
+.ticket-quick-btn {
+  flex: 1;
+  padding: 4px 7px;
+  border-radius: 7px;
+  border: 1px solid #2a2f36;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.ticket-quick-btn:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.18); }
+.ticket-quick-btn.active {
+  background: rgba(245, 197, 66, 0.12);
+  color: #f5c542;
+  border-color: rgba(245, 197, 66, 0.3);
+}
+
+/* ── CALL / PUT buttons (legacy: flat colors, ArrowUp/Down) ── */
+.ticket-trade-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+.ticket-buy-btn, .ticket-sell-btn {
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  padding: 13px 8px;
+  border-radius: 10px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+.ticket-buy-btn { background: #00b57f; --trade-feedback: #37e6b1; }
+.ticket-buy-btn:hover { background: #00a070; }
+.ticket-sell-btn { background: #f03d3d; --trade-feedback: #ff7979; }
+.ticket-sell-btn:hover { background: #d93535; }
+.ticket-buy-btn:active:not(:disabled), .ticket-sell-btn:active:not(:disabled) { transform: scale(0.97); }
+.ticket-buy-btn:focus-visible, .ticket-sell-btn:focus-visible { outline: 2px solid var(--trade-feedback); outline-offset: 2px; }
+.ticket-buy-btn:disabled, .ticket-sell-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ticket-click-feedback {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 3px var(--trade-feedback);
+  animation: ticket-click 260ms ease-out forwards;
+}
+@keyframes ticket-click { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ticket-buy-btn, .ticket-sell-btn { transition: none; }
+  .ticket-buy-btn:active:not(:disabled), .ticket-sell-btn:active:not(:disabled) { transform: none; }
+}
+
+.ticket-trade-error {
+  margin: 0 0 8px;
+  color: #ff9292;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ── Payout row (legacy) ── */
+.ticket-payout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.ticket-payout-row strong { color: #f5c542; font-size: 13px; }
+
+/* ── Tabs (legacy: border-bottom style, NOT pill) ── */
+.ticket-tabs {
+  display: flex;
+  border-bottom: 1px solid #2a2f36;
+  margin-bottom: 6px;
+}
+.ticket-tab {
+  flex: 1;
+  padding: 7px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.ticket-tab.active {
+  color: var(--text);
+  border-bottom-color: #f5c542;
+}
+
+/* ── Trade list (legacy) ── */
+.ticket-trade-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ticket-trade-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.ticket-trade-row strong { font-size: 11px; display: block; }
+.ticket-trade-row .dim { font-size: 10px; color: var(--dim); display: block; margin-top: 2px; }
+.countdown { font-weight: 700; color: var(--muted); font-size: 12px; }
+.countdown.urgent { color: #f5c542; animation: countdown-pulse 1s ease-in-out infinite; }
+@keyframes countdown-pulse { 50% { opacity: 0.55; } }
+.up { color: #10b981; }
+.down { color: #f43f5e; }
+.muted { color: var(--dim); }
+
+.ticket-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 0;
+  color: var(--dim);
+}
+.ticket-empty-state span { font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Terminal topbar styles (from legacy trading-workspace.css)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dash-terminal-main {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.dash-terminal-topbar {
+  height: 48px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--stroke);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px;
+  background: rgba(13, 17, 25, 0.92);
+  backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-wrap: nowrap;
+}
+
+.terminal-brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dash-terminal-logo {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.dash-terminal-logo img { display: block; object-fit: contain; }
+#terminal-asset-slot {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.terminal-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* Notification bell — lives in the topbar next to the account balance */
+.terminal-bell-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.terminal-bell-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); border-color: #3a4048; }
+/* Notification bell (components/layout/NotificationCenter) in the terminal
+   topbar; the dropdown panel itself is styled in alerts.css. */
+.terminal-bell-btn.nx-bell-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border-color: var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+}
+.terminal-bell-btn.nx-bell-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
+.account-balance-btn.is-open { border-color: rgba(41, 134, 255, 0.45); }
+.terminal-bell-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f5c542;
+  box-shadow: 0 0 6px rgba(245, 197, 66, 0.6);
+}
+
+/* Account display (legacy AccountSwitcher compact) */
+.terminal-account-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.account-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.account-balance-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.account-balance-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: #3a4048; }
+.account-mode-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.account-mode-dot.real { background: #f5c542; box-shadow: 0 0 6px rgba(245, 197, 66, 0.5); }
+.account-mode-dot.demo { background: #22d3ee; box-shadow: 0 0 6px rgba(34, 211, 238, 0.5); }
+
+/* Deposit + Withdraw buttons (legacy) */
+.terminal-deposit-btn {
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #00b57f;
+  color: #fff;
+  border: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s ease;
+}
+.terminal-deposit-btn:hover { background: #00a070; }
+.terminal-withdraw-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.terminal-withdraw-link:hover { color: var(--text); }
+
+/* ── Terminal content: no padding, full height ── */
+.dash-terminal-content {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  height: calc(100svh - 48px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Responsive (ported from legacy)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Large desktop */
+@media (min-width: 1200px) {
+  .terminal-main { grid-template-columns: 60px minmax(0, 1fr) 270px; }
+}
+
+/* Tablet: the rail narrows; the market pop-up is unaffected. */
+@media (max-width: 1023px) {
+  .terminal-main { grid-template-columns: 52px minmax(0, 1fr) 210px; }
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .terminal {
+    height: auto;
+    grid-template-rows: auto auto;
+    gap: 8px;
+  }
+  .terminal-main {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    overflow: visible;
+    gap: 8px;
+  }
+  .terminal-left-rail { display: none; }
+  .chart-center { min-height: 50vh; }
+  .terminal-mobile-tools { display: block; }
+  .terminal-ticket {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #2a2f36;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px 10px;
+    height: auto;
+    max-height: none;
+    padding: 10px;
+  }
+  .ticket-asset-header { grid-column: 1 / -1; }
+  .ticket-trade-actions { grid-column: 1 / -1; }
+  .ticket-payout-row { grid-column: 1 / -1; }
+  .ticket-tabs { grid-column: 1 / -1; }
+  .ticket-trade-list { grid-column: 1 / -1; }
+  .dash-terminal-topbar { height: 48px; min-height: 48px; padding: 0 10px; }
+  .dash-terminal-content {
+    height: auto;
+    min-height: calc(100svh - 48px);
+    padding: 8px 8px calc(72px + env(safe-area-inset-bottom, 0px));
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .terminal-topbar-right .terminal-withdraw-link { display: none; }
+}
