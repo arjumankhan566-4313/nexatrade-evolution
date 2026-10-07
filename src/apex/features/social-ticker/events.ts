@@ -51,7 +51,7 @@ const MARKETS = [
 ] as const;
 
 function pick<T>(list: readonly T[]): T {
-  return list[Math.floor(Math.random() * list.length)];
+  return list[Math.floor(Math.random() * list.length)]!;
 }
 
 function randInt(min: number, max: number): number {

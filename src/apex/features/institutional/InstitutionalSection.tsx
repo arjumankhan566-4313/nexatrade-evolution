@@ -73,7 +73,7 @@ export default function InstitutionalSection() {
                     <td className="px-5 py-3.5">
                       <span
                         className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ring-1 ring-inset ${
-                          ACCESS_STYLE[capability.access] ?? ACCESS_STYLE.Public
+                          ACCESS_STYLE[capability.access] ?? ACCESS_STYLE["Public"]
                         }`}
                       >
                         {capability.access}
