@@ -5,6 +5,13 @@
   color: #e6e9ef;
 }
 
+/* Unlayered on purpose: wins over the template's @layer base body rule. */
+body {
+  background: #0b0e14;
+  color: #e6e9ef;
+}
+}
+
 * {
   box-sizing: border-box;
 }
