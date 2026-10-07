@@ -164,6 +164,11 @@ export default function CanvasChart({
     engineRef.current?.setOverlays(overlays);
   }, [overlays]);
 
+  // Pull the admin-chosen countdown color once (and bind live updates).
+  useEffect(() => {
+    void useChartConfigStore.getState().loadFromServer();
+  }, []);
+
   // Keep the engine informed of the countdown pill's width, so the dashed
   // price line starts a clean COUNTDOWN_GAP_PX after it (B5). The pill hides
   // when the price line is off-plot — then the line spans the full width.
