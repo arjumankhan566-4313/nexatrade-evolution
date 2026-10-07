@@ -1,0 +1,204 @@
+/* ── Apex Blueprint design system ───────────────────────────────────────────
+   Imported from src/styles.css after the main Tailwind import — the Lovable
+   app owns preflight; Apex only adds its theme tokens and glass utilities.
+
+   Feature: Spatial UI (Apple Vision Pro aesthetic). */
+
+@theme {
+  /* Deep-space palette: #050505 → #0B0E14 */
+  --color-apex-void: #050505;
+  --color-apex-deep: #0b0e14;
+  --color-apex-surface: #101624;
+  --color-apex-raised: #161d2b;
+
+  --color-apex-ink: #e6edf3;
+  --color-apex-muted: #98a2b3;
+  --color-apex-faint: #6b7280;
+
+  /* Brand palette taken from the TRADEON lockup: cyan → lime. */
+  --color-apex-cyan: #00e5ff;
+  --color-apex-lime: #00ff66;
+  --color-apex-emerald: #10b981;
+  --color-apex-crimson: #f43f5e;
+  --color-apex-violet: #8b5cf6;
+
+  --radius-apex: 1.125rem;
+  --radius-apex-lg: 1.75rem;
+
+  --font-apex: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Non-Tailwind tokens (glass fills, hairlines, depth). Kept as plain custom
+   properties so the glassmorphism utilities stay a single definition. */
+:root {
+  --apex-glass-fill: rgba(18, 24, 38, 0.5);
+  --apex-glass-fill-strong: rgba(21, 28, 44, 0.76);
+  --apex-hairline: rgba(255, 255, 255, 0.09);
+  --apex-inner-light: rgba(255, 255, 255, 0.07);
+  --apex-glow-lime: rgba(0, 255, 102, 0.28);
+  --apex-glow-cyan: rgba(0, 229, 255, 0.26);
+  --apex-glow-violet: rgba(139, 92, 246, 0.26);
+  --apex-depth: 0 28px 64px -28px rgba(0, 0, 0, 0.9);
+  --apex-focus: var(--color-apex-cyan);
+}
+
+@layer components {
+  /* ── Multi-layered glass surface: translucent fill + 1px gradient border +
+     soft inner highlight. Two stacked blur layers max (perf budget). ── */
+  .apex-glass {
+    position: relative;
+    border-radius: var(--radius-apex);
+    background: var(--apex-glass-fill);
+    box-shadow:
+      var(--apex-depth),
+      inset 0 1px 0 var(--apex-inner-light);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .apex-glass--strong {
+    background: var(--apex-glass-fill-strong);
+    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+  }
+
+  /* 1px glowing gradient border drawn as a masked pseudo-element so the
+     glass fill underneath stays translucent. */
+  .apex-hairline::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      140deg,
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.04) 34%,
+      rgba(0, 229, 255, 0.22) 70%,
+      rgba(0, 255, 102, 0.3)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Pointer-tilt card: transform is written by Framer Motion springs. */
+  .apex-tilt {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .apex-glow-ring {
+    box-shadow:
+      0 0 0 1px var(--apex-hairline),
+      0 0 34px -6px var(--apex-glow-cyan);
+  }
+
+  .apex-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition:
+      transform 180ms ease,
+      box-shadow 220ms ease,
+      background-color 220ms ease;
+  }
+
+  .apex-btn--primary {
+    background: linear-gradient(120deg, var(--color-apex-cyan), var(--color-apex-lime));
+    color: #04140c;
+    box-shadow: 0 14px 34px -14px var(--apex-glow-lime);
+  }
+
+  .apex-btn--primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .apex-btn--ghost {
+    color: var(--color-apex-ink);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--apex-hairline);
+  }
+
+  .apex-btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Visible keyboard focus everywhere in the Apex surface (WCAG 2.4.7). */
+  .apex-focusable:focus-visible,
+  .apex-btn:focus-visible {
+    outline: 2px solid var(--apex-focus);
+    outline-offset: 2px;
+  }
+
+  /* ── Ambient deep-space backdrop. The animated canvas sits on top of this
+     static gradient; this alone is the fallback when motion is reduced or
+     WebGL/canvas is unavailable. ── */
+  .apex-space {
+    position: relative;
+    background:
+      radial-gradient(1000px 620px at 18% -10%, rgba(0, 229, 255, 0.11), transparent 62%),
+      radial-gradient(760px 520px at 88% 6%, rgba(0, 255, 102, 0.09), transparent 62%),
+      linear-gradient(180deg, #050505 0%, #0b0e14 58%, #050505 100%);
+  }
+
+  .apex-skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.11),
+      rgba(255, 255, 255, 0.05)
+    );
+    background-size: 200% 100%;
+    animation: apex-skeleton 1.5s ease-in-out infinite;
+    border-radius: 999px;
+  }
+}
+
+@keyframes apex-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* backdrop-filter unsupported → opaque fallback so text contrast is kept. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .apex-glass {
+    background: #121826;
+  }
+
+  .apex-glass--strong {
+    background: #141b2a;
+  }
+}
+
+/* Motion is decorative here: never required to read or operate the page. */
+@media (prefers-reduced-motion: reduce) {
+  .apex-glass,
+  .apex-tilt,
+  .apex-btn {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .apex-tilt {
+    transform: none !important;
+  }
+
+  .apex-skeleton {
+    animation: none !important;
+  }
+}
