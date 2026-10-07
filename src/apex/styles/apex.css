@@ -1,15 +1,8 @@
 /* ── Apex Blueprint design system ───────────────────────────────────────────
-   Tailwind v4 is wired WITHOUT preflight (theme + utilities layers only).
-   The existing terminal / chart / admin styling keeps its global reset and
-   CSS-variable tokens untouched — Apex layers on top and reuses the same
-   palette so both systems agree visually.
+   Imported from src/styles.css after the main Tailwind import — the Lovable
+   app owns preflight; Apex only adds its theme tokens and glass utilities.
 
    Feature: Spatial UI (Apple Vision Pro aesthetic). */
-
-@layer theme, base, components, utilities;
-
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
   /* Deep-space palette: #050505 → #0B0E14 */
