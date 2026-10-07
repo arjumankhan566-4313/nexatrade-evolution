@@ -386,7 +386,10 @@ export default function KycPage() {
         h3 { margin: 0 0 6px; font-size: 18px; }
         .small { font-size: 13px; }
         .card { padding: 26px; }
-        .stepper { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+        .stepper { display: flex; gap: 0; margin-bottom: 22px; flex-wrap: wrap; align-items: center; }
+        .stepper-item { display: flex; align-items: center; }
+        .stepper-connector { width: 34px; height: 2px; margin: 0 8px; border-radius: 2px; background: rgba(255, 255, 255, 0.1); }
+        .stepper-connector.done { background: linear-gradient(90deg, var(--up), rgba(22, 199, 132, 0.55)); }
         .stp { display: flex; align-items: center; gap: 9px; padding: 9px 14px; border-radius: 11px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--stroke); }
         .stp-no { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; background: rgba(255, 255, 255, 0.08); color: var(--muted); }
         .stp-label { font-size: 12.5px; color: var(--muted); }
