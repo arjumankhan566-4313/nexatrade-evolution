@@ -723,7 +723,7 @@ export default function WalletPage() {
         .tab.active { background: var(--gold-grad); color: #17130a; }
 
         .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-        .mode { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px; border-radius: 12px; border: 1px solid var(--stroke); background: rgba(255,255,255,0.03); color: var(--text); transition: all 0.16s; }
+        .mode { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px; border-radius: 12px; border: 1px solid var(--stroke); background: rgba(255,255,255,0.03); color: var(--text); transition: all 0.16s; min-width: 0; }
         .mode.active { border-color: rgba(242,184,75,0.5); background: rgba(242,184,75,0.1); }
         .mode-ic { font-size: 20px; display: grid; place-items: center; }
         .mode strong { display: block; font-size: 13px; }
@@ -816,8 +816,13 @@ export default function WalletPage() {
         .co-done p strong { color: var(--gold-1); }
 
         @media (max-width: 980px) { .split { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) {
+          .cards { grid-template-columns: 1fr; }
+          .card strong { font-size: 22px; }
+        }
         @media (max-width: 480px) {
           .rails { grid-template-columns: 1fr; }
+          .mode-switch { grid-template-columns: 1fr; }
           .pay-box { flex-direction: column; align-items: center; text-align: center; }
         }
       `}</style>
