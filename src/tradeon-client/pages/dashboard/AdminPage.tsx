@@ -576,28 +576,6 @@ function SettingsTab() {
       <div className="page-head"><div><h2>🛡️ Risk Management Engine</h2><div className="sub">Global execution parameters, volatility protection and synthetic spread controls.</div></div></div>
 
       <div className="card card-pad" style={{ maxWidth: 760, marginBottom: 18 }}>
-        <div className="card-title">Chart appearance</div>
-        <div className="setting-row">
-          <div><div className="st">Candle countdown background</div><div className="sd">The floating timer pill on every trading terminal. The pill text switches between light and dark automatically so it stays readable on any color.</div></div>
-          <div className="sc" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input
-              type="color"
-              id="set-timerbg"
-              defaultValue={s.chart_timer_bg ?? '#FFFFFF'}
-              style={{ width: 44, height: 32, padding: 2, border: '1px solid var(--border, #2a3140)', borderRadius: 6, background: 'transparent', cursor: 'pointer' }}
-            />
-            <span className="range-val" id="set-timerbg-val">{s.chart_timer_bg ?? '#FFFFFF'}</span>
-            <button className="btn btn-primary" onClick={() => {
-              const v = (document.getElementById('set-timerbg') as HTMLInputElement)?.value;
-              if (!v) return;
-              setS({ ...s, chart_timer_bg: v.toUpperCase() });
-              void save({ chart_timer_bg: v });
-            }}>Apply</button>
-          </div>
-        </div>
-      </div>
-
-      <div className="card card-pad" style={{ maxWidth: 760, marginBottom: 18 }}>
         <div className="card-title">Market data feed</div>
         <div className="setting-row">
           <div><div className="st">Price data source</div><div className="sd">LIVE streams real market prices. If a provider is unreachable, that asset falls back to the synthetic engine.</div></div>
