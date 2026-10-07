@@ -79,7 +79,7 @@ export function TiltCard({ children, className = '', intensity = 1 }: TiltCardPr
       ref={ref}
       className={`apex-tilt ${className}`}
       style={
-        reduceMotion ? undefined : { rotateX, rotateY, transformPerspective: TILT_PERSPECTIVE }
+        reduceMotion ? {} : { rotateX, rotateY, transformPerspective: TILT_PERSPECTIVE }
       }
       onPointerMove={handlePointerMove}
       onPointerLeave={reset}

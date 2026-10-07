@@ -45,6 +45,11 @@ function PillarCard({
   title: string;
   description: string;
   status: PillarStatus;
+  href?: string | undefined;
+  index: number;
+}) {
+  description: string;
+  status: PillarStatus;
   href?: string;
   index: number;
 }) {

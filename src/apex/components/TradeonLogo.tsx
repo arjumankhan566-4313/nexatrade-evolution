@@ -60,7 +60,7 @@ export default function TradeonLogo({
         transition={{ ...spring, delay: hero ? 0.05 : 0 }}
         style={
           reduceMotion || !hero
-            ? undefined
+            ? {}
             : { filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.28))' }
         }
       />
