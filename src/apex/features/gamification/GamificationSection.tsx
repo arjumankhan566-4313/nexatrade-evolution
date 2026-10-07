@@ -105,7 +105,7 @@ export default function GamificationSection() {
 
             <p className="mt-4 flex items-center gap-2 font-mono text-3xl font-semibold text-apex-ink tabular-nums">
               <Clock aria-hidden="true" className="h-5 w-5 text-apex-cyan" />
-              {formatCountdown(remaining)}
+              {remaining === null ? '--:--:--' : formatCountdown(remaining)}
             </p>
             <p className="mt-1.5 text-[11px] text-apex-faint">
               Until the next round rolls, every {TOURNAMENT_ROTATION.cadenceHours} hours.
