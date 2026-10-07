@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import "../tradeon-client/styles/global.css";
 import "../tradeon-client/styles/responsive.css";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useAuthStore } from "../tradeon-client/stores/authStore";
 
 function NotFoundComponent() {
   return (
@@ -123,6 +124,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // TRADEON session bootstrap — the original App.tsx did this on mount.
+  // Without it a cold load of any /dashboard/* page stays on "Loading…".
+  useEffect(() => {
+    void useAuthStore.getState().bootstrap();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
