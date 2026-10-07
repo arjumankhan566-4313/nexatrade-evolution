@@ -201,10 +201,21 @@ export class ChartEngine {
 
     // Fluid tick animation: the newest close is the easing target. A symbol
     // switch (no displayed value yet) snaps instead of gliding across assets.
-    const lastClose = candles[candles.length - 1].close;
+    const lastCandle = candles[candles.length - 1];
+    const prevLast = prevLen > 0 ? prev[prevLen - 1] : undefined;
+    // Candle rollover: the expired candle's final close IS the new candle's
+    // open. If the eased close is still mid-glide when the new bar opens, it
+    // would paint an instant body/wick on a candle that just opened (a visible
+    // flicker). Snap it to the new open so the bar is born flat and glides
+    // from there — the rollover itself stays 100% seamless.
+    const rolled = !!prevLast && prevLast.time !== lastCandle.time;
+    const lastClose = lastCandle.close;
     if (Number.isFinite(lastClose)) {
       this.targetClose = lastClose;
       if (this.displayedClose == null) this.displayedClose = lastClose;
+      else if (rolled) {
+        this.displayedClose = Number.isFinite(lastCandle.open) ? lastCandle.open : lastClose;
+      }
     }
 
     const last = candles.length - 1;
