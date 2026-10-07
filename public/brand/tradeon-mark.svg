@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="tradeonMarkGrad" x1="4" y1="8" x2="60" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#00f2fe"/>
+      <stop offset="0.5" stopColor="#00d4e6"/>
+      <stop offset="1" stopColor="#00b4d8"/>
+    </linearGradient>
+  </defs>
+  <!-- T bar -->
+  <rect x="6" y="10" width="24" height="7" rx="1" fill="url(#tradeonMarkGrad)"/>
+  <!-- T stem -->
+  <rect x="14.5" y="17" width="7" height="30" rx="1" fill="url(#tradeonMarkGrad)"/>
+  <!-- O ring, gap at 3 o'clock -->
+  <path d="M 59.3 35.1 A 12 12 0 1 1 59.3 26.9" stroke="url(#tradeonMarkGrad)" stroke-width="7" stroke-linecap="round"/>
+</svg>
