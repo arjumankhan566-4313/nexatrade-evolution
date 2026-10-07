@@ -22,6 +22,7 @@ import ChartToolbar from './ChartToolbar';
 import { CHART_THEME } from '../../chart/theme';
 import ChartTools, { type ChartType } from './ChartTools';
 import CandleCountdown from './CandleCountdown';
+import { useChartConfigStore } from '../../stores/chartConfigStore';
 import '../../styles/chart.css';
 
 interface Props {
