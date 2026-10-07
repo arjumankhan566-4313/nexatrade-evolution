@@ -125,6 +125,12 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // TRADEON session bootstrap — the original App.tsx did this on mount.
+  // Without it a cold load of any /dashboard/* page stays on "Loading…".
+  useEffect(() => {
+    void useAuthStore.getState().bootstrap();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
