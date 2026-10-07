@@ -48,11 +48,6 @@ function PillarCard({
   href?: string | undefined;
   index: number;
 }) {
-  description: string;
-  status: PillarStatus;
-  href?: string;
-  index: number;
-}) {
   const reduceMotion = useReducedMotion();
 
   const card = (
