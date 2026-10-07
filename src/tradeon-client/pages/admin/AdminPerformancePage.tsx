@@ -25,7 +25,7 @@ import { api } from '@/tradeon-client/lib/apiClient';
 import { alert } from '@/tradeon-client/lib/useAlertStore';
 import { socket } from '@/tradeon-client/lib/socket';
 import PageHeader from '@/tradeon-client/components/admin/PageHeader';
-import '@/styles/admin-performance.css';
+import '@/tradeon-client/styles/admin-performance.css';
 
 type Snapshot = {
   timestamp: string;

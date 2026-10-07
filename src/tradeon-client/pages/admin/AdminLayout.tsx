@@ -33,11 +33,11 @@ import { useAlertStore } from '@/tradeon-client/lib/useAlertStore';
 import { useAdminAuthStore } from '@/tradeon-client/stores/adminAuthStore';
 import AdminLoginModal from './AdminLoginModal';
 import BrandMark from '@/tradeon-client/components/BrandMark';
-import '@/styles/admin.css';
-import '@/styles/panel-repairs.css';
-import '@/styles/admin-module-utils.css';
-import '@/styles/admin-database.css';
-import '@/styles/admin-performance.css';
+import '@/tradeon-client/styles/admin.css';
+import '@/tradeon-client/styles/panel-repairs.css';
+import '@/tradeon-client/styles/admin-module-utils.css';
+import '@/tradeon-client/styles/admin-database.css';
+import '@/tradeon-client/styles/admin-performance.css';
 import { initPerfMonitor } from '@/tradeon-client/lib/perfMonitor';
 
 const NAV = [

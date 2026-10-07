@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { api } from '@/tradeon-client/lib/apiClient';
 import { alert } from '@/tradeon-client/lib/useAlertStore';
-import '@/styles/admin.css';
+import '@/tradeon-client/styles/admin.css';
 
 const SESSION_OPTIONS = ['OPEN', 'PAUSED', 'MAINTENANCE'];
 const TRADING_OPTIONS = ['ENABLED', 'DISABLED'];

@@ -8,7 +8,7 @@ import { api } from '@/tradeon-client/lib/apiClient';
 import { alert } from '@/tradeon-client/lib/useAlertStore';
 import PageHeader from '@/tradeon-client/components/admin/PageHeader';
 import { RiskSettingRow as Row, RiskSwitch } from '@/tradeon-client/components/admin/RiskSettingRow';
-import '@/styles/admin-risk.css';
+import '@/tradeon-client/styles/admin-risk.css';
 
 const NUMERIC_FIELDS = [
   'global_probability_rate', 'circuit_breaker_factor', 'spread_percentage',

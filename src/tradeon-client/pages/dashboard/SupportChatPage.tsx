@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUp, ArrowUpRight, Bot, CircleHelp, MessageCircle, Search, ShieldCheck, Wallet, CandlestickChart, BadgeCheck } from 'lucide-react';
 import { useSession } from '@/tradeon-client/components/dashboard/SessionProvider';
 import { money } from '@/tradeon-client/lib/apiClient';
-import '@/styles/training-chat.css';
+import '@/tradeon-client/styles/training-chat.css';
 
 const TOPICS = [
   { id: 'trading', label: 'Trading help', icon: CandlestickChart, preview: 'Markets, orders and demo trading', intro: 'Welcome to support. I can help with trading, wallet, KYC, and account questions.', starters: ['How do I place a trade?'], href: '/dashboard', action: 'Open terminal' },

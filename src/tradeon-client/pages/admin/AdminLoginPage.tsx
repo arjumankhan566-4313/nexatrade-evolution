@@ -12,7 +12,7 @@ import { useNavigate } from '@/tradeon-client/compat/react-router-dom';
 import { Eye, EyeOff, LockKeyhole, ArrowRight } from 'lucide-react';
 import BrandMark from '@/tradeon-client/components/BrandMark';
 import { useAdminAuthStore } from '@/tradeon-client/stores/adminAuthStore';
-import '@/styles/admin.css';
+import '@/tradeon-client/styles/admin.css';
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
