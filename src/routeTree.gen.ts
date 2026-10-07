@@ -10,18 +10,59 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ChartRouteImport } from './routes/chart'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as StatusRouteImport } from './routes/status'
+import { Route as AdminAuthedRouteImport } from './routes/admin._authed'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardAffiliateRouteImport } from './routes/dashboard.affiliate'
+import { Route as DashboardChartLabRouteImport } from './routes/dashboard.chart-lab'
+import { Route as DashboardChatRouteImport } from './routes/dashboard.chat'
+import { Route as DashboardHistoryRouteImport } from './routes/dashboard.history'
+import { Route as DashboardKycRouteImport } from './routes/dashboard.kyc'
+import { Route as DashboardMultiRouteImport } from './routes/dashboard.multi'
+import { Route as DashboardSecurityRouteImport } from './routes/dashboard.security'
+import { Route as DashboardSocialRouteImport } from './routes/dashboard.social'
+import { Route as DashboardTournamentsRouteImport } from './routes/dashboard.tournaments'
+import { Route as DashboardWalletRouteImport } from './routes/dashboard.wallet'
+import { Route as AdminAuthedIndexRouteImport } from './routes/admin._authed.index'
+import { Route as AdminAuthedAffiliateRouteImport } from './routes/admin._authed.affiliate'
+import { Route as AdminAuthedDatabaseRouteImport } from './routes/admin._authed.database'
+import { Route as AdminAuthedFinanceRouteImport } from './routes/admin._authed.finance'
+import { Route as AdminAuthedFraudRouteImport } from './routes/admin._authed.fraud'
+import { Route as AdminAuthedKycRouteImport } from './routes/admin._authed.kyc'
+import { Route as AdminAuthedLogsRouteImport } from './routes/admin._authed.logs'
+import { Route as AdminAuthedOtcRouteImport } from './routes/admin._authed.otc'
+import { Route as AdminAuthedPerformanceRouteImport } from './routes/admin._authed.performance'
+import { Route as AdminAuthedPromosRouteImport } from './routes/admin._authed.promos'
+import { Route as AdminAuthedRiskRouteImport } from './routes/admin._authed.risk'
+import { Route as AdminAuthedSupportRouteImport } from './routes/admin._authed.support'
+import { Route as AdminAuthedUsersRouteImport } from './routes/admin._authed.users'
+import { Route as SocketIoSplatRouteImport } from './routes/socket.io/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChartRoute = ChartRouteImport.update({
   id: '/chart',
   path: '/chart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -34,39 +75,379 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuthedRoute = AdminAuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAffiliateRoute = DashboardAffiliateRouteImport.update({
+  id: '/affiliate',
+  path: '/affiliate',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChartLabRoute = DashboardChartLabRouteImport.update({
+  id: '/chart-lab',
+  path: '/chart-lab',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChatRoute = DashboardChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardKycRoute = DashboardKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMultiRoute = DashboardMultiRouteImport.update({
+  id: '/multi',
+  path: '/multi',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSecurityRoute = DashboardSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSocialRoute = DashboardSocialRouteImport.update({
+  id: '/social',
+  path: '/social',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTournamentsRoute = DashboardTournamentsRouteImport.update({
+  id: '/tournaments',
+  path: '/tournaments',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardWalletRoute = DashboardWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const AdminAuthedIndexRoute = AdminAuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedAffiliateRoute = AdminAuthedAffiliateRouteImport.update({
+  id: '/affiliate',
+  path: '/affiliate',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedDatabaseRoute = AdminAuthedDatabaseRouteImport.update({
+  id: '/database',
+  path: '/database',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedFinanceRoute = AdminAuthedFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedFraudRoute = AdminAuthedFraudRouteImport.update({
+  id: '/fraud',
+  path: '/fraud',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedKycRoute = AdminAuthedKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedLogsRoute = AdminAuthedLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedOtcRoute = AdminAuthedOtcRouteImport.update({
+  id: '/otc',
+  path: '/otc',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedPerformanceRoute = AdminAuthedPerformanceRouteImport.update({
+  id: '/performance',
+  path: '/performance',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedPromosRoute = AdminAuthedPromosRouteImport.update({
+  id: '/promos',
+  path: '/promos',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedRiskRoute = AdminAuthedRiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedSupportRoute = AdminAuthedSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedUsersRoute = AdminAuthedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const SocketIoSplatRoute = SocketIoSplatRouteImport.update({
+  id: '/socket/io/$',
+  path: '/socket/io/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/chart': typeof ChartRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/status': typeof StatusRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/$': typeof ApiSplatRoute
+  '/dashboard/affiliate': typeof DashboardAffiliateRoute
+  '/dashboard/chart-lab': typeof DashboardChartLabRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/kyc': typeof DashboardKycRoute
+  '/dashboard/multi': typeof DashboardMultiRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/social': typeof DashboardSocialRoute
+  '/dashboard/tournaments': typeof DashboardTournamentsRoute
+  '/dashboard/wallet': typeof DashboardWalletRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/admin/affiliate': typeof AdminAuthedAffiliateRoute
+  '/admin/database': typeof AdminAuthedDatabaseRoute
+  '/admin/finance': typeof AdminAuthedFinanceRoute
+  '/admin/fraud': typeof AdminAuthedFraudRoute
+  '/admin/kyc': typeof AdminAuthedKycRoute
+  '/admin/logs': typeof AdminAuthedLogsRoute
+  '/admin/otc': typeof AdminAuthedOtcRoute
+  '/admin/performance': typeof AdminAuthedPerformanceRoute
+  '/admin/promos': typeof AdminAuthedPromosRoute
+  '/admin/risk': typeof AdminAuthedRiskRoute
+  '/admin/support': typeof AdminAuthedSupportRoute
+  '/admin/users': typeof AdminAuthedUsersRoute
+  '/socket/io/$': typeof SocketIoSplatRoute
+  '/admin/': typeof AdminAuthedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminAuthedIndexRoute
   '/chart': typeof ChartRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/status': typeof StatusRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/$': typeof ApiSplatRoute
+  '/dashboard/affiliate': typeof DashboardAffiliateRoute
+  '/dashboard/chart-lab': typeof DashboardChartLabRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/kyc': typeof DashboardKycRoute
+  '/dashboard/multi': typeof DashboardMultiRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/social': typeof DashboardSocialRoute
+  '/dashboard/tournaments': typeof DashboardTournamentsRoute
+  '/dashboard/wallet': typeof DashboardWalletRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/admin/affiliate': typeof AdminAuthedAffiliateRoute
+  '/admin/database': typeof AdminAuthedDatabaseRoute
+  '/admin/finance': typeof AdminAuthedFinanceRoute
+  '/admin/fraud': typeof AdminAuthedFraudRoute
+  '/admin/kyc': typeof AdminAuthedKycRoute
+  '/admin/logs': typeof AdminAuthedLogsRoute
+  '/admin/otc': typeof AdminAuthedOtcRoute
+  '/admin/performance': typeof AdminAuthedPerformanceRoute
+  '/admin/promos': typeof AdminAuthedPromosRoute
+  '/admin/risk': typeof AdminAuthedRiskRoute
+  '/admin/support': typeof AdminAuthedSupportRoute
+  '/admin/users': typeof AdminAuthedUsersRoute
+  '/socket/io/$': typeof SocketIoSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/chart': typeof ChartRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/status': typeof StatusRoute
+  '/admin/_authed': typeof AdminAuthedRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/api/$': typeof ApiSplatRoute
+  '/dashboard/affiliate': typeof DashboardAffiliateRoute
+  '/dashboard/chart-lab': typeof DashboardChartLabRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/kyc': typeof DashboardKycRoute
+  '/dashboard/multi': typeof DashboardMultiRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/social': typeof DashboardSocialRoute
+  '/dashboard/tournaments': typeof DashboardTournamentsRoute
+  '/dashboard/wallet': typeof DashboardWalletRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/admin/_authed/affiliate': typeof AdminAuthedAffiliateRoute
+  '/admin/_authed/database': typeof AdminAuthedDatabaseRoute
+  '/admin/_authed/finance': typeof AdminAuthedFinanceRoute
+  '/admin/_authed/fraud': typeof AdminAuthedFraudRoute
+  '/admin/_authed/kyc': typeof AdminAuthedKycRoute
+  '/admin/_authed/logs': typeof AdminAuthedLogsRoute
+  '/admin/_authed/otc': typeof AdminAuthedOtcRoute
+  '/admin/_authed/performance': typeof AdminAuthedPerformanceRoute
+  '/admin/_authed/promos': typeof AdminAuthedPromosRoute
+  '/admin/_authed/risk': typeof AdminAuthedRiskRoute
+  '/admin/_authed/support': typeof AdminAuthedSupportRoute
+  '/admin/_authed/users': typeof AdminAuthedUsersRoute
+  '/socket/io/$': typeof SocketIoSplatRoute
+  '/admin/_authed/': typeof AdminAuthedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chart' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/chart'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/status'
+    | '/admin/login'
+    | '/api/$'
+    | '/dashboard/affiliate'
+    | '/dashboard/chart-lab'
+    | '/dashboard/chat'
+    | '/dashboard/history'
+    | '/dashboard/kyc'
+    | '/dashboard/multi'
+    | '/dashboard/security'
+    | '/dashboard/social'
+    | '/dashboard/tournaments'
+    | '/dashboard/wallet'
+    | '/dashboard/'
+    | '/admin/affiliate'
+    | '/admin/database'
+    | '/admin/finance'
+    | '/admin/fraud'
+    | '/admin/kyc'
+    | '/admin/logs'
+    | '/admin/otc'
+    | '/admin/performance'
+    | '/admin/promos'
+    | '/admin/risk'
+    | '/admin/support'
+    | '/admin/users'
+    | '/socket/io/$'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chart' | '/login' | '/register'
-  id: '__root__' | '/' | '/chart' | '/login' | '/register'
+  to:
+    | '/'
+    | '/admin'
+    | '/chart'
+    | '/login'
+    | '/register'
+    | '/status'
+    | '/admin/login'
+    | '/api/$'
+    | '/dashboard/affiliate'
+    | '/dashboard/chart-lab'
+    | '/dashboard/chat'
+    | '/dashboard/history'
+    | '/dashboard/kyc'
+    | '/dashboard/multi'
+    | '/dashboard/security'
+    | '/dashboard/social'
+    | '/dashboard/tournaments'
+    | '/dashboard/wallet'
+    | '/dashboard'
+    | '/admin/affiliate'
+    | '/admin/database'
+    | '/admin/finance'
+    | '/admin/fraud'
+    | '/admin/kyc'
+    | '/admin/logs'
+    | '/admin/otc'
+    | '/admin/performance'
+    | '/admin/promos'
+    | '/admin/risk'
+    | '/admin/support'
+    | '/admin/users'
+    | '/socket/io/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/chart'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/status'
+    | '/admin/_authed'
+    | '/admin/login'
+    | '/api/$'
+    | '/dashboard/affiliate'
+    | '/dashboard/chart-lab'
+    | '/dashboard/chat'
+    | '/dashboard/history'
+    | '/dashboard/kyc'
+    | '/dashboard/multi'
+    | '/dashboard/security'
+    | '/dashboard/social'
+    | '/dashboard/tournaments'
+    | '/dashboard/wallet'
+    | '/dashboard/'
+    | '/admin/_authed/affiliate'
+    | '/admin/_authed/database'
+    | '/admin/_authed/finance'
+    | '/admin/_authed/fraud'
+    | '/admin/_authed/kyc'
+    | '/admin/_authed/logs'
+    | '/admin/_authed/otc'
+    | '/admin/_authed/performance'
+    | '/admin/_authed/promos'
+    | '/admin/_authed/risk'
+    | '/admin/_authed/support'
+    | '/admin/_authed/users'
+    | '/socket/io/$'
+    | '/admin/_authed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ChartRoute: typeof ChartRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  StatusRoute: typeof StatusRoute
+  ApiSplatRoute: typeof ApiSplatRoute
+  SocketIoSplatRoute: typeof SocketIoSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,11 +459,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chart': {
       id: '/chart'
       path: '/chart'
       fullPath: '/chart'
       preLoaderRoute: typeof ChartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -99,14 +494,302 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_authed': {
+      id: '/admin/_authed'
+      path: ''
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminAuthedRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/affiliate': {
+      id: '/dashboard/affiliate'
+      path: '/affiliate'
+      fullPath: '/dashboard/affiliate'
+      preLoaderRoute: typeof DashboardAffiliateRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/chart-lab': {
+      id: '/dashboard/chart-lab'
+      path: '/chart-lab'
+      fullPath: '/dashboard/chart-lab'
+      preLoaderRoute: typeof DashboardChartLabRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/chat': {
+      id: '/dashboard/chat'
+      path: '/chat'
+      fullPath: '/dashboard/chat'
+      preLoaderRoute: typeof DashboardChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/history': {
+      id: '/dashboard/history'
+      path: '/history'
+      fullPath: '/dashboard/history'
+      preLoaderRoute: typeof DashboardHistoryRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/kyc': {
+      id: '/dashboard/kyc'
+      path: '/kyc'
+      fullPath: '/dashboard/kyc'
+      preLoaderRoute: typeof DashboardKycRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/multi': {
+      id: '/dashboard/multi'
+      path: '/multi'
+      fullPath: '/dashboard/multi'
+      preLoaderRoute: typeof DashboardMultiRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/security': {
+      id: '/dashboard/security'
+      path: '/security'
+      fullPath: '/dashboard/security'
+      preLoaderRoute: typeof DashboardSecurityRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/social': {
+      id: '/dashboard/social'
+      path: '/social'
+      fullPath: '/dashboard/social'
+      preLoaderRoute: typeof DashboardSocialRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/tournaments': {
+      id: '/dashboard/tournaments'
+      path: '/tournaments'
+      fullPath: '/dashboard/tournaments'
+      preLoaderRoute: typeof DashboardTournamentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/wallet': {
+      id: '/dashboard/wallet'
+      path: '/wallet'
+      fullPath: '/dashboard/wallet'
+      preLoaderRoute: typeof DashboardWalletRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/admin/_authed/': {
+      id: '/admin/_authed/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAuthedIndexRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/affiliate': {
+      id: '/admin/_authed/affiliate'
+      path: '/affiliate'
+      fullPath: '/admin/affiliate'
+      preLoaderRoute: typeof AdminAuthedAffiliateRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/database': {
+      id: '/admin/_authed/database'
+      path: '/database'
+      fullPath: '/admin/database'
+      preLoaderRoute: typeof AdminAuthedDatabaseRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/finance': {
+      id: '/admin/_authed/finance'
+      path: '/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AdminAuthedFinanceRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/fraud': {
+      id: '/admin/_authed/fraud'
+      path: '/fraud'
+      fullPath: '/admin/fraud'
+      preLoaderRoute: typeof AdminAuthedFraudRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/kyc': {
+      id: '/admin/_authed/kyc'
+      path: '/kyc'
+      fullPath: '/admin/kyc'
+      preLoaderRoute: typeof AdminAuthedKycRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/logs': {
+      id: '/admin/_authed/logs'
+      path: '/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AdminAuthedLogsRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/otc': {
+      id: '/admin/_authed/otc'
+      path: '/otc'
+      fullPath: '/admin/otc'
+      preLoaderRoute: typeof AdminAuthedOtcRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/performance': {
+      id: '/admin/_authed/performance'
+      path: '/performance'
+      fullPath: '/admin/performance'
+      preLoaderRoute: typeof AdminAuthedPerformanceRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/promos': {
+      id: '/admin/_authed/promos'
+      path: '/promos'
+      fullPath: '/admin/promos'
+      preLoaderRoute: typeof AdminAuthedPromosRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/risk': {
+      id: '/admin/_authed/risk'
+      path: '/risk'
+      fullPath: '/admin/risk'
+      preLoaderRoute: typeof AdminAuthedRiskRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/support': {
+      id: '/admin/_authed/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminAuthedSupportRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/admin/_authed/users': {
+      id: '/admin/_authed/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminAuthedUsersRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/socket/io/$': {
+      id: '/socket/io/$'
+      path: '/socket/io/$'
+      fullPath: '/socket/io/$'
+      preLoaderRoute: typeof SocketIoSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AdminAuthedRouteChildren {
+  AdminAuthedAffiliateRoute: typeof AdminAuthedAffiliateRoute
+  AdminAuthedDatabaseRoute: typeof AdminAuthedDatabaseRoute
+  AdminAuthedFinanceRoute: typeof AdminAuthedFinanceRoute
+  AdminAuthedFraudRoute: typeof AdminAuthedFraudRoute
+  AdminAuthedKycRoute: typeof AdminAuthedKycRoute
+  AdminAuthedLogsRoute: typeof AdminAuthedLogsRoute
+  AdminAuthedOtcRoute: typeof AdminAuthedOtcRoute
+  AdminAuthedPerformanceRoute: typeof AdminAuthedPerformanceRoute
+  AdminAuthedPromosRoute: typeof AdminAuthedPromosRoute
+  AdminAuthedRiskRoute: typeof AdminAuthedRiskRoute
+  AdminAuthedSupportRoute: typeof AdminAuthedSupportRoute
+  AdminAuthedUsersRoute: typeof AdminAuthedUsersRoute
+  AdminAuthedIndexRoute: typeof AdminAuthedIndexRoute
+}
+
+const AdminAuthedRouteChildren: AdminAuthedRouteChildren = {
+  AdminAuthedAffiliateRoute: AdminAuthedAffiliateRoute,
+  AdminAuthedDatabaseRoute: AdminAuthedDatabaseRoute,
+  AdminAuthedFinanceRoute: AdminAuthedFinanceRoute,
+  AdminAuthedFraudRoute: AdminAuthedFraudRoute,
+  AdminAuthedKycRoute: AdminAuthedKycRoute,
+  AdminAuthedLogsRoute: AdminAuthedLogsRoute,
+  AdminAuthedOtcRoute: AdminAuthedOtcRoute,
+  AdminAuthedPerformanceRoute: AdminAuthedPerformanceRoute,
+  AdminAuthedPromosRoute: AdminAuthedPromosRoute,
+  AdminAuthedRiskRoute: AdminAuthedRiskRoute,
+  AdminAuthedSupportRoute: AdminAuthedSupportRoute,
+  AdminAuthedUsersRoute: AdminAuthedUsersRoute,
+  AdminAuthedIndexRoute: AdminAuthedIndexRoute,
+}
+
+const AdminAuthedRouteWithChildren = AdminAuthedRoute._addFileChildren(
+  AdminAuthedRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAuthedRoute: typeof AdminAuthedRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuthedRoute: AdminAuthedRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface DashboardRouteChildren {
+  DashboardAffiliateRoute: typeof DashboardAffiliateRoute
+  DashboardChartLabRoute: typeof DashboardChartLabRoute
+  DashboardChatRoute: typeof DashboardChatRoute
+  DashboardHistoryRoute: typeof DashboardHistoryRoute
+  DashboardKycRoute: typeof DashboardKycRoute
+  DashboardMultiRoute: typeof DashboardMultiRoute
+  DashboardSecurityRoute: typeof DashboardSecurityRoute
+  DashboardSocialRoute: typeof DashboardSocialRoute
+  DashboardTournamentsRoute: typeof DashboardTournamentsRoute
+  DashboardWalletRoute: typeof DashboardWalletRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAffiliateRoute: DashboardAffiliateRoute,
+  DashboardChartLabRoute: DashboardChartLabRoute,
+  DashboardChatRoute: DashboardChatRoute,
+  DashboardHistoryRoute: DashboardHistoryRoute,
+  DashboardKycRoute: DashboardKycRoute,
+  DashboardMultiRoute: DashboardMultiRoute,
+  DashboardSecurityRoute: DashboardSecurityRoute,
+  DashboardSocialRoute: DashboardSocialRoute,
+  DashboardTournamentsRoute: DashboardTournamentsRoute,
+  DashboardWalletRoute: DashboardWalletRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   ChartRoute: ChartRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  StatusRoute: StatusRoute,
+  ApiSplatRoute: ApiSplatRoute,
+  SocketIoSplatRoute: SocketIoSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
