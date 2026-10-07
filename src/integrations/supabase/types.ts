@@ -956,6 +956,7 @@ export type Database = {
           affiliate_enabled: boolean
           asset_catalog_version: number
           auto_deposits_enabled: boolean
+          chart_timer_bg: string
           copy_trading_enabled: boolean
           demo_gateway_enabled: boolean
           enable_force_loss: boolean
@@ -980,6 +981,7 @@ export type Database = {
           affiliate_enabled?: boolean
           asset_catalog_version?: number
           auto_deposits_enabled?: boolean
+          chart_timer_bg?: string
           copy_trading_enabled?: boolean
           demo_gateway_enabled?: boolean
           enable_force_loss?: boolean
@@ -1004,6 +1006,7 @@ export type Database = {
           affiliate_enabled?: boolean
           asset_catalog_version?: number
           auto_deposits_enabled?: boolean
+          chart_timer_bg?: string
           copy_trading_enabled?: boolean
           demo_gateway_enabled?: boolean
           enable_force_loss?: boolean
