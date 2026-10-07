@@ -55,8 +55,19 @@ const PREFETCH_LEFT_SLOTS = 60;
  *  RANGE_SNAP_REL snap instantly so live ticks never lag the price line). */
 const RANGE_EASE = 0.3;
 const RANGE_SNAP_REL = 0.004;
-/** Exponential wheel sensitivity — smooth for both notched mice and trackpads. */
-const ZOOM_SENSITIVITY = 0.0016;
+/** Exponential wheel sensitivity — tuned so one notched-mouse tick (~100px of
+ *  deltaY) is about a ×1.05 / ×0.95 step, exactly the Binance-style feel. */
+const ZOOM_SENSITIVITY = 0.0005;
+/** Zoom easing time constant (ms): the real bar width closes ~63% of the
+ *  remaining distance to its target every tau — frame-rate independent. */
+const ZOOM_TAU_MS = 80;
+/** Live-close easing time constant (ms) for the fluid tick animation. */
+const TICK_TAU_MS = 120;
+/**
+ * Clear gap (CSS px) between the live-price dashed line and the countdown
+ * pill. Spec: named constant, valid range 10–15px.
+ */
+export const COUNTDOWN_GAP_PX = 12;
 
 /** How the series is painted — the bottom-left toolbar selects this. */
 export type ChartType = 'candles' | 'bars' | 'line';
@@ -100,10 +111,26 @@ export class ChartEngine {
   private theme: ChartTheme = { ...DEFAULT_THEME };
 
   private barWidth = 9;
+  /** Wheel input only ever sets this target; the rAF loop eases barWidth
+   *  toward it (Binance-style smooth zoom). */
+  private targetBarWidth = 9;
+  /** Zoom pivot: the (fractional) candle index under the cursor and the
+   *  cursor's plot-space X. Re-anchored every frame so that point never moves. */
+  private zoomPivot: { index: number; x: number } | null = null;
   /** Index (float) anchored to the right edge of the plot. */
   private viewRight = 0;
   private autoFollow = true;
   private chartType: ChartType = 'candles';
+
+  /** Fluid tick animation: the latest tick is the target; the drawn close
+   *  eases toward it every frame instead of jumping. */
+  private targetClose: number | null = null;
+  private displayedClose: number | null = null;
+  /** Width of the countdown pill + COUNTDOWN_GAP_PX: the dashed price line
+   *  starts after it so the two never overlap. */
+  private countdownInset = 0;
+  /** Timestamp of the previous animation frame (for dt-based easing). */
+  private lastFrameTs = 0;
 
   private crosshair: { x: number; y: number } | null = null;
   private drag: { pointerId: number; startX: number; startViewRight: number } | null = null;
@@ -163,10 +190,21 @@ export class ChartEngine {
 
     if (!candles.length) {
       this.viewRight = 0;
-      // A fresh series (symbol switch) must not ease from the old asset's scale.
+      // A fresh series (symbol switch) must not ease from the old asset's
+      // scale — nor from its price.
       this.range = null;
+      this.targetClose = null;
+      this.displayedClose = null;
       this.requestBaseRender();
       return;
+    }
+
+    // Fluid tick animation: the newest close is the easing target. A symbol
+    // switch (no displayed value yet) snaps instead of gliding across assets.
+    const lastClose = candles[candles.length - 1].close;
+    if (Number.isFinite(lastClose)) {
+      this.targetClose = lastClose;
+      if (this.displayedClose == null) this.displayedClose = lastClose;
     }
 
     const last = candles.length - 1;
@@ -211,8 +249,23 @@ export class ChartEngine {
     this.olderPending = pending;
   }
 
-  /** Paint both layers synchronously (resize / hidden-tab recovery / tests). */
+  /**
+   * The countdown pill's rendered width (CSS px). The dashed live-price line
+   * starts COUNTDOWN_GAP_PX after it, so line and pill never overlap.
+   */
+  setCountdownInset(widthPx: number) {
+    const next = widthPx > 0 ? widthPx + COUNTDOWN_GAP_PX : 0;
+    if (next === this.countdownInset) return;
+    this.countdownInset = next;
+    this.requestBaseRender();
+  }
+
+  /** Paint both layers synchronously (resize / hidden-tab recovery / tests).
+   *  Snaps every running easing to its target so the paint is deterministic. */
   render() {
+    this.barWidth = this.targetBarWidth;
+    this.zoomPivot = null;
+    if (this.targetClose != null) this.displayedClose = this.targetClose;
     this.needBase = false;
     this.needOverlay = false;
     this.drawBase();
@@ -458,19 +511,20 @@ export class ChartEngine {
     if (!this.candles.length || this.plotWidth <= 0) return;
     const rect = this.base.getBoundingClientRect();
     const cursorX = e.clientX - rect.left;
-    // Index under the cursor before zoom, so it can be pinned after.
-    const idxBefore = this.xToIndex(cursorX);
-    // Exponential in the wheel delta: a notched mouse (~100) and a trackpad's
-    // stream of small deltas both scale smoothly, with no discrete jump. Line
-    // and page scroll modes are normalised to pixels first.
+    // Pivot: the (fractional) candle index under the cursor right now. The
+    // animation loop re-anchors viewRight every frame so this exact point of
+    // the series stays glued under the cursor — no jumping, no drift.
+    this.zoomPivot = { index: this.xToIndex(cursorX), x: cursorX };
+    // Wheel input only sets the TARGET width; the rAF loop eases the real
+    // barWidth toward it. Exponential in the wheel delta: a notched mouse
+    // (~×1.05/×0.95 per tick) and a trackpad's stream of small deltas both
+    // accumulate smoothly. Line/page scroll modes normalise to pixels first.
     const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? this.plotBottom : 1;
     const delta = Math.max(-160, Math.min(160, e.deltaY * unit));
     const factor = Math.exp(-delta * ZOOM_SENSITIVITY);
-    const next = Math.min(MAX_BAR_WIDTH, Math.max(MIN_BAR_WIDTH, this.barWidth * factor));
-    if (next === this.barWidth) return;
-    this.barWidth = next;
-    this.viewRight = idxBefore + (this.plotRight - cursorX) / this.barWidth - 0.5;
-    this.clampView();
+    const next = Math.min(MAX_BAR_WIDTH, Math.max(MIN_BAR_WIDTH, this.targetBarWidth * factor));
+    if (next === this.targetBarWidth) return;
+    this.targetBarWidth = next;
     this.requestBaseRender();
   };
 
@@ -576,17 +630,89 @@ export class ChartEngine {
   }
   private schedule() {
     if (this.frame) return;
-    this.frame = requestAnimationFrame(() => {
-      this.frame = 0;
-      if (this.needBase) {
-        this.needBase = false;
-        this.drawBase();
+    this.frame = requestAnimationFrame(this.onFrame);
+  }
+
+  /**
+   * Single rAF loop with a dirty flag: nothing repaints while idle, but while
+   * an easing (zoom, live close, price scale) is still catching up the loop
+   * keeps itself alive. All easing is dt-based, so the motion is identical at
+   * 30Hz, 60Hz or 144Hz.
+   */
+  private onFrame = (now: number) => {
+    this.frame = 0;
+    const dt = this.lastFrameTs ? Math.min(100, now - this.lastFrameTs) : 16.7;
+    this.lastFrameTs = now;
+
+    const zooming = this.stepZoom(dt);
+    const ticking = this.stepClose(dt);
+    if (zooming || ticking) this.needBase = true;
+
+    if (this.needBase) {
+      this.needBase = false;
+      this.drawBase();
+    }
+    if (this.needOverlay) {
+      this.needOverlay = false;
+      this.drawOverlay();
+    }
+    // drawBase flags rangeAnimating while the price scale eases; the zoom and
+    // tick easers report themselves. Any of them keeps the loop alive.
+    if (zooming || ticking || this.rangeAnimating) this.schedule();
+    else this.lastFrameTs = 0;
+  };
+
+  /**
+   * One zoom step: ease barWidth toward targetBarWidth
+   * (w += (target − w) · (1 − e^(−dt/τ)), τ = ZOOM_TAU_MS), then re-anchor the
+   * pivot so the time under the cursor stays exactly under the cursor.
+   * Returns true while still animating.
+   */
+  private stepZoom(dt: number): boolean {
+    const target = this.targetBarWidth;
+    if (Math.abs(target - this.barWidth) < 0.001) {
+      if (this.barWidth !== target) {
+        this.barWidth = target;
+        this.anchorPivot();
+        this.clampView();
+        return true; // one final repaint at the exact target
       }
-      if (this.needOverlay) {
-        this.needOverlay = false;
-        this.drawOverlay();
-      }
-    });
+      this.zoomPivot = null;
+      return false;
+    }
+    this.barWidth += (target - this.barWidth) * (1 - Math.exp(-dt / ZOOM_TAU_MS));
+    this.anchorPivot();
+    this.clampView();
+    return true;
+  }
+
+  /** Keep the pivot's series point under the pivot's cursor X. */
+  private anchorPivot() {
+    if (!this.zoomPivot) return;
+    this.viewRight = this.zoomPivot.index + (this.plotRight - this.zoomPivot.x) / this.barWidth - 0.5;
+  }
+
+  /**
+   * One tick step: ease the displayed live close toward the latest tick
+   * (same exponential form, τ = TICK_TAU_MS). Returns true while animating.
+   */
+  private stepClose(dt: number): boolean {
+    const target = this.targetClose;
+    if (target == null) return false;
+    const cur = this.displayedClose;
+    if (cur == null) {
+      this.displayedClose = target;
+      return false;
+    }
+    // Snap threshold: below one hundredth of the current price precision the
+    // move is invisible — land exactly and stop the loop.
+    const eps = Math.max(Math.abs(target) * 1e-9, 1e-9);
+    if (Math.abs(target - cur) <= eps) {
+      this.displayedClose = target;
+      return false;
+    }
+    this.displayedClose = cur + (target - cur) * (1 - Math.exp(-dt / TICK_TAU_MS));
+    return true;
   }
 
   // ── render ────────────────────────────────────────────────────────────────
@@ -765,8 +891,20 @@ export class ChartEngine {
       const merges = end > i && step > 1 && this.candles[i].finalized && this.candles[end].finalized;
       if (!merges) {
         const c = this.candles[i];
+        // The forming candle is drawn from the EASED close (fluid tick
+        // animation): body, wick extremes and close all follow displayedClose,
+        // so a fast tick glides instead of jumping.
+        let open = c.open;
+        let high = c.high;
+        let low = c.low;
+        let close = c.close;
+        if (i === last && !c.finalized && this.displayedClose != null) {
+          close = this.displayedClose;
+          if (close > high) high = close;
+          if (close < low) low = close;
+        }
         const paint = this.chartType === 'bars' ? this.paintOhlcBar : this.paintBar;
-        paint.call(this, ctx, range, c.open, c.high, c.low, c.close, this.indexToX(i), this.barWidth * 0.7);
+        paint.call(this, ctx, range, open, high, low, close, this.indexToX(i), this.barWidth * 0.7);
         i += 1;
         continue;
       }
@@ -895,15 +1033,21 @@ export class ChartEngine {
     ctx.restore();
   }
 
-  /** Latest close: a solid white 2px line plus a filled right-axis badge. */
+  /**
+   * Latest close: a DASHED pure-white 2px line plus a filled right-axis badge.
+   * The line is drawn from the eased displayedClose (fluid tick animation)
+   * and starts COUNTDOWN_GAP_PX after the countdown pill, so the two never
+   * overlap and stay vertically aligned.
+   */
   private drawPriceLine(ctx: CanvasRenderingContext2D, range: { lo: number; hi: number }) {
     const c = this.candles[this.candles.length - 1];
-    if (!c || !Number.isFinite(c.close)) {
+    const close = this.displayedClose ?? c?.close;
+    if (!c || close == null || !Number.isFinite(close)) {
       this.liveBadgeY = null;
       this.onPriceLineY?.(null);
       return;
     }
-    const rawY = this.priceToY(c.close, range);
+    const rawY = this.priceToY(close, range);
     if (rawY < this.plotTop - 1 || rawY > this.plotBottom + 1) {
       this.liveBadgeY = null;
       this.onPriceLineY?.(null);
@@ -914,12 +1058,15 @@ export class ChartEngine {
     // half-lit across two rows; this keeps the line fully opaque and crisp.
     const wDev = Math.max(1, Math.round(PRICE_LINE_W * this.dpr));
     const y = Math.round(rawY * this.dpr) / this.dpr;
+    // The countdown pill sits at the plot's left edge; the dashed line starts
+    // a clear COUNTDOWN_GAP_PX after it (countdownInset = pill width + gap).
+    const x0 = Math.min(this.countdownInset, this.plotRight);
     ctx.save();
     ctx.strokeStyle = this.theme.priceLine;
     ctx.lineWidth = wDev / this.dpr;
-    ctx.setLineDash([]);
+    ctx.setLineDash([6, 4]);
     ctx.beginPath();
-    ctx.moveTo(0, y);
+    ctx.moveTo(x0, y);
     ctx.lineTo(this.plotRight, y);
     ctx.stroke();
     ctx.restore();
@@ -928,7 +1075,7 @@ export class ChartEngine {
     this.onPriceLineY?.(rawY);
 
     this.liveBadgeY = rawY;
-    const label = formatPrice(c.close, this.pricePrecision);
+    const label = formatPrice(close, this.pricePrecision);
     ctx.fillStyle = this.theme.priceLabelBg;
     ctx.fillRect(
       this.snapEdge(this.plotRight + 1),
@@ -1007,6 +1154,10 @@ export class ChartEngine {
       aggregateStep: this.aggregateStep(),
       range: this.range,
       olderPending: this.olderPending,
+      targetBarWidth: this.targetBarWidth,
+      displayedClose: this.displayedClose,
+      targetClose: this.targetClose,
+      countdownInset: this.countdownInset,
     };
   }
 

@@ -46,6 +46,12 @@ export interface FeedState {
   sequence: number;
   status: 'idle' | 'loading' | 'live' | 'error';
   error: string | null;
+  /**
+   * Server clock minus the local clock (ms), learned from each tick's
+   * serverTime. The candle countdown runs on SERVER time via this offset, so
+   * a skewed client clock never shows a wrong timer.
+   */
+  serverTimeOffset: number;
 }
 
 /** Hard cap on the in-memory series: live tail + any history paged in. */
@@ -65,6 +71,7 @@ export function useOtcFeed(
     sequence: 0,
     status: 'idle',
     error: null,
+    serverTimeOffset: 0,
   });
   const candlesRef = useRef<Candle[]>([]);
   const lastSeq = useRef(0);
@@ -72,8 +79,21 @@ export function useOtcFeed(
   const ownRef = useRef<Socket | null>(null);
   /** One backward page in flight at a time. */
   const loadingOlder = useRef(false);
+  /** Latest server-clock offset; pushed into state only when it drifts. */
+  const offsetRef = useRef(0);
+
+  /** Learn the server clock offset from a payload's serverTime. */
+  const learnServerTime = useCallback((serverTime?: number) => {
+    if (!serverTime || !Number.isFinite(serverTime)) return;
+    const next = serverTime - Date.now();
+    offsetRef.current = next;
+    setState((s) =>
+      Math.abs(s.serverTimeOffset - next) > 250 ? { ...s, serverTimeOffset: next } : s
+    );
+  }, []);
 
   const mergeTick = useCallback((tick: OtcTick) => {
+    learnServerTime(tick.serverTime);
     const list = candlesRef.current;
     if (!list.length) return;
     const tail = list[list.length - 1];
@@ -110,7 +130,7 @@ export function useOtcFeed(
     candlesRef.current = next;
     lastSeq.current = tick.sequence;
     setState((s) => ({ ...s, candles: next, livePrice: tick.price, sequence: tick.sequence, status: 'live' }));
-  }, []);
+  }, [learnServerTime]);
 
   // Open/close this feed's own connection (declared before the stream effect so
   // it has run by the time the subscription is emitted).
@@ -156,7 +176,7 @@ export function useOtcFeed(
     let cancelled = false;
     // Shared feeds use the app-wide socket; dedicated ones their own.
     const sock = ownRef.current ?? socket;
-    setState({ candles: [], livePrice: null, sequence: 0, status: 'loading', error: null });
+    setState({ candles: [], livePrice: null, sequence: 0, status: 'loading', error: null, serverTimeOffset: 0 });
     candlesRef.current = [];
     lastSeq.current = 0;
 
@@ -193,6 +213,7 @@ export function useOtcFeed(
     const onHello = (_p: OtcHelloPayload) => {};
     const onSnapshot = (p: OtcSnapshotPayload) => {
       if (cancelled) return;
+      learnServerTime(p.serverTime);
       const c = p.snapshot?.currentCandle;
       if (c && candlesRef.current.length) {
         const next = candlesRef.current.slice();
@@ -251,7 +272,7 @@ export function useOtcFeed(
       sock.off('otc:tick', onTick);
       sock.off('otc:replay', onReplay);
     };
-  }, [symbol, timeframe, mergeTick]);
+  }, [symbol, timeframe, mergeTick, learnServerTime]);
 
   return { ...state, loadOlder };
 }

@@ -72,8 +72,11 @@ export default function CanvasChart({
   const priceLineYRef = useRef<number | null>(null);
   /** Latest history pager, read by the engine's prefetch callback. */
   const loadOlderRef = useRef<(() => Promise<void>) | null>(null);
+  /** The countdown pill: its measured width tells the engine where the
+   *  dashed price line starts (pill width + COUNTDOWN_GAP_PX). */
+  const timerRef = useRef<HTMLDivElement>(null);
 
-  const { candles, livePrice, status, loadOlder } = useOtcFeed(symbol, timeframe, { dedicatedSocket });
+  const { candles, livePrice, status, loadOlder, serverTimeOffset } = useOtcFeed(symbol, timeframe, { dedicatedSocket });
   const { trades } = useMyTrades();
   const bucketMs = timeframeToMs(timeframe);
 
@@ -161,6 +164,24 @@ export default function CanvasChart({
     engineRef.current?.setOverlays(overlays);
   }, [overlays]);
 
+  // Keep the engine informed of the countdown pill's width, so the dashed
+  // price line starts a clean COUNTDOWN_GAP_PX after it (B5). The pill hides
+  // when the price line is off-plot — then the line spans the full width.
+  useEffect(() => {
+    const el = timerRef.current;
+    const engine = engineRef.current;
+    if (!engine) return;
+    if (!el) {
+      engine.setCountdownInset(0);
+      return;
+    }
+    const measure = () => engine.setCountdownInset(el.offsetWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [priceLineY]);
+
   // Chart type is a paint style, so it only needs a base repaint.
   useEffect(() => {
     engineRef.current?.setChartType(chartType);
@@ -192,8 +213,8 @@ export default function CanvasChart({
         {/* Candle countdown, anchored to the white live-price line: it rides
             the same Y through ticks, pan and zoom, just left of the badge. */}
         {priceLineY != null && (
-          <div className="chart-live-timer" style={{ top: `${priceLineY}px` }}>
-            <CandleCountdown bucketMs={bucketMs} />
+          <div className="chart-live-timer" ref={timerRef} style={{ top: `${priceLineY}px` }}>
+            <CandleCountdown bucketMs={bucketMs} serverTimeOffset={serverTimeOffset} />
           </div>
         )}
 
