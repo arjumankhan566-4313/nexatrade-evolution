@@ -715,11 +715,11 @@ export default function WalletPage() {
         .card em { font-style: normal; font-size: 12px; }
         .card.gold { background: radial-gradient(120% 120% at 0% 0%, rgba(242, 184, 75, 0.16), rgba(20, 25, 38, 0.72)); }
         .card.gold strong { color: var(--gold-1); }
-        .split { display: grid; grid-template-columns: minmax(0, 420px) 1fr; gap: 16px; align-items: start; }
-        .panel { padding: 20px; }
+        .split { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 16px; align-items: start; }
+        .panel { padding: 20px; min-width: 0; }
         .panel h3 { margin: 0; font-size: 16px; }
         .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; background: rgba(0, 0, 0, 0.35); border-radius: 12px; margin-bottom: 16px; }
-        .tab { padding: 10px; border-radius: 9px; border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 13px; }
+        .tab { padding: 10px; border-radius: 9px; border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 13px; min-width: 0; }
         .tab.active { background: var(--gold-grad); color: #17130a; }
 
         .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
