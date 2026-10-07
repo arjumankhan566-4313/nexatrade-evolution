@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import "../tradeon-client/styles/global.css";
 import "../tradeon-client/styles/responsive.css";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useAuthStore } from "../tradeon-client/stores/authStore";
 
 function NotFoundComponent() {
   return (
