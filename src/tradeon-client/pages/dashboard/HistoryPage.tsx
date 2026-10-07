@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from '@/tradeon-client/lib/nextDynamic';
 import { api, money, fmtDate, fmtPrice } from '@/tradeon-client/lib/apiClient';
+import { Activity, TrendingUp, TrendingDown, Target, Wallet } from 'lucide-react';
 
 
 // Recharts is only needed once an equity curve exists — keep it off the
@@ -92,14 +93,17 @@ export default function HistoryPage() {
     <div>
       <div className="stats">
         {[
-          ['Total trades', data.stats.total, ''],
-          ['Wins', data.stats.wins, 'up'],
-          ['Losses', data.stats.losses, 'down'],
-          ['Win rate', `${data.stats.winRate}%`, ''],
-          ['Net P/L', money(data.stats.pnl), data.stats.pnl >= 0 ? 'up' : 'down'],
-        ].map(([label, value, tone]) => (
-          <div key={label} className="glass stat">
-            <span>{label}</span>
+          ['Total trades', data.stats.total, '', Activity, 'var(--gold-1)'],
+          ['Wins', data.stats.wins, 'up', TrendingUp, 'var(--up)'],
+          ['Losses', data.stats.losses, 'down', TrendingDown, 'var(--down)'],
+          ['Win rate', `${data.stats.winRate}%`, '', Target, 'var(--gold-1)'],
+          ['Net P/L', money(data.stats.pnl), data.stats.pnl >= 0 ? 'up' : 'down', Wallet, data.stats.pnl >= 0 ? 'var(--up)' : 'var(--down)'],
+        ].map(([label, value, tone, Icon, accent]) => (
+          <div key={label} className="glass stat" style={{ borderTop: `2px solid ${accent}` }}>
+            <div className="stat-top">
+              <span>{label}</span>
+              <Icon size={15} style={{ color: accent, opacity: 0.85 }} />
+            </div>
             <strong className={tone}>{value}</strong>
           </div>
         ))}
