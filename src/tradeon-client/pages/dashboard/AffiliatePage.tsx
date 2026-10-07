@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from '@/tradeon-client/lib/nextDynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Handshake, Clock, XCircle } from 'lucide-react';
+import { Handshake, Clock, XCircle, Percent, Repeat, Zap } from 'lucide-react';
 
 // Recharts analytics chart is lazy-loaded off the initial Affiliate bundle.
 const ReferralChart = dynamic(() => import('@/tradeon-client/components/charts/ReferralChart'), {
@@ -86,7 +86,21 @@ export default function AffiliatePage() {
     return (
       <div className="affiliate">
         {msg && <div className={`alert alert-${msg.kind === 'ok' ? 'ok' : 'error'}`}>{msg.text}</div>}
-        
+
+        <div className="perk-grid">
+          {[
+            { icon: Percent, title: '40% commission', text: 'Earn on every deposit your referrals make — one of the highest rates in the industry.' },
+            { icon: Repeat, title: 'Lifetime earnings', text: 'Your referral link is yours forever. Every trader you bring keeps earning for you.' },
+            { icon: Zap, title: 'Fast weekly payouts', text: 'Commissions settle weekly to your real balance — withdraw anytime after KYC.' },
+          ].map(({ icon: Icon, title, text }) => (
+            <div key={title} className="glass perk">
+              <div className="perk-icon"><Icon size={18} /></div>
+              <strong>{title}</strong>
+              <span>{text}</span>
+            </div>
+          ))}
+        </div>
+
         <section className="glass" style={{ padding: 28, maxWidth: 600 }}>
           <div className="badge badge-gold" style={{ marginBottom: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <Handshake size={14} /> Affiliate Partner Program
@@ -180,6 +194,12 @@ export default function AffiliatePage() {
 
         <style>{`
           .affiliate { display: grid; gap: 16px; max-width: 700px; }
+          .perk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+          .perk { padding: 18px; display: grid; gap: 8px; border-radius: 14px; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+          .perk:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
+          .perk-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: rgba(245, 197, 66, 0.12); border: 1px solid rgba(245, 197, 66, 0.35); color: var(--gold-1); }
+          .perk strong { font-size: 14.5px; }
+          .perk span { font-size: 12.5px; line-height: 1.6; color: var(--muted); }
           .app-form { display: grid; gap: 14px; }
           .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
           @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }

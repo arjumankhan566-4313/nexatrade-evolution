@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from '@/tradeon-client/lib/nextDynamic';
 import { api, money, fmtDate, fmtPrice } from '@/tradeon-client/lib/apiClient';
+import { Activity, TrendingUp, TrendingDown, Target, Wallet } from 'lucide-react';
 
 
 // Recharts is only needed once an equity curve exists — keep it off the
@@ -92,14 +93,17 @@ export default function HistoryPage() {
     <div>
       <div className="stats">
         {[
-          ['Total trades', data.stats.total, ''],
-          ['Wins', data.stats.wins, 'up'],
-          ['Losses', data.stats.losses, 'down'],
-          ['Win rate', `${data.stats.winRate}%`, ''],
-          ['Net P/L', money(data.stats.pnl), data.stats.pnl >= 0 ? 'up' : 'down'],
-        ].map(([label, value, tone]) => (
-          <div key={label} className="glass stat">
-            <span>{label}</span>
+          ['Total trades', data.stats.total, '', Activity, 'var(--gold-1)'],
+          ['Wins', data.stats.wins, 'up', TrendingUp, 'var(--up)'],
+          ['Losses', data.stats.losses, 'down', TrendingDown, 'var(--down)'],
+          ['Win rate', `${data.stats.winRate}%`, '', Target, 'var(--gold-1)'],
+          ['Net P/L', money(data.stats.pnl), data.stats.pnl >= 0 ? 'up' : 'down', Wallet, data.stats.pnl >= 0 ? 'var(--up)' : 'var(--down)'],
+        ].map(([label, value, tone, Icon, accent]) => (
+          <div key={label} className="glass stat" style={{ borderTop: `2px solid ${accent}` }}>
+            <div className="stat-top">
+              <span>{label}</span>
+              <Icon size={15} style={{ color: accent, opacity: 0.85 }} />
+            </div>
             <strong className={tone}>{value}</strong>
           </div>
         ))}
@@ -181,7 +185,9 @@ export default function HistoryPage() {
 
       <style>{`
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
-        .stat { padding: 16px 18px; display: grid; gap: 5px; }
+        .stat { padding: 16px 18px; display: grid; gap: 6px; border-radius: 14px; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+        .stat:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
+        .stat-top { display: flex; align-items: center; justify-content: space-between; }
         .stat span { font-size: 11px; letter-spacing: 1.1px; text-transform: uppercase; color: var(--dim); }
         .stat strong { font-size: 22px; font-family: var(--mono); }
 

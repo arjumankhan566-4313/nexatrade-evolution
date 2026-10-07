@@ -82,6 +82,24 @@ export default function AdminRiskPage() {
         </Row>
       </motion.section>
 
+      <motion.section className="card card-pad risk-card-3d" aria-labelledby="risk-chart-title"
+        custom={1} variants={cardVariants} initial="hidden" animate="visible"
+        style={{ transformStyle: 'preserve-3d', perspective: 800 }}>
+        <div className="risk-card-glow risk-glow-cyan" />
+        <h3 className="card-title" id="risk-chart-title">
+          <span className="risk-card-icon">🎨</span> Chart appearance
+        </h3>
+        <Row title="Candle countdown background" description="The floating timer pill on every trading terminal. The pill text switches between light and dark automatically so it stays readable on any color. Applies live to all open terminals.">
+          <input type="color" id="set-timerbg" aria-label="Candle countdown background"
+            value={draft.chart_timer_bg ?? '#FFFFFF'}
+            onChange={(e) => change('chart_timer_bg', e.target.value.toUpperCase())}
+            style={{ width: 44, height: 32, padding: 2, border: '1px solid rgba(255,255,255,0.18)', borderRadius: 6, background: 'transparent', cursor: 'pointer' }} />
+          <span className="range-val" id="set-timerbg-v">{draft.chart_timer_bg ?? '#FFFFFF'}</span>
+          <button type="button" className="btn btn-primary" disabled={busy}
+            onClick={() => save({ chart_timer_bg: draft.chart_timer_bg })}>Apply</button>
+        </Row>
+      </motion.section>
+
       <motion.section className="card card-pad risk-card-3d" aria-labelledby="risk-execution-title"
         custom={1} variants={cardVariants} initial="hidden" animate="visible"
         style={{ transformStyle: 'preserve-3d', perspective: 800 }}>
