@@ -1,13 +1,14 @@
-# TRADEON → Lovable Migration Roadmap
+# TRADEON — Lovable-এ পোর্ট রোডম্যাপ
 
-Goal: move the whole TRADEON platform (platform-v2) into this Lovable project so everything previews here.
+## সম্পন্ন ✅
+- [x] পুরো প্রজেক্ট ফাইল এখানে আনা (ক্লায়েন্ট ১৭০, সার্ভার ১০৪, ৬৪৪ ছবি/আইকন)
+- [x] প্রিভিউতে ল্যান্ডিং পেজ চালু
+- [x] /api/* ও /socket.io/* ফরওয়ার্ডার রুট (Vite প্রক্সি বন্ধ থাকায়)
+- [x] লগইন পেজ — নতুন প্রিমিয়াম ডিজাইন (split-screen, ব্র্যান্ড প্যানেল, পাসওয়ার্ড শো/হাইড)
+- [x] রেজিস্টার পেজ — নতুন প্রিমিয়াম ডিজাইন (পাসওয়ার্ড স্ট্রেংথ মিটার, কনফার্ম পাসওয়ার্ড, দেশ ড্রপডাউন, টার্মস চেকবক্স)
+- [x] ড্যাশবোর্ড সাব-পেজ "Loading…"-এ আটকে থাকার বাগ ঠিক (auth bootstrap কল বাদ পড়েছিল — __root.tsx-এ যোগ)
+- [x] যাচাই: লগইন, রেজিস্টার→ড্যাশবোর্ড, হিস্টোরি/ওয়ালেট/অ্যাফিলিয়েট/KYC/সিকিউরিটি, অ্যাডমিন লগইন + অ্যাডমিন পেজ — সব OK, ০ console এরর
 
-- [x] Legacy Next.js app deleted from repo; DB schema + catalog ported to platform-v2 (done earlier, pushed to GitHub)
-- [x] Database schema (30+ tables) live in Lovable Cloud database
-- [x] Phase 1: Apex landing page (TRADEON design, unchanged) as the Lovable home page — live in preview; /login, /register, /chart placeholders up
-- [x] ALL source files copied into this project: full client (170 files) + full server (104 files, no node_modules) under `tradeon/`, all 644 public assets (brand, market-icons, training-ui, favicon) under `public/`, plus docs/configs (AGENTS.md, README, SETUP, docker-compose, render.yaml, .env.example). `src/apex/` remains the live landing copy; `tradeon/client/src/apex/` is the mirror. Work paused here per user request.
-- [ ] Phase 2: Auth (login/register) against the existing database
-- [ ] Phase 3: Trading screen (chart, trade panel, OTC market data via server routes)
-- [ ] Phase 4: Dashboard, wallet, KYC, referrals
-- [ ] Phase 5: Admin panel
-- [ ] Phase 6: OTC engine as Lovable server-side worker/cron replacement for Socket.io
+## পরবর্তী (ইউজার চাইলে)
+- [ ] ইউজার প্যানেলের ভেতরের পেজগুলোর আরও পলিশ (এখন যেমন আছে তেমনই প্রফেশনাল, তবে চাইলে আরও প্রিমিয়াম করা যাবে)
+- [ ] হোস্টিং/পাবলিশ — ইউজার এখন চায় না
