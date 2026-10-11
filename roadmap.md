@@ -41,3 +41,11 @@
 - Verified /, /login, /register, /chart, /dashboard, /wallet, /history, /kyc, /admin at 390/820/1366/1920px — zero horizontal overflow.
 - Fixed wallet on phones: balance cards stack 1-col (≤640px), mode switch + rails stack (≤480px), min-width:0 guards stop panel/tab overflow.
 - Fixed landing header: Sign in / Create account no longer wrap on phones (whitespace-nowrap).
+
+## সম্পন্ন ✅ (টাইমার পিল ডানদিকো — ক্রিটিক্যাল বাগ ১)
+- [x] `.chart-live-timer` ডানদিকো নেওয়া হয়েছে (`right: 78px`); ড্যাশড প্রাইস লাইন এখন বাঁ থেকে শুরু হয়ে পিলের 12px আগে শেষ (`plotRight - countdownInset`)
+- [x] যাচাই (ব্রাউজার): পিলের ডান কিনারা 842px = প্লটের ডান কিনারা (দাম অ্যাাক্ষিসের ঠিক আগে), inset 81 = পিল 69 + গ্যাপ 12; লাইভ টিক চলছ (81973.82 → 82506.10); Bitcoin→Ethereum সুইচে দাম 83004 → 2503, ৩০০টি ক্যান্ডেল পুনরায় লোড
+- [x] লাইভ ডেট সার্ভার: `tradeon/server`-এ `bun install` + `npx tsx src/index.ts` (:4000) — DATABASE_URL=$SUPABASE_DB_URL, SUPER_ADMIN_PASSWORD, JWT_SECRET, CORS_ORIGINS=http://localhost:8080, NODE_TLS_REJECT_UNAUTHORIZED=0
+
+## পরবরতী
+- [ ] প্রজেক্ট ডাওয়নলোড: GitHub `nexatrade-evolution` → Code → Download ZIP, সাথের `/mnt/documents`-এ ক্লিন সোর্স ZIP
