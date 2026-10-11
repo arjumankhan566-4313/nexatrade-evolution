@@ -199,13 +199,16 @@
   text-decoration: underline;
 }
 /* Candle countdown: rides the live-price line (the engine reports the line's Y
-   every frame, so it stays aligned through ticks, panning and zoom) and sits
-   FLUSH against the plot's left edge. The engine has no left gutter — the price
-   axis and its badge live in the 78px RIGHT gutter (RIGHT_GUTTER in
-   chart/ChartEngine.ts), so x = 0 IS the first candle's column. */
+   every frame, so it stays aligned through ticks, panning and zoom) and sits on
+   the RIGHT, flush against the price axis — where every trading terminal keeps
+   it. The engine keeps the price axis and its badge in the 78px RIGHT gutter
+   (RIGHT_GUTTER in chart/ChartEngine.ts), so right: 78px lands the pill's right
+   edge exactly on the plot's right edge, just before the axis. The dashed price
+   line stops COUNTDOWN_GAP_PX short of the pill's left edge (the engine is told
+   the pill's width through setCountdownInset), so the two never overlap. */
 .chart-live-timer {
   position: absolute;
-  left: 0;
+  right: 78px;
   transform: translateY(-50%);
   z-index: 21;
   pointer-events: none;

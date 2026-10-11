@@ -1069,16 +1069,17 @@ export class ChartEngine {
     // half-lit across two rows; this keeps the line fully opaque and crisp.
     const wDev = Math.max(1, Math.round(PRICE_LINE_W * this.dpr));
     const y = Math.round(rawY * this.dpr) / this.dpr;
-    // The countdown pill sits at the plot's left edge; the dashed line starts
-    // a clear COUNTDOWN_GAP_PX after it (countdownInset = pill width + gap).
-    const x0 = Math.min(this.countdownInset, this.plotRight);
+    // The countdown pill sits on the RIGHT, flush against the price axis, so the
+    // dashed line runs from the plot's left edge and stops a clear
+    // COUNTDOWN_GAP_PX before the pill (countdownInset = pill width + gap).
+    const x1 = Math.max(0, this.plotRight - this.countdownInset);
     ctx.save();
     ctx.strokeStyle = this.theme.priceLine;
     ctx.lineWidth = wDev / this.dpr;
     ctx.setLineDash([6, 4]);
     ctx.beginPath();
-    ctx.moveTo(x0, y);
-    ctx.lineTo(this.plotRight, y);
+    ctx.moveTo(0, y);
+    ctx.lineTo(x1, y);
     ctx.stroke();
     ctx.restore();
 
