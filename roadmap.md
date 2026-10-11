@@ -47,5 +47,12 @@
 - [x] যাচাই (ব্রাউজার): পিলের ডান কিনারা 842px = প্লটের ডান কিনারা (দাম অ্যাাক্ষিসের ঠিক আগে), inset 81 = পিল 69 + গ্যাপ 12; লাইভ টিক চলছ (81973.82 → 82506.10); Bitcoin→Ethereum সুইচে দাম 83004 → 2503, ৩০০টি ক্যান্ডেল পুনরায় লোড
 - [x] লাইভ ডেট সার্ভার: `tradeon/server`-এ `bun install` + `npx tsx src/index.ts` (:4000) — DATABASE_URL=$SUPABASE_DB_URL, SUPER_ADMIN_PASSWORD, JWT_SECRET, CORS_ORIGINS=http://localhost:8080, NODE_TLS_REJECT_UNAUTHORIZED=0
 
+## চলছব — গুটহাব
+ে পুরো প্রজেক্ট (A to Z)
+- [x] ডাটাবেসের তথ্যের কপি প্রজেক্টে যোগ (`database-export/`): স্কিমা + ২৫টো টেবিলের লাইভ তথ্য (বড় ফিড টেবিল দুটো বাদে)
+- [ ] কপি থেকে ফিরাইয়ে আনার নিয়ম লেখা (`database-export/README.md`)
+- [ ] গুটহাব রিপোয় সব পৌঁছয়েছ কিনা য়াচাই
+- [ ] ইউজারকে বলব: কপিতো অ্য্যাকাউন্টের তথ্য নিয়ে রাকবে — রিপো নিজি (private) রাকত হব
+
 ## পরবরতী
 - [ ] প্রজেক্ট ডাওয়নলোড: GitHub `nexatrade-evolution` → Code → Download ZIP, সাথের `/mnt/documents`-এ ক্লিন সোর্স ZIP
