@@ -1,7 +1,7 @@
-import type { AIAssistantProvider, MarketProvider, MetricsProvider } from './types';
-import { createMockAIAssistantProvider } from './mock/ai';
-import { createLiveMetricsProvider } from './live/metrics';
-import { createLiveMarketProvider } from './live/market';
+import type { AIAssistantProvider, MarketProvider, MetricsProvider } from "./types";
+import { createMockAIAssistantProvider } from "./mock/ai";
+import { createLiveMetricsProvider } from "./live/metrics";
+import { createLiveMarketProvider } from "./live/market";
 
 /**
  * The only place the app decides which implementation backs each interface.
@@ -23,4 +23,4 @@ export type {
   MetricsProvider,
   MetricSample,
   SentimentReading,
-} from './types';
+} from "./types";

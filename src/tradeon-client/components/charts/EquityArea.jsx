@@ -1,4 +1,3 @@
-
 /**
  * EquityArea — the shared Recharts P/L area chart used by the History and
  * Social (trader profile) screens.
@@ -7,10 +6,16 @@
  * whole `recharts` package out of their first-load JavaScript. Visual output is
  * byte-for-byte the same as the previous inline chart.
  */
-import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts';
+import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
 
-export default function EquityArea({ data, up, domain, gradientId = 'equityFill', fillOpacity = 0.35 }) {
-  const stroke = up ? '#10b981' : '#f43f5e';
+export default function EquityArea({
+  data,
+  up,
+  domain,
+  gradientId = "equityFill",
+  fillOpacity = 0.35,
+}) {
+  const stroke = up ? "#10b981" : "#f43f5e";
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>

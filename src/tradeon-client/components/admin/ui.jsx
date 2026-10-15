@@ -1,13 +1,12 @@
-
-import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 /**
  * 3D glassmorphic card — tracks the cursor to produce a subtle perspective
  * tilt + a radial glow that follows the pointer. Pure CSS in admin.css drives
  * the animated gradient border and glass blur.
  */
-export function GlassCard({ children, className = '', delay = 0, tilt = true, ...rest }) {
+export function GlassCard({ children, className = "", delay = 0, tilt = true, ...rest }) {
   const ref = useRef(null);
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0);
@@ -21,8 +20,8 @@ export function GlassCard({ children, className = '', delay = 0, tilt = true, ..
     const py = (e.clientY - r.top) / r.height;
     mx.set(px);
     my.set(py);
-    ref.current.style.setProperty('--mx', `${px * 100}%`);
-    ref.current.style.setProperty('--my', `${py * 100}%`);
+    ref.current.style.setProperty("--mx", `${px * 100}%`);
+    ref.current.style.setProperty("--my", `${py * 100}%`);
   };
   const onLeave = () => {
     mx.set(0.5);
@@ -47,7 +46,14 @@ export function GlassCard({ children, className = '', delay = 0, tilt = true, ..
 }
 
 /** Spring-animated number that counts up to its target (tabular-nums). */
-export function CountUp({ value, decimals = 0, prefix = '', suffix = '', duration = 1.1, className = '' }) {
+export function CountUp({
+  value,
+  decimals = 0,
+  prefix = "",
+  suffix = "",
+  duration = 1.1,
+  className = "",
+}) {
   const [display, setDisplay] = useState(0);
   const prev = useRef(0);
 
@@ -94,8 +100,8 @@ export function CardHead({ eyebrow, title, sub, right }) {
 }
 
 /** Pulsing live indicator pill. */
-export function LivePill({ label = 'LIVE', variant = 'green' }) {
-  return <span className={`nt-live-pill ${variant === 'cyan' ? 'cyan' : ''}`}>{label}</span>;
+export function LivePill({ label = "LIVE", variant = "green" }) {
+  return <span className={`nt-live-pill ${variant === "cyan" ? "cyan" : ""}`}>{label}</span>;
 }
 
 /** Segmented control (Today / Week / All-time). */
@@ -106,7 +112,7 @@ export function Segmented({ options, value, onChange }) {
         <button
           key={o.value}
           type="button"
-          className={value === o.value ? 'active' : ''}
+          className={value === o.value ? "active" : ""}
           onClick={() => onChange(o.value)}
         >
           {o.label}
@@ -117,7 +123,7 @@ export function Segmented({ options, value, onChange }) {
 }
 
 /** Tiny sparkline (SVG) for KPI cards. */
-export function Spark({ data, color = '#34d399', id }) {
+export function Spark({ data, color = "#34d399", id }) {
   if (!data || data.length < 2) return null;
   const w = 120;
   const h = 36;
@@ -128,7 +134,9 @@ export function Spark({ data, color = '#34d399', id }) {
     (i / (data.length - 1)) * w,
     h - 4 - ((v - min) / range) * (h - 8),
   ]);
-  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const line = pts
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p[0].toFixed(1)},${p[1].toFixed(1)}`)
+    .join(" ");
   const area = `${line} L${w},${h} L0,${h} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="nt-kpi-spark">
@@ -139,7 +147,14 @@ export function Spark({ data, color = '#34d399', id }) {
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#sg-${id})`} />
-      <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={line}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

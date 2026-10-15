@@ -22,11 +22,11 @@ export function pricePrecision(price: number): number {
 
 /** Format a price with an explicit precision, else the asset's own. */
 export function formatPrice(price: number, precision?: number): string {
-  if (!Number.isFinite(price)) return '—';
+  if (!Number.isFinite(price)) return "—";
   return price.toFixed(precision ?? pricePrecision(price));
 }
 
-const pad2 = (n: number) => String(n).padStart(2, '0');
+const pad2 = (n: number) => String(n).padStart(2, "0");
 
 /** HH:MM — the compact clock used for grid labels and the time tag. */
 export function formatClock(time: number): string {

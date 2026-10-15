@@ -10,38 +10,38 @@
  * (`POST /api/trades`) with open positions polled from the trades endpoints.
  * Nothing is mocked and no candle is generated in the browser.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from '@/tradeon-client/compat/react-router-dom';
-import CanvasChart from '../components/Chart/CanvasChart';
-import ChartHeader from '../components/Chart/ChartHeader';
-import ChartRail from '../components/Chart/ChartRail';
-import type { ChartType } from '../components/Chart/ChartTools';
-import TradePanel, { type TradeDirection } from '../components/Trade/TradePanel';
-import ActiveTrades from '../components/Trade/ActiveTrades';
-import MarketSelector from '../components/Market/MarketSelector';
-import { useOtcAssets } from '../hooks/useOtcAssets';
-import { useAuthStore } from '../stores/authStore';
-import { useAccountModeStore } from '../stores/accountModeStore';
-import { useLivePayouts } from '../stores/payoutStore';
-import { api } from '../lib/api';
-import { fetchAllTrades, type UiTrade } from '../lib/trades';
-import { useSheetDrag, type SheetSnap } from '../hooks/useSheetDrag';
-import '../styles/chart.css';
-import '../styles/chart-shell.css';
-import '../styles/trade-panel.css';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "@/tradeon-client/compat/react-router-dom";
+import CanvasChart from "../components/Chart/CanvasChart";
+import ChartHeader from "../components/Chart/ChartHeader";
+import ChartRail from "../components/Chart/ChartRail";
+import type { ChartType } from "../components/Chart/ChartTools";
+import TradePanel, { type TradeDirection } from "../components/Trade/TradePanel";
+import ActiveTrades from "../components/Trade/ActiveTrades";
+import MarketSelector from "../components/Market/MarketSelector";
+import { useOtcAssets } from "../hooks/useOtcAssets";
+import { useAuthStore } from "../stores/authStore";
+import { useAccountModeStore } from "../stores/accountModeStore";
+import { useLivePayouts } from "../stores/payoutStore";
+import { api } from "../lib/api";
+import { fetchAllTrades, type UiTrade } from "../lib/trades";
+import { useSheetDrag, type SheetSnap } from "../hooks/useSheetDrag";
+import "../styles/chart.css";
+import "../styles/chart-shell.css";
+import "../styles/trade-panel.css";
 
-const DEFAULT_SYMBOL = 'BTCUSD-OTC';
+const DEFAULT_SYMBOL = "BTCUSD-OTC";
 const TRADES_POLL_MS = 8000;
 /** Matches the server's double-click guard so a double tap never double-books. */
 const PLACEMENT_GAP_MS = 450;
 
 export default function ChartPage() {
   const [symbol, setSymbol] = useState(DEFAULT_SYMBOL);
-  const [timeframe, setTimeframe] = useState('1m');
-  const [chartType, setChartType] = useState<ChartType>('candles');
+  const [timeframe, setTimeframe] = useState("1m");
+  const [chartType, setChartType] = useState<ChartType>("candles");
   const [livePrice, setLivePrice] = useState<number | null>(null);
   /** Mobile bottom-sheet stop — the ticket never covers the chart at 'peek'. */
-  const [sheetSnap, setSheetSnap] = useState<SheetSnap>('peek');
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>("peek");
   const panelRef = useRef<HTMLElement>(null);
   const [marketOpen, setMarketOpen] = useState(false);
   const [trades, setTrades] = useState<UiTrade[]>([]);
@@ -50,7 +50,7 @@ export default function ChartPage() {
 
   const { user, refresh } = useAuthStore();
   const { mode } = useAccountModeStore();
-  const account = mode === 'real' ? 'REAL' : 'DEMO';
+  const account = mode === "real" ? "REAL" : "DEMO";
   const { assets, loading } = useOtcAssets();
 
   const asset = useMemo(() => assets.find((a) => a.symbol === symbol) ?? null, [assets, symbol]);
@@ -59,7 +59,7 @@ export default function ChartPage() {
   // is also the rate the server records on the trade it places.
   const payouts = useLivePayouts();
   const payoutRate = payouts[symbol] ?? asset?.payoutRate ?? 85;
-  const balance = account === 'REAL' ? user?.balanceReal ?? 0 : user?.balanceDemo ?? 0;
+  const balance = account === "REAL" ? (user?.balanceReal ?? 0) : (user?.balanceDemo ?? 0);
 
   const handleLivePrice = useCallback((price: number | null) => setLivePrice(price), []);
 
@@ -88,7 +88,7 @@ export default function ChartPage() {
     [trades, account],
   );
   const activeCount = useMemo(
-    () => accountTrades.filter((t) => t.status === 'OPEN').length,
+    () => accountTrades.filter((t) => t.status === "OPEN").length,
     [accountTrades],
   );
   const closedCount = accountTrades.length - activeCount;
@@ -97,24 +97,26 @@ export default function ChartPage() {
   const place = useCallback(
     async (direction: TradeDirection, stake: number, durationSec: number) => {
       if (!user) {
-        setTradeError('Sign in to place a trade.');
+        setTradeError("Sign in to place a trade.");
         return;
       }
       const investment = Number(stake);
       if (!Number.isFinite(investment) || investment < 1) {
-        setTradeError('Enter an amount of at least $1.');
+        setTradeError("Enter an amount of at least $1.");
         return;
       }
       if (investment > balance) {
         setTradeError(
           `Insufficient ${account.toLowerCase()} balance ($${balance.toFixed(2)}). ` +
-            (account === 'REAL' ? 'Deposit to continue trading.' : 'Lower the amount or switch accounts.'),
+            (account === "REAL"
+              ? "Deposit to continue trading."
+              : "Lower the amount or switch accounts."),
         );
         return;
       }
       const now = Date.now();
       if (now - lastPlacement.current < PLACEMENT_GAP_MS) {
-        setTradeError('Please wait a moment before placing another trade.');
+        setTradeError("Please wait a moment before placing another trade.");
         return;
       }
       lastPlacement.current = now;
@@ -131,7 +133,7 @@ export default function ChartPage() {
         exitPrice: null,
         payoutRate,
         duration: durationSec,
-        status: 'OPEN',
+        status: "OPEN",
         accountType: account,
         profit: null,
         createdAt: new Date(now).toISOString(),
@@ -142,8 +144,8 @@ export default function ChartPage() {
       setTrades((prev) => [optimistic, ...prev]);
 
       try {
-        const res = await api<{ trade: Record<string, unknown> }>('/trades', {
-          method: 'POST',
+        const res = await api<{ trade: Record<string, unknown> }>("/trades", {
+          method: "POST",
           body: {
             symbol,
             direction,
@@ -153,7 +155,7 @@ export default function ChartPage() {
           },
         });
         if (res.status >= 400) {
-          const err = (res.data as { error?: string })?.error || 'Trade failed';
+          const err = (res.data as { error?: string })?.error || "Trade failed";
           setTrades((prev) => prev.filter((t) => t.id !== optimisticId));
           setTradeError(err);
           if (/insufficient/i.test(err)) refresh();
@@ -164,7 +166,7 @@ export default function ChartPage() {
         loadTrades();
       } catch {
         setTrades((prev) => prev.filter((t) => t.id !== optimisticId));
-        setTradeError('The trade could not be confirmed. Please try again.');
+        setTradeError("The trade could not be confirmed. Please try again.");
       }
     },
     [user, balance, account, symbol, livePrice, payoutRate, refresh, loadTrades],
@@ -182,7 +184,7 @@ export default function ChartPage() {
   const cycleSheet = useCallback(() => {
     // A swipe that ends on the handle must not also count as a tap.
     if (sheet.isDragging()) return;
-    setSheetSnap((s) => (s === 'peek' ? 'half' : s === 'half' ? 'full' : 'peek'));
+    setSheetSnap((s) => (s === "peek" ? "half" : s === "half" ? "full" : "peek"));
   }, [sheet]);
 
   return (
@@ -222,9 +224,9 @@ export default function ChartPage() {
               the chart stays directly tappable at the peek/half stops. */}
           <button
             type="button"
-            className={`nxt-scrim ${sheetSnap === 'full' ? 'is-open' : ''}`}
+            className={`nxt-scrim ${sheetSnap === "full" ? "is-open" : ""}`}
             aria-label="Close trade panel"
-            onClick={() => setSheetSnap('peek')}
+            onClick={() => setSheetSnap("peek")}
           />
 
           <aside ref={panelRef} className={`nxw__panel is-${sheetSnap}`}>
@@ -233,7 +235,7 @@ export default function ChartPage() {
             <button
               type="button"
               className="nxt-sheet-head"
-              aria-expanded={sheetSnap !== 'peek'}
+              aria-expanded={sheetSnap !== "peek"}
               aria-label="Trade panel — drag or tap to resize"
               onPointerDown={sheet.handleProps.onPointerDown}
               onPointerMove={sheet.handleProps.onPointerMove}
@@ -244,7 +246,17 @@ export default function ChartPage() {
               <span className="nxt-sheet-head__grip" />
               <span className="nxt-sheet-head__title">Trade Panel</span>
               <span className="nxt-sheet-head__payout">{payoutRate}% payout</span>
-              <svg className="nxt-sheet-head__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                className="nxt-sheet-head__chev"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M18 15l-6-6-6 6" />
               </svg>
             </button>

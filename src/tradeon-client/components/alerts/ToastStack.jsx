@@ -3,10 +3,10 @@
  * Top-CENTER toast stack, newest on top, capped at 3. Auto-dismiss per
  * severity with hover-to-pause + manual close.
  */
-import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, Info, ShieldAlert, X } from 'lucide-react';
-import { useAlertStore } from '@/tradeon-client/lib/useAlertStore';
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, CheckCircle2, Info, ShieldAlert, X } from "lucide-react";
+import { useAlertStore } from "@/tradeon-client/lib/useAlertStore";
 
 const ICONS = {
   critical: ShieldAlert,
@@ -52,12 +52,12 @@ function ToastRow({ toast, onDismiss }) {
   return (
     <motion.div
       layout
-      role={toast.severity === 'critical' || toast.severity === 'warning' ? 'alert' : 'status'}
+      role={toast.severity === "critical" || toast.severity === "warning" ? "alert" : "status"}
       className={`nx-toast nx-toast-${toast.severity}`}
       initial={{ opacity: 0, y: -16, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
-      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+      transition={{ type: "spring", stiffness: 380, damping: 30 }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -69,7 +69,13 @@ function ToastRow({ toast, onDismiss }) {
       <button type="button" className="nx-toast-x" onClick={onDismiss} aria-label="Dismiss">
         <X size={14} />
       </button>
-      <i className="nx-toast-bar" style={{ animationDuration: `${toast.durationMs}ms`, animationPlayState: paused ? 'paused' : 'running' }} />
+      <i
+        className="nx-toast-bar"
+        style={{
+          animationDuration: `${toast.durationMs}ms`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
+      />
     </motion.div>
   );
 }

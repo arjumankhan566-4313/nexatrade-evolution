@@ -13,8 +13,14 @@ import {
   useParams as tanUseParams,
   useRouter,
   useRouterState,
-} from '@tanstack/react-router';
-import { forwardRef, useCallback, type CSSProperties, type MouseEventHandler, type ReactNode } from 'react';
+} from "@tanstack/react-router";
+import {
+  forwardRef,
+  useCallback,
+  type CSSProperties,
+  type MouseEventHandler,
+  type ReactNode,
+} from "react";
 
 export const Outlet = TanOutlet;
 
@@ -27,7 +33,7 @@ type ToProps = {
   style?: CSSProperties;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
-  'aria-label'?: string;
+  "aria-label"?: string;
   [key: string]: any;
 };
 
@@ -42,7 +48,7 @@ export const Link = forwardRef<HTMLAnchorElement, ToProps>(function Link(
   );
 });
 
-type NavLinkProps = Omit<ToProps, 'className'> & {
+type NavLinkProps = Omit<ToProps, "className"> & {
   end?: boolean;
   className?: string | ((state: { isActive: boolean }) => string);
 };
@@ -53,7 +59,7 @@ export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(function NavL
 ) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = end ? pathname === to : pathname === to || pathname.startsWith(`${to}/`);
-  const cls = typeof className === 'function' ? className({ isActive }) : className;
+  const cls = typeof className === "function" ? className({ isActive }) : className;
   return (
     <TanLink ref={ref} to={to as never} className={cls} {...(rest as object)}>
       {children}
@@ -74,7 +80,7 @@ export function useNavigate() {
   // loop — React's "Maximum update depth exceeded".
   return useCallback(
     (to: string | number, options?: { replace?: boolean; state?: unknown }) => {
-      if (typeof to === 'number') {
+      if (typeof to === "number") {
         router.history.go(to);
         return;
       }

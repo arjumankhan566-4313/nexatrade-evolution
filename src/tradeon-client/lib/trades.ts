@@ -7,13 +7,13 @@
  * ported components unchanged.
  */
 
-import { api } from './api';
+import { api } from "./api";
 
 /* ── UI-facing trade shape (matches legacy convention) ── */
 export interface UiTrade {
   id: string;
   symbol: string;
-  direction: 'CALL' | 'PUT';
+  direction: "CALL" | "PUT";
   stake: number;
   entryPrice: number;
   exitPrice: number | null;
@@ -50,9 +50,9 @@ interface V2Trade {
 
 /** Map V2 status → legacy display status. */
 function mapStatus(s: string): string {
-  if (s === 'PENDING') return 'OPEN';
-  if (s === 'WIN') return 'WON';
-  if (s === 'LOSS') return 'LOST';
+  if (s === "PENDING") return "OPEN";
+  if (s === "WIN") return "WON";
+  if (s === "LOSS") return "LOST";
   return s;
 }
 
@@ -61,7 +61,7 @@ export function mapTrade(t: V2Trade): UiTrade {
   return {
     id: t.id,
     symbol: t.asset_pair,
-    direction: t.direction as 'CALL' | 'PUT',
+    direction: t.direction as "CALL" | "PUT",
     stake: Number(t.amount),
     entryPrice: Number(t.entry_price),
     exitPrice: t.exit_price != null ? Number(t.exit_price) : null,
@@ -105,11 +105,13 @@ export function mapStats(a: V2Analytics): TradeStats {
 /* ── API calls ── */
 
 /** Fetch active + history trades combined (matches legacy `/api/trades?limit=200`). */
-export async function fetchAllTrades(limit = 200): Promise<{ trades: UiTrade[]; stats: TradeStats }> {
+export async function fetchAllTrades(
+  limit = 200,
+): Promise<{ trades: UiTrade[]; stats: TradeStats }> {
   const [activeRes, historyRes, analyticsRes] = await Promise.all([
-    api<{ trades: V2Trade[] }>('/trades/active'),
+    api<{ trades: V2Trade[] }>("/trades/active"),
     api<{ trades: V2Trade[] }>(`/trades/history?limit=${limit}`),
-    api<{ analytics: V2Analytics }>('/trades/analytics'),
+    api<{ analytics: V2Analytics }>("/trades/analytics"),
   ]);
 
   const active = (activeRes.data?.trades || []).map(mapTrade);
@@ -126,18 +128,24 @@ export async function fetchAllTrades(limit = 200): Promise<{ trades: UiTrade[]; 
 /* ── Formatting helpers (ported from legacy apiClient.js) ── */
 
 export function money(n: number | null | undefined): string {
-  if (n == null || !Number.isFinite(n)) return '$0.00';
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (n == null || !Number.isFinite(n)) return "$0.00";
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function fmtPrice(n: number | null | undefined, digits = 2): string {
-  if (n == null || !Number.isFinite(n)) return '—';
-  return n.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  if (n == null || !Number.isFinite(n)) return "—";
+  return n.toLocaleString("en-US", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
 }
 
 export function fmtDate(iso: string): string {
-  if (!iso) return '';
+  if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-    ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  return (
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+    " " +
+    d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+  );
 }

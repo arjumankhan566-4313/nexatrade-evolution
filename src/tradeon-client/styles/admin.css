@@ -72,7 +72,7 @@
   isolation: isolate;
 }
 .nt-shell::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
@@ -83,7 +83,7 @@
     linear-gradient(160deg, #0a0f17 0%, #080b11 52%, #070a0f 100%);
 }
 .nt-shell::after {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -111,13 +111,19 @@
   box-shadow: 30px 0 80px -30px rgba(0, 0, 0, 0.8);
 }
 .nt-side::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 242, 254, 0.6), rgba(16, 185, 129, 0.5), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 242, 254, 0.6),
+    rgba(16, 185, 129, 0.5),
+    transparent
+  );
 }
 
 .nt-brand {
@@ -136,7 +142,9 @@
   place-items: center;
   position: relative;
   background: var(--grad-cyan-em);
-  box-shadow: 0 0 30px rgba(0, 242, 254, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 0 30px rgba(0, 242, 254, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
   perspective: 600px;
 }
 .nt-logo span {
@@ -146,7 +154,7 @@
   letter-spacing: -0.5px;
 }
 .nt-logo::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -3px;
   border-radius: 17px;
@@ -236,16 +244,25 @@
   color: #eafdff;
   background: linear-gradient(90deg, rgba(0, 242, 254, 0.14), rgba(16, 185, 129, 0.07));
   border-color: transparent;
-  box-shadow: inset 3px 0 0 var(--cyan), 0 0 28px rgba(0, 242, 254, 0.12);
+  box-shadow:
+    inset 3px 0 0 var(--cyan),
+    0 0 28px rgba(0, 242, 254, 0.12);
 }
 .nt-item.active::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 12px;
   padding: 1px;
-  background: linear-gradient(120deg, rgba(0, 242, 254, 0.7), rgba(16, 185, 129, 0.5), rgba(0, 242, 254, 0.15));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  background: linear-gradient(
+    120deg,
+    rgba(0, 242, 254, 0.7),
+    rgba(16, 185, 129, 0.5),
+    rgba(0, 242, 254, 0.15)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation: ntBorderFlow 4s linear infinite;
@@ -466,9 +483,14 @@
   background: linear-gradient(145deg, rgba(24, 34, 50, 0.5), rgba(12, 17, 27, 0.35));
   border-color: var(--stroke);
   border-top-color: rgba(148, 197, 255, 0.2);
-  box-shadow: var(--shadow-float), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow:
+    var(--shadow-float),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(22px) saturate(140%);
-  transition: transform 0.18s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 /* animated gradient border + hover lift so sub-module panels match the
    dashboard's 3D glassmorphic cards */
@@ -478,13 +500,21 @@
 }
 .nt-body main section.glass::before,
 .nt-body main > .glass::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(130deg, rgba(0, 242, 254, 0.45), rgba(255, 255, 255, 0.05) 30%, rgba(16, 185, 129, 0.4) 70%, rgba(0, 242, 254, 0.15));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  background: linear-gradient(
+    130deg,
+    rgba(0, 242, 254, 0.45),
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(16, 185, 129, 0.4) 70%,
+    rgba(0, 242, 254, 0.15)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.55;
@@ -493,7 +523,9 @@
 .nt-body main section.glass:hover,
 .nt-body main > .glass:hover {
   border-color: rgba(0, 242, 254, 0.26);
-  box-shadow: 0 36px 80px -28px rgba(0, 0, 0, 0.9), 0 0 36px -14px rgba(0, 242, 254, 0.3);
+  box-shadow:
+    0 36px 80px -28px rgba(0, 0, 0, 0.9),
+    0 0 36px -14px rgba(0, 242, 254, 0.3);
 }
 
 /* page hero header — shared across all sub-modules */
@@ -537,7 +569,9 @@
 .nt-body .select:focus,
 .nt-body textarea.input:focus {
   border-color: rgba(0, 242, 254, 0.55);
-  box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1), 0 0 26px rgba(0, 242, 254, 0.07);
+  box-shadow:
+    0 0 0 3px rgba(0, 242, 254, 0.1),
+    0 0 26px rgba(0, 242, 254, 0.07);
 }
 .nt-body .btn {
   border-color: var(--stroke-2);
@@ -639,34 +673,53 @@
   backdrop-filter: blur(22px) saturate(150%);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
   border: 1px solid var(--stroke);
-  box-shadow: var(--shadow-float), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow:
+    var(--shadow-float),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transform-style: preserve-3d;
-  transition: transform 0.18s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
   overflow: hidden;
 }
 .nt-card:hover {
   border-color: rgba(0, 242, 254, 0.28);
-  box-shadow: 0 42px 90px -28px rgba(0, 0, 0, 0.9), 0 0 40px -12px rgba(0, 242, 254, 0.35);
+  box-shadow:
+    0 42px 90px -28px rgba(0, 0, 0, 0.9),
+    0 0 40px -12px rgba(0, 242, 254, 0.35);
 }
 .nt-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(130deg, rgba(0, 242, 254, 0.5), rgba(255, 255, 255, 0.06) 30%, rgba(16, 185, 129, 0.45) 70%, rgba(0, 242, 254, 0.2));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  background: linear-gradient(
+    130deg,
+    rgba(0, 242, 254, 0.5),
+    rgba(255, 255, 255, 0.06) 30%,
+    rgba(16, 185, 129, 0.45) 70%,
+    rgba(0, 242, 254, 0.2)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.5;
   pointer-events: none;
 }
 .nt-card::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(0, 242, 254, 0.1), transparent 46%);
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(0, 242, 254, 0.1),
+    transparent 46%
+  );
   opacity: 0;
   transition: opacity 0.35s;
   pointer-events: none;
@@ -717,7 +770,7 @@
   text-transform: uppercase;
 }
 .nt-live-pill::before {
-  content: '';
+  content: "";
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -843,7 +896,7 @@
   color: #04101a;
 }
 .nt-seg button.active::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 8px;
@@ -1135,7 +1188,7 @@
   position: relative;
 }
 .nt-stream-row.flash::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, rgba(0, 242, 254, 0.09), transparent);
@@ -1273,7 +1326,12 @@
 
 /* empty/loading shimmer */
 .nt-shimmer {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 25%, rgba(0, 242, 254, 0.06) 50%, rgba(255, 255, 255, 0.02) 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(0, 242, 254, 0.06) 50%,
+    rgba(255, 255, 255, 0.02) 75%
+  );
   background-size: 200% 100%;
   animation: ntShimmer 1.6s linear infinite;
   border-radius: 10px;
@@ -1313,13 +1371,28 @@
 }
 @keyframes ntBorderFlow {
   0% {
-    background: linear-gradient(120deg, rgba(0, 242, 254, 0.75), rgba(16, 185, 129, 0.45), rgba(0, 242, 254, 0.1));
+    background: linear-gradient(
+      120deg,
+      rgba(0, 242, 254, 0.75),
+      rgba(16, 185, 129, 0.45),
+      rgba(0, 242, 254, 0.1)
+    );
   }
   50% {
-    background: linear-gradient(300deg, rgba(0, 242, 254, 0.75), rgba(16, 185, 129, 0.45), rgba(0, 242, 254, 0.1));
+    background: linear-gradient(
+      300deg,
+      rgba(0, 242, 254, 0.75),
+      rgba(16, 185, 129, 0.45),
+      rgba(0, 242, 254, 0.1)
+    );
   }
   100% {
-    background: linear-gradient(480deg, rgba(0, 242, 254, 0.75), rgba(16, 185, 129, 0.45), rgba(0, 242, 254, 0.1));
+    background: linear-gradient(
+      480deg,
+      rgba(0, 242, 254, 0.75),
+      rgba(16, 185, 129, 0.45),
+      rgba(0, 242, 254, 0.1)
+    );
   }
 }
 @keyframes ntArc {
@@ -1413,7 +1486,9 @@
   border: 1px solid var(--stroke);
   border-top-color: rgba(148, 197, 255, 0.2);
   backdrop-filter: blur(22px) saturate(150%);
-  box-shadow: 0 30px 70px -22px rgba(0, 0, 0, 0.85), 0 0 40px -18px rgba(0, 242, 254, 0.4);
+  box-shadow:
+    0 30px 70px -22px rgba(0, 0, 0, 0.85),
+    0 0 40px -18px rgba(0, 242, 254, 0.4);
 }
 .nt-login .btn-gold {
   background: var(--grad-cyan-em);
@@ -1426,7 +1501,9 @@
 }
 .nt-login .input:focus {
   border-color: rgba(0, 242, 254, 0.55);
-  box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1), 0 0 26px rgba(0, 242, 254, 0.07);
+  box-shadow:
+    0 0 0 3px rgba(0, 242, 254, 0.1),
+    0 0 26px rgba(0, 242, 254, 0.07);
 }
 .nt-login .field label {
   color: #93a3bd;
@@ -1461,8 +1538,11 @@
 
 /* ═════════════ Admin Login Modal (popup) ═════════════ */
 .admin-modal-overlay {
-  position: fixed; inset: 0; z-index: 9999;
-  display: grid; place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
   padding: 20px;
   background: rgba(4, 8, 16, 0.72);
   backdrop-filter: blur(14px) saturate(120%);
@@ -1520,13 +1600,17 @@
   opacity: 0.4;
 }
 .admin-modal-glow-1 {
-  top: -40px; right: -30px;
-  width: 140px; height: 140px;
+  top: -40px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
   background: radial-gradient(circle, rgba(0, 242, 254, 0.25), transparent 70%);
 }
 .admin-modal-glow-2 {
-  bottom: -40px; left: -20px;
-  width: 120px; height: 120px;
+  bottom: -40px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
   background: radial-gradient(circle, rgba(234, 57, 67, 0.2), transparent 70%);
 }
 
@@ -1556,8 +1640,8 @@
 .otc-cat-tabs button {
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1px solid var(--stroke, rgba(255,255,255,0.08));
-  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--stroke, rgba(255, 255, 255, 0.08));
+  background: rgba(255, 255, 255, 0.03);
   color: var(--muted, #a0a0a0);
   font-size: 12.5px;
   font-weight: 600;
@@ -1570,12 +1654,12 @@
   opacity: 0.6;
 }
 .otc-cat-tabs button:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 .otc-cat-tabs button.active {
-  background: rgba(0,230,118,0.12);
-  border-color: rgba(0,230,118,0.4);
+  background: rgba(0, 230, 118, 0.12);
+  border-color: rgba(0, 230, 118, 0.4);
   color: #00e676;
 }
 
@@ -1591,15 +1675,22 @@
   gap: 5px;
   padding: 4px 9px;
   border-radius: 7px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--stroke, rgba(255,255,255,0.08));
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke, rgba(255, 255, 255, 0.08));
   font-size: 11.5px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.otc-cat-chip:hover { background: rgba(255,255,255,0.07); }
-.otc-cat-chip b { color: #fff; font-size: 11px; }
-.otc-cat-chip span { color: var(--muted, #a0a0a0); }
+.otc-cat-chip:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+.otc-cat-chip b {
+  color: #fff;
+  font-size: 11px;
+}
+.otc-cat-chip span {
+  color: var(--muted, #a0a0a0);
+}
 
 .otc-cat-dot {
   width: 7px;
@@ -1608,12 +1699,24 @@
   display: inline-block;
   flex-shrink: 0;
 }
-.otc-cat-dot[data-cat="CRYPTO"] { background: #f7931a; }
-.otc-cat-dot[data-cat="STOCK"] { background: #2A7BF6; }
-.otc-cat-dot[data-cat="FOREX"] { background: #00e676; }
-.otc-cat-dot[data-cat="COMMODITY"] { background: #cd7f32; }
-.otc-cat-dot[data-cat="INDEX"] { background: #9c27b0; }
-.otc-cat-dot[data-cat="OTC"] { background: #607d8b; }
+.otc-cat-dot[data-cat="CRYPTO"] {
+  background: #f7931a;
+}
+.otc-cat-dot[data-cat="STOCK"] {
+  background: #2a7bf6;
+}
+.otc-cat-dot[data-cat="FOREX"] {
+  background: #00e676;
+}
+.otc-cat-dot[data-cat="COMMODITY"] {
+  background: #cd7f32;
+}
+.otc-cat-dot[data-cat="INDEX"] {
+  background: #9c27b0;
+}
+.otc-cat-dot[data-cat="OTC"] {
+  background: #607d8b;
+}
 
 .otc-cat-badge {
   font-size: 10.5px;
@@ -1624,12 +1727,30 @@
   letter-spacing: 0.3px;
   white-space: nowrap;
 }
-.otc-cat-badge[data-cat="CRYPTO"] { background: rgba(247,147,26,0.15); color: #f7931a; }
-.otc-cat-badge[data-cat="STOCK"] { background: rgba(42,123,246,0.15); color: #5a9bff; }
-.otc-cat-badge[data-cat="FOREX"] { background: rgba(0,230,118,0.12); color: #00e676; }
-.otc-cat-badge[data-cat="COMMODITY"] { background: rgba(205,127,50,0.15); color: #cd7f32; }
-.otc-cat-badge[data-cat="INDEX"] { background: rgba(156,39,176,0.15); color: #ba68c8; }
-.otc-cat-badge[data-cat="OTC"] { background: rgba(96,125,139,0.15); color: #90a4ae; }
+.otc-cat-badge[data-cat="CRYPTO"] {
+  background: rgba(247, 147, 26, 0.15);
+  color: #f7931a;
+}
+.otc-cat-badge[data-cat="STOCK"] {
+  background: rgba(42, 123, 246, 0.15);
+  color: #5a9bff;
+}
+.otc-cat-badge[data-cat="FOREX"] {
+  background: rgba(0, 230, 118, 0.12);
+  color: #00e676;
+}
+.otc-cat-badge[data-cat="COMMODITY"] {
+  background: rgba(205, 127, 50, 0.15);
+  color: #cd7f32;
+}
+.otc-cat-badge[data-cat="INDEX"] {
+  background: rgba(156, 39, 176, 0.15);
+  color: #ba68c8;
+}
+.otc-cat-badge[data-cat="OTC"] {
+  background: rgba(96, 125, 139, 0.15);
+  color: #90a4ae;
+}
 
 .otc-icon-cell {
   width: 32px;
@@ -1654,7 +1775,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--muted, #a0a0a0);
   font-size: 9px;
   font-weight: 700;

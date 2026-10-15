@@ -12,18 +12,18 @@
  * The live feed arrives as Micro-JSON tuples and is parsed in useOtcFeed; the
  * trade overlays are built from the user's own trades in chart/tradeOverlays.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChartEngine } from '../../chart/ChartEngine';
-import { formatDateTime, formatPrice } from '../../chart/format';
-import { buildTradeOverlays } from '../../chart/tradeOverlays';
-import { useOtcFeed } from '../../hooks/useOtcFeed';
-import { useMyTrades } from '../../hooks/useMyTrades';
-import ChartToolbar from './ChartToolbar';
-import { CHART_THEME } from '../../chart/theme';
-import ChartTools, { type ChartType } from './ChartTools';
-import CandleCountdown from './CandleCountdown';
-import { useChartConfigStore } from '../../stores/chartConfigStore';
-import '../../styles/chart.css';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChartEngine } from "../../chart/ChartEngine";
+import { formatDateTime, formatPrice } from "../../chart/format";
+import { buildTradeOverlays } from "../../chart/tradeOverlays";
+import { useOtcFeed } from "../../hooks/useOtcFeed";
+import { useMyTrades } from "../../hooks/useMyTrades";
+import ChartToolbar from "./ChartToolbar";
+import { CHART_THEME } from "../../chart/theme";
+import ChartTools, { type ChartType } from "./ChartTools";
+import CandleCountdown from "./CandleCountdown";
+import { useChartConfigStore } from "../../stores/chartConfigStore";
+import "../../styles/chart.css";
 
 interface Props {
   symbol: string;
@@ -48,7 +48,7 @@ function timeframeToMs(tf: string): number {
   if (!m) return 60_000;
   const n = parseInt(m[1], 10);
   const unit = m[2];
-  return n * (unit === 's' ? 1000 : unit === 'm' ? 60_000 : 3_600_000);
+  return n * (unit === "s" ? 1000 : unit === "m" ? 60_000 : 3_600_000);
 }
 
 export default function CanvasChart({
@@ -57,7 +57,7 @@ export default function CanvasChart({
   assetName,
   onOpenMarket,
   onTimeframeChange,
-  chartType = 'candles',
+  chartType = "candles",
   onChartTypeChange,
   dedicatedSocket,
   onLivePrice,
@@ -77,7 +77,11 @@ export default function CanvasChart({
    *  dashed price line starts (pill width + COUNTDOWN_GAP_PX). */
   const timerRef = useRef<HTMLDivElement>(null);
 
-  const { candles, livePrice, status, loadOlder, serverTimeOffset } = useOtcFeed(symbol, timeframe, { dedicatedSocket });
+  const { candles, livePrice, status, loadOlder, serverTimeOffset } = useOtcFeed(
+    symbol,
+    timeframe,
+    { dedicatedSocket },
+  );
   const { trades } = useMyTrades();
   const bucketMs = timeframeToMs(timeframe);
 
@@ -85,7 +89,7 @@ export default function CanvasChart({
   // them glued to their candles through zoom/pan (rebuilt as candles shift).
   const overlays = useMemo(
     () => buildTradeOverlays(trades, candles, bucketMs, symbol),
-    [trades, candles, bucketMs, symbol]
+    [trades, candles, bucketMs, symbol],
   );
 
   useEffect(() => {
@@ -102,8 +106,8 @@ export default function CanvasChart({
         setReadout(
           info
             ? `O ${formatPrice(info.candle.open)}  H ${formatPrice(info.candle.high)}  ` +
-              `L ${formatPrice(info.candle.low)}  C ${formatPrice(info.candle.close)}  ·  ${formatDateTime(info.time)}`
-            : null
+                `L ${formatPrice(info.candle.low)}  C ${formatPrice(info.candle.close)}  ·  ${formatDateTime(info.time)}`
+            : null,
         ),
       // Infinite left-scroll: page older candles in, then release the latch.
       onNeedOlder: () => {
@@ -125,7 +129,8 @@ export default function CanvasChart({
     engineRef.current = engine;
     // Dev-only handle so the real browser can be inspected/verified without
     // guessing at canvas pixels. Stripped from production builds.
-    if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__nexaChartEngine = engine;
+    if (import.meta.env.DEV)
+      (window as unknown as Record<string, unknown>).__nexaChartEngine = engine;
 
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -146,7 +151,8 @@ export default function CanvasChart({
       ro.disconnect();
       engine.destroy();
       engineRef.current = null;
-      if (import.meta.env.DEV) delete (window as unknown as Record<string, unknown>).__nexaChartEngine;
+      if (import.meta.env.DEV)
+        delete (window as unknown as Record<string, unknown>).__nexaChartEngine;
     };
   }, []);
 
@@ -235,8 +241,12 @@ export default function CanvasChart({
         )}
 
         {readout && <div className="chart-crosshair-readout">{readout}</div>}
-        {status === 'loading' && !candles.length && <div className="chart-empty">Loading OTC candles…</div>}
-        {status === 'error' && !candles.length && <div className="chart-empty">Unable to load candles.</div>}
+        {status === "loading" && !candles.length && (
+          <div className="chart-empty">Loading OTC candles…</div>
+        )}
+        {status === "error" && !candles.length && (
+          <div className="chart-empty">Unable to load candles.</div>
+        )}
       </div>
     </div>
   );

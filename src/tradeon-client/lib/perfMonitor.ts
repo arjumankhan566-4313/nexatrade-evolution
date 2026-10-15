@@ -16,10 +16,10 @@
 
 const SAMPLE_RATE = 1; // 1 = 100% in dev; set to 0.1 for production
 const BATCH_INTERVAL = 5000; // flush every 5s
-const RUM_ENDPOINT = '/api/performance/rum';
+const RUM_ENDPOINT = "/api/performance/rum";
 
 type MetricPayload = {
-  panel: 'admin' | 'user';
+  panel: "admin" | "user";
   page: string;
   metrics: {
     ttfb?: number;
@@ -39,20 +39,20 @@ type MetricPayload = {
 
 let batch: MetricPayload[] = [];
 let flushTimer: ReturnType<typeof setInterval> | null = null;
-let panel: 'admin' | 'user' = 'user';
+let panel: "admin" | "user" = "user";
 let routeTransitionStart = 0;
-let lastRoute = '';
+let lastRoute = "";
 
 function getDeviceType(): string {
   const ua = navigator.userAgent;
-  if (/Mobi|Android/i.test(ua)) return 'mobile';
-  if (/Tablet|iPad/i.test(ua)) return 'tablet';
-  return 'desktop';
+  if (/Mobi|Android/i.test(ua)) return "mobile";
+  if (/Tablet|iPad/i.test(ua)) return "tablet";
+  return "desktop";
 }
 
 function getNetworkType(): string {
   const conn = (navigator as any).connection || (navigator as any).mozConnection;
-  return conn?.effectiveType || 'unknown';
+  return conn?.effectiveType || "unknown";
 }
 
 function shouldSample(): boolean {
@@ -65,17 +65,19 @@ function flush() {
   batch = [];
   try {
     if (navigator.sendBeacon) {
-      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
       navigator.sendBeacon(RUM_ENDPOINT, blob);
     } else {
       fetch(RUM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
         keepalive: true,
       }).catch(() => {});
     }
-  } catch { /* silent — monitoring must never break the app */ }
+  } catch {
+    /* silent — monitoring must never break the app */
+  }
 }
 
 function sendMetric(m: MetricPayload) {
@@ -84,7 +86,7 @@ function sendMetric(m: MetricPayload) {
 }
 
 // ── Initialize RUM for a panel ──
-export function initPerfMonitor(currentPanel: 'admin' | 'user') {
+export function initPerfMonitor(currentPanel: "admin" | "user") {
   panel = currentPanel;
   lastRoute = window.location.pathname;
 
@@ -92,13 +94,15 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
   flushTimer = setInterval(flush, BATCH_INTERVAL);
 
   // Flush on page unload
-  window.addEventListener('pagehide', flush);
+  window.addEventListener("pagehide", flush);
 
   // ── Navigation Timing (initial page load) ──
   if (shouldSample()) {
-    window.addEventListener('load', () => {
+    window.addEventListener("load", () => {
       setTimeout(() => {
-        const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+        const navEntries = performance.getEntriesByType(
+          "navigation",
+        ) as PerformanceNavigationTiming[];
         if (navEntries.length) {
           const nav = navEntries[0];
           const ttfb = nav.responseStart - nav.requestStart;
@@ -123,16 +127,20 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
   let lcpValue = 0;
   const lcpObserver = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (entry.entryType === 'largest-contentful-paint') {
+      if (entry.entryType === "largest-contentful-paint") {
         lcpValue = Math.round(entry.startTime);
       }
     }
   });
-  try { lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true }); } catch {}
+  try {
+    lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
+  } catch {
+    /* LCP not supported by this browser */
+  }
 
   const fcpObserver = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
+      if (entry.entryType === "paint" && entry.name === "first-contentful-paint") {
         if (shouldSample()) {
           sendMetric({
             panel,
@@ -148,10 +156,14 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
       }
     }
   });
-  try { fcpObserver.observe({ type: 'paint', buffered: true }); } catch {}
+  try {
+    fcpObserver.observe({ type: "paint", buffered: true });
+  } catch {
+    /* paint timing not supported by this browser */
+  }
 
   // LCP final value on page hide
-  window.addEventListener('pagehide', () => {
+  window.addEventListener("pagehide", () => {
     if (lcpValue > 0 && shouldSample()) {
       sendMetric({
         panel,
@@ -174,20 +186,28 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
       }
     }
   });
-  try { clsObserver.observe({ type: 'layout-shift', buffered: true }); } catch {}
+  try {
+    clsObserver.observe({ type: "layout-shift", buffered: true });
+  } catch {
+    /* layout-shift not supported by this browser */
+  }
 
   // ── Interaction (INP) ──
   let maxInp = 0;
   const inpObserver = new PerformanceObserver((list) => {
     for (const entry of list.getEntries() as any) {
-      const duration = entry.duration || (entry.processingEnd - entry.startTime);
+      const duration = entry.duration || entry.processingEnd - entry.startTime;
       if (duration > maxInp) maxInp = duration;
     }
   });
-  try { inpObserver.observe({ type: 'event', buffered: true }); } catch {}
+  try {
+    inpObserver.observe({ type: "event", buffered: true });
+  } catch {
+    /* event timing not supported by this browser */
+  }
 
   // Send CLS + INP on pagehide
-  window.addEventListener('pagehide', () => {
+  window.addEventListener("pagehide", () => {
     if ((clsValue > 0 || maxInp > 0) && shouldSample()) {
       sendMetric({
         panel,
@@ -213,7 +233,9 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
     routeTransitionStart = performance.now();
     return origReplaceState.apply(history, args);
   };
-  window.addEventListener('popstate', () => { routeTransitionStart = performance.now(); });
+  window.addEventListener("popstate", () => {
+    routeTransitionStart = performance.now();
+  });
 
   // Observe DOM mutations after route change to measure transition time
   let transitionSent = false;
@@ -233,7 +255,10 @@ export function initPerfMonitor(currentPanel: 'admin' | 'user') {
             },
           });
         }
-        setTimeout(() => { transitionSent = false; routeTransitionStart = 0; }, 500);
+        setTimeout(() => {
+          transitionSent = false;
+          routeTransitionStart = 0;
+        }, 500);
       }
     }
   });
@@ -255,7 +280,8 @@ export function startFpsMonitor() {
     if (!fpsActive) return;
     fpsFrames++;
     const elapsed = performance.now() - fpsStart;
-    if (elapsed >= 2000) { // sample every 2s
+    if (elapsed >= 2000) {
+      // sample every 2s
       const fps = Math.round((fpsFrames / elapsed) * 1000);
       if (shouldSample()) {
         sendMetric({

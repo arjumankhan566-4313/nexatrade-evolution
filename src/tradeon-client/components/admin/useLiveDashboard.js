@@ -1,7 +1,6 @@
-
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { api } from '@/tradeon-client/lib/apiClient';
-import { useLiveEvents } from '@/tradeon-client/lib/realtimeClient';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "@/tradeon-client/lib/apiClient";
+import { useLiveEvents } from "@/tradeon-client/lib/realtimeClient";
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -24,21 +23,21 @@ const REFRESH_MS = 15000;
 
 /* Stable reference — must not be recreated per render (useLiveEvents
    resubscribes its SSE connection whenever `topics` changes identity). */
-const ADMIN_TOPICS = ['admin', 'finance', 'payments', 'settings', 'assets', 'maintenance'];
+const ADMIN_TOPICS = ["admin", "finance", "payments", "settings", "assets", "maintenance"];
 
 export function useLiveDashboard() {
-  const [range, setRange] = useState('today');
+  const [range, setRange] = useState("today");
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [candles, setCandles] = useState({}); // symbol -> real OHLC candles
-  const [feed, setFeed] = useState('loading'); // 'live' | 'offline' | 'loading'
+  const [feed, setFeed] = useState("loading"); // 'live' | 'offline' | 'loading'
 
   const rangeRef = useRef(range);
   rangeRef.current = range;
 
   const load = useCallback(async () => {
     try {
-      const d = await api('/api/admin/dashboard');
+      const d = await api("/api/admin/dashboard");
       setData(d);
       setError(null);
     } catch (e) {
@@ -55,22 +54,24 @@ export function useLiveDashboard() {
 
   /* SSE — refetch instantly whenever something consequential happens. */
   useLiveEvents({
-    scope: 'admin',
+    scope: "admin",
     topics: ADMIN_TOPICS,
     onEvent: (e) => {
-      if (e && e.topic && e.topic !== 'ping' && e.topic !== 'hello') load();
+      if (e && e.topic && e.topic !== "ping" && e.topic !== "hello") load();
     },
   });
 
   /* Real market candles for the trading-activity chart (on-demand). */
   const loadCandles = useCallback(async (symbol) => {
     try {
-      const d = await api(`/api/market/candles?symbol=${encodeURIComponent(symbol)}&interval=1m&limit=40`);
-      const feedStatus = d.feed === 'LIVE' ? 'live' : 'offline';
+      const d = await api(
+        `/api/market/candles?symbol=${encodeURIComponent(symbol)}&interval=1m&limit=40`,
+      );
+      const feedStatus = d.feed === "LIVE" ? "live" : "offline";
       setFeed(feedStatus);
       setCandles((prev) => ({ ...prev, [symbol]: d.candles || [] }));
     } catch {
-      setFeed('offline');
+      setFeed("offline");
       setCandles((prev) => ({ ...prev, [symbol]: [] }));
     }
   }, []);

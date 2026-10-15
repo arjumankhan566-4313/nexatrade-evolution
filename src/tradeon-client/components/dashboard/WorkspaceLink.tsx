@@ -8,7 +8,7 @@
  * Vite Fast Refresh boundary, so editing it invalidated this module and forced a
  * full reload of every importer instead of a hot update.
  */
-import { Link as RouterLink } from '@/tradeon-client/compat/react-router-dom';
+import { Link as RouterLink } from "@/tradeon-client/compat/react-router-dom";
 
 export default function Link({ href, children, className, style, ...rest }) {
   return (

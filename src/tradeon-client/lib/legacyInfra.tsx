@@ -10,35 +10,42 @@
  *   legacy `@/components/dashboard/SessionProvider` → useSession
  *   legacy `@/components/dashboard/WorkspaceLink`   → Link
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { io as ioClient, type Socket as SIOSocket } from 'socket.io-client';
-import { useAuthStore } from '../stores/authStore';
-import { lpToast } from './legacy';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { io as ioClient, type Socket as SIOSocket } from "socket.io-client";
+import { useAuthStore } from "../stores/authStore";
+import { lpToast } from "./legacy";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    apiClient shim  (legacy src/lib/apiClient.js)
    ═══════════════════════════════════════════════════════════════════════════ */
 export function deviceFingerprint(): string {
-  return '';
+  return "";
 }
 
 /** Tiny fetch wrapper — always sends cookies, throws readable errors (1:1). */
-export async function api<T = any>(path: string, { method = 'GET', body, signal }: { method?: string; body?: any; signal?: AbortSignal } = {}): Promise<T> {
+export async function api<T = any>(
+  path: string,
+  { method = "GET", body, signal }: { method?: string; body?: any; signal?: AbortSignal } = {},
+): Promise<T> {
   const headers: Record<string, string> = {};
-  if (body) headers['content-type'] = 'application/json';
+  if (body) headers["content-type"] = "application/json";
   const fp = deviceFingerprint();
-  if (fp) headers['x-nexa-device'] = fp;
+  if (fp) headers["x-nexa-device"] = fp;
 
   const res = await fetch(path, {
     method,
-    credentials: 'same-origin',
-    cache: 'no-store',
+    credentials: "same-origin",
+    cache: "no-store",
     signal,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
   let data: any = null;
-  try { data = await res.json(); } catch { data = null; }
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
   if (!res.ok) {
     const err: any = new Error(data?.error || `Request failed (${res.status})`);
     err.status = res.status;
@@ -56,10 +63,13 @@ export const money = (n: any, digits = 2): string =>
   `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 
 export const fmtPrice = (n: any, digits = 2): string =>
-  Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  Number(n || 0).toLocaleString(undefined, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
 
 export function timeAgo(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return "—";
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
   if (diff < 60) return `${Math.max(0, Math.floor(diff))}s ago`;
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
@@ -68,7 +78,7 @@ export function timeAgo(iso?: string): string {
 }
 
 export const fmtDate = (iso?: string): string =>
-  iso ? new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+  iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "—";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    useAlertStore shim  (legacy src/lib/useAlertStore.js)
@@ -86,19 +96,32 @@ interface ModalSpec {
 let _modal: ModalSpec | null = null;
 const _modalListeners = new Set<(m: ModalSpec | null) => void>();
 
-export function pushModal(spec: ModalSpec) { _modal = spec; _modalListeners.forEach((fn) => fn(_modal)); }
-export function dismissModal() { _modal = null; _modalListeners.forEach((fn) => fn(null)); }
-export function getModal() { return _modal; }
+export function pushModal(spec: ModalSpec) {
+  _modal = spec;
+  _modalListeners.forEach((fn) => fn(_modal));
+}
+export function dismissModal() {
+  _modal = null;
+  _modalListeners.forEach((fn) => fn(null));
+}
+export function getModal() {
+  return _modal;
+}
 export function subscribeModal(fn: (m: ModalSpec | null) => void) {
   _modalListeners.add(fn);
-  return () => { _modalListeners.delete(fn); };
+  return () => {
+    _modalListeners.delete(fn);
+  };
 }
 
 export const alert = {
-  success: (text: string, opts?: { title?: string }) => lpToast(opts?.title || 'Success', text, 'success'),
-  info: (text: string, opts?: { title?: string }) => lpToast(opts?.title || 'Info', text, 'info'),
-  warning: (text: string, opts?: { title?: string }) => lpToast(opts?.title || 'Warning', text, 'error'),
-  critical: (text: string, opts?: { title?: string }) => lpToast(opts?.title || 'Critical', text, 'error'),
+  success: (text: string, opts?: { title?: string }) =>
+    lpToast(opts?.title || "Success", text, "success"),
+  info: (text: string, opts?: { title?: string }) => lpToast(opts?.title || "Info", text, "info"),
+  warning: (text: string, opts?: { title?: string }) =>
+    lpToast(opts?.title || "Warning", text, "error"),
+  critical: (text: string, opts?: { title?: string }) =>
+    lpToast(opts?.title || "Critical", text, "error"),
   modal: (spec: ModalSpec) => pushModal(spec),
 };
 
@@ -114,57 +137,79 @@ let _socket: SIOSocket | null = null;
 
 function getSocket(): SIOSocket {
   if (!_socket) {
-    _socket = ioClient({ transports: ['websocket', 'polling'], withCredentials: true });
+    _socket = ioClient({ transports: ["websocket", "polling"], withCredentials: true });
   }
   return _socket;
 }
 
-export function useLiveEvents(opts: { onEvent?: (e: any) => void; scope?: string; topics?: string[] }): { status: 'live' | 'reconnecting' | 'connecting' } {
-  const [status, setStatus] = useState<'live' | 'reconnecting' | 'connecting'>('connecting');
+export function useLiveEvents(opts: {
+  onEvent?: (e: any) => void;
+  scope?: string;
+  topics?: string[];
+}): { status: "live" | "reconnecting" | "connecting" } {
+  const [status, setStatus] = useState<"live" | "reconnecting" | "connecting">("connecting");
   const onEventRef = useRef(opts.onEvent);
   onEventRef.current = opts.onEvent;
 
-  const channels = opts.topics || ['settings', 'assets', 'tiers', 'tournaments', 'leaderboard',
-    'maintenance', 'balance', 'trade', 'kyc', 'notification', 'session', 'copy', 'tier',
-    'finance', 'payments', 'admin', 'affiliate_application'];
-  const channelKey = channels.slice().sort().join(',');
+  const channels = opts.topics || [
+    "settings",
+    "assets",
+    "tiers",
+    "tournaments",
+    "leaderboard",
+    "maintenance",
+    "balance",
+    "trade",
+    "kyc",
+    "notification",
+    "session",
+    "copy",
+    "tier",
+    "finance",
+    "payments",
+    "admin",
+    "affiliate_application",
+  ];
+  const channelKey = channels.slice().sort().join(",");
 
   useEffect(() => {
     const socket = getSocket();
     const joined: string[] = [];
 
     const handleChannel = (channel: string) => (payload: any) => {
-      onEventRef.current?.(payload?.topic === channel && payload?.payload !== undefined
-        ? payload
-        : { topic: channel, payload });
+      onEventRef.current?.(
+        payload?.topic === channel && payload?.payload !== undefined
+          ? payload
+          : { topic: channel, payload },
+      );
     };
 
     const handlers: Record<string, (payload: any) => void> = {};
     for (const ch of channels) {
       handlers[ch] = handleChannel(ch);
       socket.on(`rt:${ch}`, handlers[ch]);
-      socket.emit('join:rt', ch);
+      socket.emit("join:rt", ch);
       joined.push(ch);
     }
 
     const onConnect = () => {
       // Re-join rooms after reconnect
-      for (const ch of joined) socket.emit('join:rt', ch);
-      setStatus('live');
+      for (const ch of joined) socket.emit("join:rt", ch);
+      setStatus("live");
     };
-    const onDisconnect = () => setStatus('reconnecting');
-    const onConnectError = () => setStatus('reconnecting');
+    const onDisconnect = () => setStatus("reconnecting");
+    const onConnectError = () => setStatus("reconnecting");
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('connect_error', onConnectError);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
 
-    if (socket.connected) setStatus('live');
+    if (socket.connected) setStatus("live");
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('connect_error', onConnectError);
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
       for (const ch of joined) {
         socket.off(`rt:${ch}`, handlers[ch]);
       }
@@ -181,7 +226,9 @@ export function useLiveEvents(opts: { onEvent?: (e: any) => void; scope?: string
    ═══════════════════════════════════════════════════════════════════════════ */
 export function useSession() {
   const user = useAuthStore((s) => s.user);
-  const refresh = useCallback(async () => { await useAuthStore.getState().refresh(); }, []);
+  const refresh = useCallback(async () => {
+    await useAuthStore.getState().refresh();
+  }, []);
   return { user, refresh, kyc: null, notifications: [], loading: false, initError: null };
 }
 
@@ -190,5 +237,3 @@ export function useSession() {
    `components/dashboard/LegacyModalHost.tsx`.  A module that mixes components
    with plain helpers is not a Vite Fast Refresh boundary, so keeping them here
    made every edit force a full reload of all importers. */
-
-

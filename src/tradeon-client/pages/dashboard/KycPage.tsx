@@ -1,36 +1,44 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronDown, CheckCircle2, FileImage } from 'lucide-react';
-import { useSession } from '@/tradeon-client/components/dashboard/SessionProvider';
-import Stepper from '@/tradeon-client/components/kyc/Stepper';
-import { COUNTRIES, DOC_LABELS, getCountry } from '@/tradeon-client/lib/countries';
-import { api, fmtDate } from '@/tradeon-client/lib/apiClient';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, ChevronDown, CheckCircle2, FileImage } from "lucide-react";
+import { useSession } from "@/tradeon-client/components/dashboard/SessionProvider";
+import Stepper from "@/tradeon-client/components/kyc/Stepper";
+import { COUNTRIES, DOC_LABELS, getCountry } from "@/tradeon-client/lib/countries";
+import { api, fmtDate } from "@/tradeon-client/lib/apiClient";
 import {
-  fileToDataUrl, drawToCanvas, detectFace, matchFaces, pickChallenges, runChallenge, scoreLiveness,
-} from '@/tradeon-client/lib/biometrics';
+  fileToDataUrl,
+  drawToCanvas,
+  detectFace,
+  matchFaces,
+  pickChallenges,
+  runChallenge,
+  scoreLiveness,
+} from "@/tradeon-client/lib/biometrics";
 
-const STEPS = ['Country & document', 'Upload ID', 'Live face check', 'Review & submit'];
+const STEPS = ["Country & document", "Upload ID", "Live face check", "Review & submit"];
 
 const STATUS_UI = {
-  NONE: ['badge', 'Not started'],
-  PENDING: ['badge badge-warn', 'Pending'],
-  UNDER_REVIEW: ['badge badge-warn', 'Under review'],
-  VERIFIED: ['badge badge-up', 'Verified'],
-  REJECTED: ['badge badge-down', 'Rejected'],
+  NONE: ["badge", "Not started"],
+  PENDING: ["badge badge-warn", "Pending"],
+  UNDER_REVIEW: ["badge badge-warn", "Under review"],
+  VERIFIED: ["badge badge-up", "Verified"],
+  REJECTED: ["badge badge-down", "Rejected"],
 };
 
 /* Flag from ISO 3166-1 alpha-2 → regional-indicator flag glyph */
 const flagFor = (code) => {
-  if (!code || code === 'OTHER' || code.length !== 2) return '🌐';
-  return code.toUpperCase().replace(/./g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
+  if (!code || code === "OTHER" || code.length !== 2) return "🌐";
+  return code
+    .toUpperCase()
+    .replace(/./g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
 };
 
 /* Spec §6.7 — custom searchable combobox (replaces the native <select>) */
 function SearchSelect({ value, onChange, options, placeholder, disabled, renderLabel }) {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -38,8 +46,8 @@ function SearchSelect({ value, onChange, options, placeholder, disabled, renderL
     const onDoc = (e) => {
       if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
     };
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
   const selected = options.find((o) => o.value === value);
@@ -52,12 +60,20 @@ function SearchSelect({ value, onChange, options, placeholder, disabled, renderL
     <div className="combo" ref={rootRef}>
       <button
         type="button"
-        className={`combo-trigger ${open ? 'open' : ''}`}
+        className={`combo-trigger ${open ? "open" : ""}`}
         disabled={disabled}
-        onClick={() => { setOpen((v) => !v); setQuery(''); }}
+        onClick={() => {
+          setOpen((v) => !v);
+          setQuery("");
+        }}
       >
-        <span className={selected ? '' : 'combo-ph'}>{selected ? (renderLabel ? renderLabel(selected) : selected.label) : placeholder}</span>
-        <span className={`combo-chev ${open ? 'rot' : ''}`} style={{ display: 'grid', placeItems: 'center' }}>
+        <span className={selected ? "" : "combo-ph"}>
+          {selected ? (renderLabel ? renderLabel(selected) : selected.label) : placeholder}
+        </span>
+        <span
+          className={`combo-chev ${open ? "rot" : ""}`}
+          style={{ display: "grid", placeItems: "center" }}
+        >
           <ChevronDown size={15} />
         </span>
       </button>
@@ -65,7 +81,12 @@ function SearchSelect({ value, onChange, options, placeholder, disabled, renderL
         <div className="combo-menu">
           <div className="combo-search">
             <Search size={14} />
-            <input autoFocus placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input
+              autoFocus
+              placeholder="Search…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </div>
           <div className="combo-list">
             {filtered.length === 0 && <div className="combo-empty">No match</div>}
@@ -73,8 +94,11 @@ function SearchSelect({ value, onChange, options, placeholder, disabled, renderL
               <button
                 type="button"
                 key={o.value}
-                className={`combo-opt ${o.value === value ? 'sel' : ''}`}
-                onClick={() => { onChange(o.value); setOpen(false); }}
+                className={`combo-opt ${o.value === value ? "sel" : ""}`}
+                onClick={() => {
+                  onChange(o.value);
+                  setOpen(false);
+                }}
               >
                 {renderLabel ? renderLabel(o) : o.label}
               </button>
@@ -115,13 +139,18 @@ export default function KycPage() {
   const { user, kyc, refresh } = useSession();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
-    country: '', docType: '', docNumber: '', fullName: '', dateOfBirth: '', address: '',
+    country: "",
+    docType: "",
+    docNumber: "",
+    fullName: "",
+    dateOfBirth: "",
+    address: "",
   });
-  const [docFront, setDocFront] = useState('');
-  const [docBack, setDocBack] = useState('');
-  const [selfie, setSelfie] = useState('');
+  const [docFront, setDocFront] = useState("");
+  const [docBack, setDocBack] = useState("");
+  const [selfie, setSelfie] = useState("");
   const [biometrics, setBiometrics] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -133,17 +162,17 @@ export default function KycPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const status = user?.kycStatus || 'NONE';
+  const status = user?.kycStatus || "NONE";
   const [badgeClass, badgeText] = STATUS_UI[status] || STATUS_UI.NONE;
-  const locked = ['UNDER_REVIEW', 'VERIFIED'].includes(status) || submitted;
+  const locked = ["UNDER_REVIEW", "VERIFIED"].includes(status) || submitted;
 
   const uploadDoc = (side) => async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setError('');
+    setError("");
     try {
       const dataUrl = await fileToDataUrl(file, 1280, 0.85);
-      if (side === 'front') setDocFront(dataUrl);
+      if (side === "front") setDocFront(dataUrl);
       else setDocBack(dataUrl);
     } catch (err) {
       setError(err.message);
@@ -152,10 +181,10 @@ export default function KycPage() {
 
   const submit = async () => {
     setBusy(true);
-    setError('');
+    setError("");
     try {
-      await api('/api/kyc', {
-        method: 'POST',
+      await api("/api/kyc", {
+        method: "POST",
         body: {
           ...form,
           docFront,
@@ -188,24 +217,38 @@ export default function KycPage() {
           <h1 style={{ margin: 0, fontSize: 22 }}>Identity verification</h1>
           <span className={badgeClass}>{badgeText}</span>
         </div>
-        {status === 'VERIFIED' ? (
+        {status === "VERIFIED" ? (
           <div className="alert alert-ok">
-            <CheckCircle2 size={16} style={{ verticalAlign: '-3px', marginRight: 6 }} />
+            <CheckCircle2 size={16} style={{ verticalAlign: "-3px", marginRight: 6 }} />
             Your identity is verified. Real-money trading and withdrawals are unlocked.
           </div>
         ) : (
           <div className="alert alert-warn">
-            Your documents are in the compliance queue. Reviews are usually completed within a few hours.
+            Your documents are in the compliance queue. Reviews are usually completed within a few
+            hours.
           </div>
         )}
         {kyc && (
           <div className="scores">
-            <div><span>Face match</span><strong>{kyc.faceMatchScore}%</strong></div>
-            <div><span>Liveness</span><strong>{kyc.livenessScore}%</strong></div>
-            <div><span>Submitted</span><strong>{fmtDate(kyc.createdAt)}</strong></div>
+            <div>
+              <span>Face match</span>
+              <strong>{kyc.faceMatchScore}%</strong>
+            </div>
+            <div>
+              <span>Liveness</span>
+              <strong>{kyc.livenessScore}%</strong>
+            </div>
+            <div>
+              <span>Submitted</span>
+              <strong>{fmtDate(kyc.createdAt)}</strong>
+            </div>
           </div>
         )}
-        {kyc?.reviewerNote && <p className="muted" style={{ marginTop: 14 }}>Reviewer note: {kyc.reviewerNote}</p>}
+        {kyc?.reviewerNote && (
+          <p className="muted" style={{ marginTop: 14 }}>
+            Reviewer note: {kyc.reviewerNote}
+          </p>
+        )}
         <style>{`
           .scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 20px; }
           .scores div { padding: 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--stroke); }
@@ -218,20 +261,22 @@ export default function KycPage() {
 
   return (
     <div className="kyc">
-      <header className="row-between" style={{ marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
+      <header className="row-between" style={{ marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
         <div>
           <h1>Identity verification</h1>
-          <p className="muted">Country-specific documents, a live face check and a manual compliance review.</p>
+          <p className="muted">
+            Country-specific documents, a live face check and a manual compliance review.
+          </p>
         </div>
         <span className={badgeClass}>{badgeText}</span>
       </header>
 
-      <div style={{ marginBottom: 18, overflowX: 'auto' }}>
+      <div style={{ marginBottom: 18, overflowX: "auto" }}>
         <Stepper steps={STEPS} currentStep={step + 1} />
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
-      {status === 'REJECTED' && kyc?.reviewerNote && (
+      {status === "REJECTED" && kyc?.reviewerNote && (
         <div className="alert alert-warn">Previous attempt rejected: {kyc.reviewerNote}</div>
       )}
 
@@ -247,14 +292,19 @@ export default function KycPage() {
           {step === 0 && (
             <>
               <h3>Where are you resident?</h3>
-              <p className="muted small">Accepted documents change per country — pick yours to see the exact requirements.</p>
+              <p className="muted small">
+                Accepted documents change per country — pick yours to see the exact requirements.
+              </p>
               <div className="grid2">
                 <div className="field">
                   <label>Country</label>
                   <SearchSelect
                     value={form.country}
-                    onChange={(v) => setForm({ ...form, country: v, docType: '' })}
-                    options={COUNTRIES.map((c) => ({ value: c.code, label: `${flagFor(c.code)} ${c.name}` }))}
+                    onChange={(v) => setForm({ ...form, country: v, docType: "" })}
+                    options={COUNTRIES.map((c) => ({
+                      value: c.code,
+                      label: `${flagFor(c.code)} ${c.name}`,
+                    }))}
                     placeholder="Search country…"
                   />
                 </div>
@@ -264,36 +314,67 @@ export default function KycPage() {
                     value={form.docType}
                     onChange={(v) => setForm({ ...form, docType: v })}
                     disabled={!country}
-                    options={(country?.docs || []).map((d) => ({ value: d, label: DOC_LABELS[d] || d }))}
-                    placeholder={country ? 'Select document…' : 'Select a country first'}
+                    options={(country?.docs || []).map((d) => ({
+                      value: d,
+                      label: DOC_LABELS[d] || d,
+                    }))}
+                    placeholder={country ? "Select document…" : "Select a country first"}
                   />
                 </div>
                 <div className="field">
                   <label>Full legal name (as printed on the document)</label>
-                  <input className="input" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
+                  <input
+                    className="input"
+                    value={form.fullName}
+                    onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                  />
                 </div>
                 <div className="field">
                   <label>Date of birth</label>
-                  <input className="input" type="date" value={form.dateOfBirth} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} />
+                  <input
+                    className="input"
+                    type="date"
+                    value={form.dateOfBirth}
+                    onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+                  />
                 </div>
                 <div className="field">
                   <label>Document number</label>
-                  <input className="input mono" value={form.docNumber} onChange={(e) => setForm({ ...form, docNumber: e.target.value })} placeholder="e.g. 1990123456789" />
+                  <input
+                    className="input mono"
+                    value={form.docNumber}
+                    onChange={(e) => setForm({ ...form, docNumber: e.target.value })}
+                    placeholder="e.g. 1990123456789"
+                  />
                 </div>
                 <div className="field">
                   <label>Residential address</label>
-                  <input className="input" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, city, postcode" />
+                  <input
+                    className="input"
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    placeholder="Street, city, postcode"
+                  />
                 </div>
               </div>
               {country && (
                 <div className="alert alert-info">
-                  <strong>{country.name}</strong> requires: {country.docs.map((d) => DOC_LABELS[d] || d).join(' · ')}
-                  {country.backRequired ? ' — both sides of the document.' : ' — front side is sufficient.'}
+                  <strong>{country.name}</strong> requires:{" "}
+                  {country.docs.map((d) => DOC_LABELS[d] || d).join(" · ")}
+                  {country.backRequired
+                    ? " — both sides of the document."
+                    : " — front side is sufficient."}
                 </div>
               )}
               <button
                 className="btn btn-gold"
-                disabled={!form.country || !form.docType || !form.fullName || !form.dateOfBirth || !form.docNumber}
+                disabled={
+                  !form.country ||
+                  !form.docType ||
+                  !form.fullName ||
+                  !form.dateOfBirth ||
+                  !form.docNumber
+                }
                 onClick={() => setStep(1)}
               >
                 Continue →
@@ -303,20 +384,33 @@ export default function KycPage() {
 
           {step === 1 && (
             <>
-              <h3>Upload your {DOC_LABELS[form.docType] || 'document'}</h3>
-              <p className="muted small">Clear, uncropped photos. All four corners visible, no glare on the portrait.</p>
+              <h3>Upload your {DOC_LABELS[form.docType] || "document"}</h3>
+              <p className="muted small">
+                Clear, uncropped photos. All four corners visible, no glare on the portrait.
+              </p>
               <div className="uploads">
-                <UploadTile label="Front side" required value={docFront} onChange={uploadDoc('front')} />
                 <UploadTile
-                  label={`Back side${country?.backRequired ? '' : ' (optional)'}`}
+                  label="Front side"
+                  required
+                  value={docFront}
+                  onChange={uploadDoc("front")}
+                />
+                <UploadTile
+                  label={`Back side${country?.backRequired ? "" : " (optional)"}`}
                   required={country?.backRequired}
                   value={docBack}
-                  onChange={uploadDoc('back')}
+                  onChange={uploadDoc("back")}
                 />
               </div>
               <div className="row" style={{ gap: 10 }}>
-                <button className="btn btn-ghost" onClick={() => setStep(0)}>← Back</button>
-                <button className="btn btn-gold" disabled={!docFront || (country?.backRequired && !docBack)} onClick={() => setStep(2)}>
+                <button className="btn btn-ghost" onClick={() => setStep(0)}>
+                  ← Back
+                </button>
+                <button
+                  className="btn btn-gold"
+                  disabled={!docFront || (country?.backRequired && !docBack)}
+                  onClick={() => setStep(2)}
+                >
                   Continue to face check →
                 </button>
               </div>
@@ -361,18 +455,28 @@ export default function KycPage() {
                   <Row label="Number" value={form.docNumber} />
                   <Row label="Name" value={form.fullName} />
                   <Row label="Date of birth" value={form.dateOfBirth} />
-                  <Row label="Face match" value={`${biometrics?.faceMatchScore ?? 0}%`} tone={(biometrics?.faceMatchScore ?? 0) >= 55 ? 'up' : 'warn'} />
-                  <Row label="Liveness" value={`${biometrics?.livenessScore ?? 0}%`} tone={(biometrics?.livenessScore ?? 0) >= 60 ? 'up' : 'warn'} />
+                  <Row
+                    label="Face match"
+                    value={`${biometrics?.faceMatchScore ?? 0}%`}
+                    tone={(biometrics?.faceMatchScore ?? 0) >= 55 ? "up" : "warn"}
+                  />
+                  <Row
+                    label="Liveness"
+                    value={`${biometrics?.livenessScore ?? 0}%`}
+                    tone={(biometrics?.livenessScore ?? 0) >= 60 ? "up" : "warn"}
+                  />
                 </div>
               </div>
               <div className="alert alert-info small">
-                Submitting sends your case to the compliance queue, where an officer compares your ID photo and live
-                capture side-by-side before approving.
+                Submitting sends your case to the compliance queue, where an officer compares your
+                ID photo and live capture side-by-side before approving.
               </div>
               <div className="row" style={{ gap: 10 }}>
-                <button className="btn btn-ghost" onClick={() => setStep(2)}>← Retake face check</button>
+                <button className="btn btn-ghost" onClick={() => setStep(2)}>
+                  ← Retake face check
+                </button>
                 <button className="btn btn-gold" disabled={busy} onClick={submit}>
-                  {busy ? <span className="spinner" /> : 'Submit for verification'}
+                  {busy ? <span className="spinner" /> : "Submit for verification"}
                 </button>
               </div>
             </>
@@ -416,7 +520,9 @@ function Row({ label, value, tone }) {
   return (
     <div className="rw">
       <span>{label}</span>
-      <strong className={tone === 'up' ? 'up' : tone === 'warn' ? 'badge badge-warn' : ''}>{value}</strong>
+      <strong className={tone === "up" ? "up" : tone === "warn" ? "badge badge-warn" : ""}>
+        {value}
+      </strong>
       <style>{`
         .rw { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--stroke); font-size: 13.5px; }
         .rw span { color: var(--muted); }
@@ -427,11 +533,20 @@ function Row({ label, value, tone }) {
 
 function UploadTile({ label, value, onChange, required }) {
   return (
-    <label className={`tile ${value ? 'filled' : ''}`}>
+    <label className={`tile ${value ? "filled" : ""}`}>
       <input type="file" accept="image/*" capture="environment" onChange={onChange} hidden />
-      {value ? <img src={value} alt={label} /> : <span className="tile-icon"><FileImage size={30} style={{ color: 'var(--gold-1)' }} /></span>}
-      <span className="tile-label">{label}{required ? ' *' : ''}</span>
-      <span className="tile-hint">{value ? 'Tap to replace' : 'Tap to upload or capture'}</span>
+      {value ? (
+        <img src={value} alt={label} />
+      ) : (
+        <span className="tile-icon">
+          <FileImage size={30} style={{ color: "var(--gold-1)" }} />
+        </span>
+      )}
+      <span className="tile-label">
+        {label}
+        {required ? " *" : ""}
+      </span>
+      <span className="tile-hint">{value ? "Tap to replace" : "Tap to upload or capture"}</span>
       <style>{`
         .tile {
           display: grid; place-items: center; gap: 8px; padding: 22px; border-radius: 14px; cursor: pointer;
@@ -454,14 +569,14 @@ function UploadTile({ label, value, onChange, required }) {
 function LivenessStep({ docFront, onDone, onBack }) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const [camera, setCamera] = useState('idle');
-  const [prompt, setPrompt] = useState('');
-  const [hint, setHint] = useState('');
+  const [camera, setCamera] = useState("idle");
+  const [prompt, setPrompt] = useState("");
+  const [hint, setHint] = useState("");
   const [progress, setProgress] = useState(0);
   const [faceOk, setFaceOk] = useState(false);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -469,11 +584,11 @@ function LivenessStep({ docFront, onDone, onBack }) {
   }, []);
 
   const startCamera = useCallback(async () => {
-    setError('');
-    setCamera('starting');
+    setError("");
+    setCamera("starting");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -481,13 +596,13 @@ function LivenessStep({ docFront, onDone, onBack }) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
-      setCamera('ready');
+      setCamera("ready");
     } catch (err) {
-      setCamera('error');
+      setCamera("error");
       setError(
-        err?.name === 'NotAllowedError'
-          ? 'Camera permission was denied. Allow camera access in your browser and try again.'
-          : 'No camera could be started on this device.'
+        err?.name === "NotAllowedError"
+          ? "Camera permission was denied. Allow camera access in your browser and try again."
+          : "No camera could be started on this device.",
       );
     }
   }, []);
@@ -496,27 +611,28 @@ function LivenessStep({ docFront, onDone, onBack }) {
 
   // Idle face framing feedback
   useEffect(() => {
-    if (camera !== 'ready' || running) return undefined;
+    if (camera !== "ready" || running) return undefined;
     let alive = true;
     const loop = async () => {
       while (alive) {
         if (videoRef.current?.readyState >= 2) {
-          // eslint-disable-next-line no-await-in-loop
           const face = await detectFace(videoRef.current, 200);
           if (alive) setFaceOk(Boolean(face));
         }
-        // eslint-disable-next-line no-await-in-loop
+
         await new Promise((r) => setTimeout(r, 500));
       }
     };
     loop();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [camera, running]);
 
   const run = async () => {
     if (!videoRef.current) return;
     setRunning(true);
-    setError('');
+    setError("");
     setResult(null);
     try {
       const challenges = pickChallenges(3);
@@ -525,19 +641,22 @@ function LivenessStep({ docFront, onDone, onBack }) {
         setPrompt(challenge.prompt);
         setHint(challenge.hint);
         setProgress(0);
-        // eslint-disable-next-line no-await-in-loop
+
         const r = await runChallenge(videoRef.current, challenge, {
           durationMs: 2800,
-          onProgress: (p, face) => { setProgress(p); setFaceOk(Boolean(face)); },
+          onProgress: (p, face) => {
+            setProgress(p);
+            setFaceOk(Boolean(face));
+          },
         });
         results.push(r);
-        // eslint-disable-next-line no-await-in-loop
+
         await new Promise((res) => setTimeout(res, 350));
       }
 
-      setPrompt('Hold still — capturing');
+      setPrompt("Hold still — capturing");
       const canvas = drawToCanvas(videoRef.current, 720);
-      const shot = canvas.toDataURL('image/jpeg', 0.9);
+      const shot = canvas.toDataURL("image/jpeg", 0.9);
       const liveness = scoreLiveness(results);
       const match = await matchFaces(docFront, shot);
 
@@ -547,12 +666,12 @@ function LivenessStep({ docFront, onDone, onBack }) {
         framesAnalysed: liveness.framesAnalysed,
         checks: liveness.checks,
         faceMatchScore: match.score,
-        detector: match.detector || 'n/a',
-        matchError: match.error || '',
+        detector: match.detector || "n/a",
+        matchError: match.error || "",
       });
-      setPrompt('');
+      setPrompt("");
     } catch (err) {
-      setError(err.message || 'The face check could not be completed.');
+      setError(err.message || "The face check could not be completed.");
     } finally {
       setRunning(false);
       setProgress(0);
@@ -568,30 +687,44 @@ function LivenessStep({ docFront, onDone, onBack }) {
     <>
       <h3>Live face verification</h3>
       <p className="muted" style={{ fontSize: 13 }}>
-        We run a randomised challenge sequence to prove a real person is present, then compare your face with the
-        portrait on your document.
+        We run a randomised challenge sequence to prove a real person is present, then compare your
+        face with the portrait on your document.
       </p>
 
-      {error && <div className="alert alert-error" style={{ marginTop: 14 }}>{error}</div>}
+      {error && (
+        <div className="alert alert-error" style={{ marginTop: 14 }}>
+          {error}
+        </div>
+      )}
 
       <div className="cam-wrap">
-        <div className={`cam ${faceOk ? 'ok' : ''}`}>
+        <div className={`cam ${faceOk ? "ok" : ""}`}>
           <video ref={videoRef} playsInline muted />
           <div className="oval" />
-          {camera !== 'ready' && (
+          {camera !== "ready" && (
             <div className="cam-overlay">
-              {camera === 'starting' ? <span className="spinner" /> : <button className="btn btn-gold" onClick={startCamera}>Enable camera</button>}
+              {camera === "starting" ? (
+                <span className="spinner" />
+              ) : (
+                <button className="btn btn-gold" onClick={startCamera}>
+                  Enable camera
+                </button>
+              )}
             </div>
           )}
           {prompt && (
             <div className="prompt">
               <strong>{prompt}</strong>
               <span>{hint}</span>
-              <div className="bar"><i style={{ width: `${progress * 100}%` }} /></div>
+              <div className="bar">
+                <i style={{ width: `${progress * 100}%` }} />
+              </div>
             </div>
           )}
-          {camera === 'ready' && !running && !prompt && (
-            <div className={`framing ${faceOk ? 'ok' : ''}`}>{faceOk ? 'Face detected' : 'Center your face in the oval'}</div>
+          {camera === "ready" && !running && !prompt && (
+            <div className={`framing ${faceOk ? "ok" : ""}`}>
+              {faceOk ? "Face detected" : "Center your face in the oval"}
+            </div>
           )}
         </div>
 
@@ -600,24 +733,37 @@ function LivenessStep({ docFront, onDone, onBack }) {
             <>
               <div className="score-card">
                 <span>Liveness</span>
-                <strong className={result.livenessScore >= 60 ? 'up' : 'down'}>{result.livenessScore}%</strong>
+                <strong className={result.livenessScore >= 60 ? "up" : "down"}>
+                  {result.livenessScore}%
+                </strong>
               </div>
               <div className="score-card">
                 <span>Face match vs ID</span>
-                <strong className={result.faceMatchScore >= 55 ? 'up' : 'down'}>{result.faceMatchScore}%</strong>
+                <strong className={result.faceMatchScore >= 55 ? "up" : "down"}>
+                  {result.faceMatchScore}%
+                </strong>
               </div>
-              {result.matchError && <div className="alert alert-warn small">{result.matchError} Your case will still be reviewed manually.</div>}
+              {result.matchError && (
+                <div className="alert alert-warn small">
+                  {result.matchError} Your case will still be reviewed manually.
+                </div>
+              )}
               <ul className="checks">
                 {result.checks.map((c) => (
-                  <li key={c.id} className={c.passed ? 'pass' : 'fail'}>
-                    {c.passed ? '✓' : '✕'} {c.id.replace('_', ' ').toLowerCase()} <em>({c.frames} frames)</em>
+                  <li key={c.id} className={c.passed ? "pass" : "fail"}>
+                    {c.passed ? "✓" : "✕"} {c.id.replace("_", " ").toLowerCase()}{" "}
+                    <em>({c.frames} frames)</em>
                   </li>
                 ))}
               </ul>
               <img className="shot" src={result.selfie} alt="Live capture" />
               <div className="row" style={{ gap: 8 }}>
-                <button className="btn btn-sm btn-ghost" onClick={run}>Retry</button>
-                <button className="btn btn-sm btn-gold grow" onClick={accept}>Use this capture →</button>
+                <button className="btn btn-sm btn-ghost" onClick={run}>
+                  Retry
+                </button>
+                <button className="btn btn-sm btn-gold grow" onClick={accept}>
+                  Use this capture →
+                </button>
               </div>
             </>
           ) : (
@@ -627,8 +773,12 @@ function LivenessStep({ docFront, onDone, onBack }) {
                 <li>Remove hats, sunglasses and masks.</li>
                 <li>Follow each on-screen instruction until it completes.</li>
               </ol>
-              <button className="btn btn-gold btn-block" disabled={camera !== 'ready' || running} onClick={run}>
-                {running ? <span className="spinner" /> : 'Start liveness check'}
+              <button
+                className="btn btn-gold btn-block"
+                disabled={camera !== "ready" || running}
+                onClick={run}
+              >
+                {running ? <span className="spinner" /> : "Start liveness check"}
               </button>
             </>
           )}
@@ -636,7 +786,15 @@ function LivenessStep({ docFront, onDone, onBack }) {
       </div>
 
       <div className="row" style={{ gap: 10, marginTop: 16 }}>
-        <button className="btn btn-ghost" onClick={() => { stopCamera(); onBack(); }}>← Back</button>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            stopCamera();
+            onBack();
+          }}
+        >
+          ← Back
+        </button>
       </div>
 
       <style>{`

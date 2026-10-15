@@ -11,9 +11,9 @@
  * needs no cache invalidation — a failed poll simply leaves the last known
  * rates on screen until the next one lands.
  */
-import { useEffect } from 'react';
-import { create } from 'zustand';
-import { api } from '../lib/api';
+import { useEffect } from "react";
+import { create } from "zustand";
+import { api } from "../lib/api";
 
 /** Refresh cadence. The server moves a rate at most once every 15s. */
 const POLL_MS = 2000;
@@ -29,7 +29,7 @@ let refs = 0;
 
 async function refresh(): Promise<void> {
   try {
-    const res = await api<{ payouts: Record<string, number> }>('/market/otc/payouts');
+    const res = await api<{ payouts: Record<string, number> }>("/market/otc/payouts");
     const payouts = res.data?.payouts;
     if (res.status >= 400 || !payouts) return;
     usePayoutStore.setState({ rates: payouts });

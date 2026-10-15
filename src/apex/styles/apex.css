@@ -25,7 +25,7 @@
   --radius-apex: 1.125rem;
   --radius-apex-lg: 1.75rem;
 
-  --font-apex: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-apex: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 /* Non-Tailwind tokens (glass fills, hairlines, depth). Kept as plain custom
@@ -65,7 +65,7 @@
   /* 1px glowing gradient border drawn as a masked pseudo-element so the
      glass fill underneath stays translucent. */
   .apex-hairline::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;

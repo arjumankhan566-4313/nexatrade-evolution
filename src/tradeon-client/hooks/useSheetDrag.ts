@@ -11,9 +11,9 @@
  * Stops are expressed in the panel's OWN height, matching the CSS percentages,
  * so the gesture and the stylesheet never disagree about the geometry.
  */
-import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useRef, type PointerEvent as ReactPointerEvent } from "react";
 
-export type SheetSnap = 'peek' | 'half' | 'full';
+export type SheetSnap = "peek" | "half" | "full";
 
 /** Visible height while collapsed — the sticky sheet handle. Keep in sync with
  *  `.nxw__panel` in `styles/trade-panel.css`. */
@@ -32,8 +32,8 @@ function clamp(v: number, min: number, max: number): number {
 
 /** Pixel translation of a stop, measured from the fully-open position. */
 function stopPx(snap: SheetSnap, height: number): number {
-  if (snap === 'full') return 0;
-  if (snap === 'half') return height * SHEET_HALF_FRACTION;
+  if (snap === "full") return 0;
+  if (snap === "half") return height * SHEET_HALF_FRACTION;
   return Math.max(0, height - SHEET_PEEK_PX);
 }
 
@@ -78,16 +78,16 @@ export function useSheetDrag(
         } catch {
           /* capture is an optimisation — losing it must never break the drag */
         }
-        panel.classList.remove('is-dragging');
+        panel.classList.remove("is-dragging");
       }
       if (!panel) return;
       // Inline transform is released; the snap class owns the final position.
-      panel.style.transform = '';
+      panel.style.transform = "";
 
       const stops: Array<{ snap: SheetSnap; px: number }> = [
-        { snap: 'full', px: stopPx('full', d.height) },
-        { snap: 'half', px: stopPx('half', d.height) },
-        { snap: 'peek', px: stopPx('peek', d.height) },
+        { snap: "full", px: stopPx("full", d.height) },
+        { snap: "half", px: stopPx("half", d.height) },
+        { snap: "peek", px: stopPx("peek", d.height) },
       ];
       // A flick projects where the gesture was heading before snapping.
       const projected = d.px + clamp(d.vy * FLICK_MS, -MAX_FLICK_PX, MAX_FLICK_PX);
@@ -116,7 +116,7 @@ export function useSheetDrag(
         vy: 0,
         moved: false,
       };
-      panel.classList.add('is-dragging');
+      panel.classList.add("is-dragging");
       try {
         panel.setPointerCapture?.(e.pointerId);
       } catch {
@@ -133,7 +133,7 @@ export function useSheetDrag(
       if (!d.active || !panel) return;
       const dy = e.clientY - d.startY;
       if (Math.abs(dy) > DRAG_SLOP_PX) d.moved = true;
-      d.px = clamp(d.startPx + dy, 0, stopPx('peek', d.height));
+      d.px = clamp(d.startPx + dy, 0, stopPx("peek", d.height));
       const dt = e.timeStamp - d.lastT;
       if (dt > 0) d.vy = (e.clientY - d.lastY) / dt;
       d.lastY = e.clientY;
@@ -162,5 +162,8 @@ export function useSheetDrag(
 
   const isDragging = useCallback(() => drag.current.moved, []);
 
-  return { handleProps: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel }, isDragging };
+  return {
+    handleProps: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel },
+    isDragging,
+  };
 }

@@ -1,4 +1,4 @@
-import type { MetricSample, MetricsProvider } from '../types';
+import type { MetricSample, MetricsProvider } from "../types";
 
 /**
  * Live metrics provider — reads the running OTC engine.
@@ -27,17 +27,17 @@ type EngineHealthPayload = {
 };
 
 const numberOrNull = (value: unknown): number | null =>
-  typeof value === 'number' && Number.isFinite(value) ? value : null;
+  typeof value === "number" && Number.isFinite(value) ? value : null;
 
 export function createLiveMetricsProvider(): MetricsProvider {
   return {
-    id: 'live-engine-metrics',
-    source: 'live',
+    id: "live-engine-metrics",
+    source: "live",
 
     async getSystemMetrics(): Promise<readonly MetricSample[]> {
       const startedAt = performance.now();
-      const response = await fetch('/api/health/otc', {
-        headers: { accept: 'application/json' },
+      const response = await fetch("/api/health/otc", {
+        headers: { accept: "application/json" },
       });
       // Round-trip of this very request — a real measurement, not a benchmark.
       const roundTripMs = performance.now() - startedAt;
@@ -56,14 +56,14 @@ export function createLiveMetricsProvider(): MetricsProvider {
         label: string,
         value: number | null,
         unit: string,
-        precision: number
+        precision: number,
       ): MetricSample => ({
         id,
         label,
         value,
         unit,
         precision,
-        source: 'live',
+        source: "live",
         measuredAt: value === null ? null : measuredAt,
       });
 
@@ -71,21 +71,21 @@ export function createLiveMetricsProvider(): MetricsProvider {
 
       return [
         sample(
-          'engine-uptime',
-          'Engine uptime (this instance)',
+          "engine-uptime",
+          "Engine uptime (this instance)",
           uptimeMs === null ? null : uptimeMs / 3_600_000,
-          'h',
-          2
+          "h",
+          2,
         ),
-        sample('ticks-published', 'Ticks published', numberOrNull(counters.ticks), '', 0),
+        sample("ticks-published", "Ticks published", numberOrNull(counters.ticks), "", 0),
         sample(
-          'instruments-streaming',
-          'Instruments streaming',
+          "instruments-streaming",
+          "Instruments streaming",
           Array.isArray(engine.symbols) ? engine.symbols.length : null,
-          '',
-          0
+          "",
+          0,
         ),
-        sample('api-round-trip', 'API round-trip (measured)', roundTripMs, 'ms', 1),
+        sample("api-round-trip", "API round-trip (measured)", roundTripMs, "ms", 1),
       ];
     },
   };

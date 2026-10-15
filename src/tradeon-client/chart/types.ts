@@ -174,16 +174,16 @@ export interface ChartTheme {
 }
 
 export const DEFAULT_THEME: ChartTheme = {
-  bg: '#0b0e11',
-  grid: '#1a2230',
-  axisText: '#8b95a7',
+  bg: "#0b0e11",
+  grid: "#1a2230",
+  axisText: "#8b95a7",
   // Binance's own candle palette (the trade panel uses the same pair), so the
   // series reads exactly like the exchange the owner asked us to match.
-  up: '#0ecb81',
-  down: '#f6465d',
-  priceLine: '#ffffff',
-  priceLabelBg: '#2986ff',
-  priceLabelText: '#ffffff',
-  crosshair: '#5b6677',
-  crosshairText: '#c7ccd6',
+  up: "#0ecb81",
+  down: "#f6465d",
+  priceLine: "#ffffff",
+  priceLabelBg: "#2986ff",
+  priceLabelText: "#ffffff",
+  crosshair: "#5b6677",
+  crosshairText: "#c7ccd6",
 };

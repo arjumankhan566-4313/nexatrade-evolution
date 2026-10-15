@@ -51,12 +51,12 @@
   word-break: break-all;
 }
 
-.row code[data-status='connected'] {
+.row code[data-status="connected"] {
   color: #35d07f;
 }
 
-.row code[data-status='disconnected'],
-.row code[data-status='connecting'] {
+.row code[data-status="disconnected"],
+.row code[data-status="connecting"] {
   color: #ffb020;
 }
 

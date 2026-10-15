@@ -2,8 +2,8 @@
  * LegacyModal — modal system, 1:1 port of legacy openModal/closeModal.
  * Mount once in the app root; control via openLegacyModal / closeLegacyModal.
  */
-import { useEffect, useState, type ReactNode } from 'react';
-import '../styles/legacy-pages.css';
+import { useEffect, useState, type ReactNode } from "react";
+import "../styles/legacy-pages.css";
 
 let modalContent: ReactNode | null = null;
 let modalSeq = 0;
@@ -26,9 +26,14 @@ export default function LegacyModal() {
   useEffect(() => {
     const fn = () => setTick((t) => t + 1);
     listeners.add(fn);
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeLegacyModal(); };
-    document.addEventListener('keydown', onKey);
-    return () => { listeners.delete(fn); document.removeEventListener('keydown', onKey); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLegacyModal();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      listeners.delete(fn);
+      document.removeEventListener("keydown", onKey);
+    };
   }, []);
 
   if (!modalContent) return null;

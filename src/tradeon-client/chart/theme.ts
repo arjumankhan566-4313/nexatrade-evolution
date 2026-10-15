@@ -7,17 +7,17 @@
  * an opaque WHITE price line with a BLUE badge, Binance-style green/red
  * candles.
  */
-import type { ChartTheme } from './types';
+import type { ChartTheme } from "./types";
 
 export const CHART_THEME: ChartTheme = {
-  bg: '#0b0e11',
-  grid: '#1a2230',
-  axisText: '#8b95a7',
-  up: '#0ecb81',
-  down: '#f6465d',
-  priceLine: '#ffffff',
-  priceLabelBg: '#2986ff',
-  priceLabelText: '#ffffff',
-  crosshair: '#5b6677',
-  crosshairText: '#c7ccd6',
+  bg: "#0b0e11",
+  grid: "#1a2230",
+  axisText: "#8b95a7",
+  up: "#0ecb81",
+  down: "#f6465d",
+  priceLine: "#ffffff",
+  priceLabelBg: "#2986ff",
+  priceLabelText: "#ffffff",
+  crosshair: "#5b6677",
+  crosshairText: "#c7ccd6",
 };

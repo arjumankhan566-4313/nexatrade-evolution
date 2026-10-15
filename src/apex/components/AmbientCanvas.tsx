@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 /**
  * Lightweight ambient deep-space canvas.
@@ -18,9 +18,9 @@ type Drift = {
 };
 
 const DRIFTS: readonly Drift[] = [
-  { hue: '0, 242, 254', radiusRatio: 0.46, speed: 0.00013, phase: 0, offsetRatio: [0.2, 0.12] },
-  { hue: '139, 92, 246', radiusRatio: 0.4, speed: 0.0001, phase: 2.1, offsetRatio: [0.82, 0.18] },
-  { hue: '242, 184, 75', radiusRatio: 0.3, speed: 0.00016, phase: 4.2, offsetRatio: [0.55, 0.78] },
+  { hue: "0, 242, 254", radiusRatio: 0.46, speed: 0.00013, phase: 0, offsetRatio: [0.2, 0.12] },
+  { hue: "139, 92, 246", radiusRatio: 0.4, speed: 0.0001, phase: 2.1, offsetRatio: [0.82, 0.18] },
+  { hue: "242, 184, 75", radiusRatio: 0.3, speed: 0.00016, phase: 4.2, offsetRatio: [0.55, 0.78] },
 ];
 
 const HALF_RESOLUTION = 0.5;
@@ -33,7 +33,7 @@ export default function AmbientCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     if (!context) return;
 
     let frame = 0;
@@ -54,7 +54,7 @@ export default function AmbientCanvas() {
       const elapsed = now - startedAt;
 
       ctx.clearRect(0, 0, width, height);
-      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalCompositeOperation = "lighter";
 
       for (const drift of DRIFTS) {
         const [baseX, baseY] = drift.offsetRatio;
@@ -71,7 +71,7 @@ export default function AmbientCanvas() {
         ctx.fill();
       }
 
-      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalCompositeOperation = "source-over";
     }
 
     function loop(now: number) {
@@ -101,13 +101,13 @@ export default function AmbientCanvas() {
     paint(performance.now());
     if (!document.hidden) start();
 
-    window.addEventListener('resize', resize);
-    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       stop();
-      window.removeEventListener('resize', resize);
-      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 

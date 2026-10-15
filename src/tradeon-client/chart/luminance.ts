@@ -11,7 +11,11 @@ export function parseHexColor(hex: string): [number, number, number] | null {
   const m = hex.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
   if (!m) return null;
   let h = m[1];
-  if (h.length === 3) h = h.split('').map((ch) => ch + ch).join('');
+  if (h.length === 3)
+    h = h
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
   const n = parseInt(h, 16);
   return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
 }
@@ -36,5 +40,5 @@ export function relativeLuminance(hex: string): number {
  * where contrast against white and against near-black crosses over.
  */
 export function readableTextColor(bgHex: string): string {
-  return relativeLuminance(bgHex) > 0.179 ? '#0d111a' : '#ffffff';
+  return relativeLuminance(bgHex) > 0.179 ? "#0d111a" : "#ffffff";
 }

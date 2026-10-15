@@ -96,7 +96,7 @@ video {
 
   /* Kill the 300ms tap delay and accidental double-tap zoom on controls. */
   button,
-  [role='button'],
+  [role="button"],
   a,
   input,
   select,
@@ -135,13 +135,13 @@ video {
   .auth-card select,
   .nt-login .input,
   .ticket-amount-control input,
-  .apex-space input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  .apex-space input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
   .apex-space textarea {
     font-size: 16px;
   }
 
   /* Full-width entry fields also need a real touch height. */
-  .apex-space input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  .apex-space input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
   .apex-space textarea {
     min-height: 44px;
   }
@@ -162,10 +162,14 @@ video {
     padding: 8px 10px;
     gap: 8px;
   }
-  .chart-market-btn__text strong { max-width: 120px; }
+  .chart-market-btn__text strong {
+    max-width: 120px;
+  }
 
   /* The floating tool column keeps clear of the top bar and the sheet handle. */
-  .chtools { max-height: calc(100% - 132px); }
+  .chtools {
+    max-height: calc(100% - 132px);
+  }
 }
 
 /* ── Phone: dense labels ────────────────────────────────────────────────── */

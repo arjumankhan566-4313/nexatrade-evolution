@@ -1,12 +1,12 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Check, Terminal } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Check, Terminal } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import {
   API_CAPABILITIES,
   API_SAMPLE_ENDPOINT,
   API_SAMPLE_RESPONSE,
-} from '../../config/content.config';
-import { GlassCard, SectionHeading, SectionShell } from '../../components/primitives';
+} from "../../config/content.config";
+import { GlassCard, SectionHeading, SectionShell } from "../../components/primitives";
 
 /**
  * Feature 6 — Institutional & API access.
@@ -16,8 +16,8 @@ import { GlassCard, SectionHeading, SectionShell } from '../../components/primit
  */
 
 const ACCESS_STYLE: Record<string, string> = {
-  Public: 'text-apex-emerald bg-apex-emerald/10 ring-apex-emerald/25',
-  Authenticated: 'text-apex-cyan bg-apex-cyan/10 ring-apex-cyan/25',
+  Public: "text-apex-emerald bg-apex-emerald/10 ring-apex-emerald/25",
+  Authenticated: "text-apex-cyan bg-apex-cyan/10 ring-apex-cyan/25",
 };
 
 export default function InstitutionalSection() {
@@ -101,14 +101,19 @@ export default function InstitutionalSection() {
           <GlassCard className="p-6" depth={false}>
             <h3 className="font-apex text-sm font-semibold text-apex-ink">Request access</h3>
             <ul className="mt-4 space-y-2.5">
-              {['Full catalogue and candle history', 'Live tick stream over sockets', 'Sandbox keys for integration testing'].map(
-                (item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-[12.5px] text-apex-muted">
-                    <Check aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-apex-lime" />
-                    {item}
-                  </li>
-                )
-              )}
+              {[
+                "Full catalogue and candle history",
+                "Live tick stream over sockets",
+                "Sandbox keys for integration testing",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-[12.5px] text-apex-muted">
+                  <Check
+                    aria-hidden="true"
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-apex-lime"
+                  />
+                  {item}
+                </li>
+              ))}
             </ul>
             <Link
               to="/register"

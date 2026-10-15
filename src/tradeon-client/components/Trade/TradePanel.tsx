@@ -10,23 +10,23 @@
  * Orders are REAL: the panel validates locally and hands the order to the page,
  * which posts it to `/api/trades`. Nothing here is mocked.
  */
-import { useEffect, useRef, useState } from 'react';
-import { formatPrice } from '../../chart/format';
-import ExpiryPicker, { type ExpiryValue } from './ExpiryPicker';
-import '../../styles/trade-panel.css';
+import { useEffect, useRef, useState } from "react";
+import { formatPrice } from "../../chart/format";
+import ExpiryPicker, { type ExpiryValue } from "./ExpiryPicker";
+import "../../styles/trade-panel.css";
 
-export type TradeDirection = 'CALL' | 'PUT';
+export type TradeDirection = "CALL" | "PUT";
 
 const QUICK_STAKES = [10, 25, 50, 100, 250];
 
-const DEFAULT_EXPIRY: ExpiryValue = { kind: 'TIMER', seconds: 60, label: '1m' };
+const DEFAULT_EXPIRY: ExpiryValue = { kind: "TIMER", seconds: 60, label: "1m" };
 
 interface Props {
   name: string;
   payoutRate: number;
   price: number | null;
   balance: number;
-  account: 'REAL' | 'DEMO';
+  account: "REAL" | "DEMO";
   signedIn: boolean;
   /** Server-side rejection (insufficient balance, rate limit, …). */
   error?: string | null;
@@ -37,11 +37,20 @@ interface Props {
 }
 
 function money(n: number): string {
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 const Arrow = ({ up }: { up: boolean }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     {up ? <path d="M12 19V5M5 12l7-7 7 7" /> : <path d="M12 5v14M19 12l-7 7-7-7" />}
   </svg>
 );
@@ -61,7 +70,7 @@ export default function TradePanel({
   const [stake, setStake] = useState(25);
   const [expiry, setExpiry] = useState<ExpiryValue>(DEFAULT_EXPIRY);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerKind, setPickerKind] = useState<'TIMER' | 'TIME'>('TIMER');
+  const [pickerKind, setPickerKind] = useState<"TIMER" | "TIME">("TIMER");
   const [localError, setLocalError] = useState<string | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
@@ -74,13 +83,13 @@ export default function TradePanel({
       if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setPickerOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPickerOpen(false);
+      if (e.key === "Escape") setPickerOpen(false);
     };
-    document.addEventListener('mousedown', onDocDown);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener("mousedown", onDocDown);
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener('mousedown', onDocDown);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener("mousedown", onDocDown);
+      document.removeEventListener("keydown", onKey);
     };
   }, [pickerOpen]);
 
@@ -89,11 +98,11 @@ export default function TradePanel({
 
   const place = (direction: TradeDirection) => {
     if (!signedIn) {
-      setLocalError('Sign in to trade.');
+      setLocalError("Sign in to trade.");
       return;
     }
     if (!Number.isFinite(amount) || amount < 1) {
-      setLocalError('Enter an amount of at least $1.');
+      setLocalError("Enter an amount of at least $1.");
       return;
     }
     if (amount > balance) {
@@ -112,7 +121,7 @@ export default function TradePanel({
         <div className="nxt-asset">
           <span className="nxt-asset__name">{name}</span>
           <span className="nxt-asset__price">
-            {price != null ? formatPrice(price) : '—'}
+            {price != null ? formatPrice(price) : "—"}
             <span className="nxt-live">
               <i />
               live
@@ -129,7 +138,7 @@ export default function TradePanel({
         <div className="nxt-expiry-select" ref={pickerRef}>
           <button
             type="button"
-            className={`nxt-expiry-trigger ${pickerOpen ? 'is-open' : ''}`}
+            className={`nxt-expiry-trigger ${pickerOpen ? "is-open" : ""}`}
             aria-haspopup="dialog"
             aria-expanded={pickerOpen}
             onClick={() => {
@@ -137,13 +146,31 @@ export default function TradePanel({
               setPickerOpen((v) => !v);
             }}
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="9" />
               <path d="M12 7v5l3 2" />
             </svg>
             <span className="nxt-expiry-trigger__value">{expiry.label}</span>
-            <small>{expiry.kind === 'TIMER' ? 'Timer' : 'Time'}</small>
-            <svg className="nxt-expiry-trigger__chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <small>{expiry.kind === "TIMER" ? "Timer" : "Time"}</small>
+            <svg
+              className="nxt-expiry-trigger__chev"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            >
               <path d="M6 9l6 6 6-6" />
             </svg>
           </button>
@@ -173,7 +200,12 @@ export default function TradePanel({
           <span className="nxt-field__hint">{money(balance)}</span>
         </div>
         <div className="nxt-amount">
-          <button type="button" className="nxt-amount__step" onClick={() => step(-5)} aria-label="Decrease amount">
+          <button
+            type="button"
+            className="nxt-amount__step"
+            onClick={() => step(-5)}
+            aria-label="Decrease amount"
+          >
             −
           </button>
           <label className="nxt-amount__field">
@@ -188,7 +220,12 @@ export default function TradePanel({
               aria-label="Trade amount"
             />
           </label>
-          <button type="button" className="nxt-amount__step" onClick={() => step(5)} aria-label="Increase amount">
+          <button
+            type="button"
+            className="nxt-amount__step"
+            onClick={() => step(5)}
+            aria-label="Increase amount"
+          >
             +
           </button>
         </div>
@@ -197,7 +234,7 @@ export default function TradePanel({
             <button
               key={s}
               type="button"
-              className={`nxt-chip ${stake === s ? 'is-active' : ''}`}
+              className={`nxt-chip ${stake === s ? "is-active" : ""}`}
               onClick={() => setStake(s)}
             >
               ${s}
@@ -207,11 +244,11 @@ export default function TradePanel({
       </div>
 
       <div className="nxt-actions">
-        <button type="button" className="nxt-btn nxt-btn--up" onClick={() => place('CALL')}>
+        <button type="button" className="nxt-btn nxt-btn--up" onClick={() => place("CALL")}>
           <Arrow up />
           Up
         </button>
-        <button type="button" className="nxt-btn nxt-btn--down" onClick={() => place('PUT')}>
+        <button type="button" className="nxt-btn nxt-btn--down" onClick={() => place("PUT")}>
           <Arrow up={false} />
           Down
         </button>
@@ -225,11 +262,15 @@ export default function TradePanel({
         <span className="nxt-payout__pct">+{payoutRate}%</span>
       </div>
 
-      {message && <p className="nxt-error" role="alert">{message}</p>}
+      {message && (
+        <p className="nxt-error" role="alert">
+          {message}
+        </p>
+      )}
 
       <div className="nxt-balance">
-        <span>{account === 'REAL' ? 'Real balance' : 'Demo balance'}</span>
-        <strong>{signedIn ? money(balance) : '—'}</strong>
+        <span>{account === "REAL" ? "Real balance" : "Demo balance"}</span>
+        <strong>{signedIn ? money(balance) : "—"}</strong>
       </div>
     </section>
   );

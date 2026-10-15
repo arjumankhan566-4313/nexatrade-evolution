@@ -1,40 +1,48 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import dynamic from '@/tradeon-client/lib/nextDynamic';
-import { api, money, fmtDate, fmtPrice } from '@/tradeon-client/lib/apiClient';
-import { Activity, TrendingUp, TrendingDown, Target, Wallet } from 'lucide-react';
-
+import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "@/tradeon-client/lib/nextDynamic";
+import { api, money, fmtDate, fmtPrice } from "@/tradeon-client/lib/apiClient";
+import { Activity, TrendingUp, TrendingDown, Target, Wallet } from "lucide-react";
 
 // Recharts is only needed once an equity curve exists — keep it off the
 // initial History bundle and load it lazily on the client.
-const EquityArea = dynamic(() => import('@/tradeon-client/components/charts/EquityArea'), {
+const EquityArea = dynamic(() => import("@/tradeon-client/components/charts/EquityArea"), {
   ssr: false,
   loading: () => <div className="equity-empty" aria-hidden="true" />,
 });
 
 const STATUS = {
-  OPEN: 'badge badge-info',
-  SETTLING: 'badge badge-warn',
-  WON: 'badge badge-up',
-  LOST: 'badge badge-down',
-  VOID: 'badge',
+  OPEN: "badge badge-info",
+  SETTLING: "badge badge-warn",
+  WON: "badge badge-up",
+  LOST: "badge badge-down",
+  VOID: "badge",
 };
 
 /* Spec §6.8 — segmented filters: All / Real / Demo / Calls / Puts */
 const FILTERS = [
-  { id: 'ALL', label: 'All' },
-  { id: 'REAL', label: 'Real' },
-  { id: 'DEMO', label: 'Demo' },
-  { id: 'CALL', label: 'Calls' },
-  { id: 'PUT', label: 'Puts' },
+  { id: "ALL", label: "All" },
+  { id: "REAL", label: "Real" },
+  { id: "DEMO", label: "Demo" },
+  { id: "CALL", label: "Calls" },
+  { id: "PUT", label: "Puts" },
 ];
 
 export default function HistoryPage() {
-  const [data, setData] = useState({ trades: [], stats: { total: 0, wins: 0, losses: 0, pnl: 0, winRate: 0 } });
-  const [filter, setFilter] = useState('ALL');
+  const [data, setData] = useState({
+    trades: [],
+    stats: { total: 0, wins: 0, losses: 0, pnl: 0, winRate: 0 },
+  });
+  const [filter, setFilter] = useState("ALL");
   // Trade snapshots must remain fresh; route code is warmed independently.
-  const refresh = useCallback(() => api('/api/trades?limit=200').then(setData).catch(() => {}), []);
+  const refresh = useCallback(
+    () =>
+      api("/api/trades?limit=200")
+        .then(setData)
+        .catch(() => {}),
+    [],
+  );
   useEffect(() => {
     refresh();
     const t = setInterval(refresh, 30_000);
@@ -43,16 +51,16 @@ export default function HistoryPage() {
 
   const trades = useMemo(() => {
     const list = data.trades.filter((t) => {
-      if (filter === 'CALL') return t.direction === 'CALL';
-      if (filter === 'PUT') return t.direction === 'PUT';
-      return filter === 'ALL' || t.accountType === filter;
+      if (filter === "CALL") return t.direction === "CALL";
+      if (filter === "PUT") return t.direction === "PUT";
+      return filter === "ALL" || t.accountType === filter;
     });
     return list;
   }, [data.trades, filter]);
 
   /* Spec §6.8 — cumulative equity curve (oldest → newest) above the table */
   const equity = useMemo(() => {
-    const settled = data.trades.filter((t) => ['WON', 'LOST', 'VOID'].includes(t.status));
+    const settled = data.trades.filter((t) => ["WON", "LOST", "VOID"].includes(t.status));
     const ordered = [...settled].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     let cum = 0;
     return ordered.map((t, i) => {
@@ -66,7 +74,7 @@ export default function HistoryPage() {
   const equityUp = equity.length && equity[equity.length - 1].pnl >= 0;
 
   const exportCsv = () => {
-    const head = 'Opened,Market,Side,Account,Stake,Entry,Exit,Expiry,Result,PNL';
+    const head = "Opened,Market,Side,Account,Stake,Entry,Exit,Expiry,Result,PNL";
     const rows = trades.map((t) =>
       [
         fmtDate(t.createdAt),
@@ -75,16 +83,16 @@ export default function HistoryPage() {
         t.accountType,
         t.stake,
         t.entryPrice,
-        t.exitPrice ?? '',
+        t.exitPrice ?? "",
         `${t.duration}s`,
         t.status,
-        t.profit ?? '',
-      ].join(',')
+        t.profit ?? "",
+      ].join(","),
     );
-    const blob = new Blob([[head, ...rows].join('\n')], { type: 'text/csv' });
-    const a = document.createElement('a');
+    const blob = new Blob([[head, ...rows].join("\n")], { type: "text/csv" });
+    const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = 'tradeon-history.csv';
+    a.download = "tradeon-history.csv";
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -93,11 +101,17 @@ export default function HistoryPage() {
     <div>
       <div className="stats">
         {[
-          ['Total trades', data.stats.total, '', Activity, 'var(--gold-1)'],
-          ['Wins', data.stats.wins, 'up', TrendingUp, 'var(--up)'],
-          ['Losses', data.stats.losses, 'down', TrendingDown, 'var(--down)'],
-          ['Win rate', `${data.stats.winRate}%`, '', Target, 'var(--gold-1)'],
-          ['Net P/L', money(data.stats.pnl), data.stats.pnl >= 0 ? 'up' : 'down', Wallet, data.stats.pnl >= 0 ? 'var(--up)' : 'var(--down)'],
+          ["Total trades", data.stats.total, "", Activity, "var(--gold-1)"],
+          ["Wins", data.stats.wins, "up", TrendingUp, "var(--up)"],
+          ["Losses", data.stats.losses, "down", TrendingDown, "var(--down)"],
+          ["Win rate", `${data.stats.winRate}%`, "", Target, "var(--gold-1)"],
+          [
+            "Net P/L",
+            money(data.stats.pnl),
+            data.stats.pnl >= 0 ? "up" : "down",
+            Wallet,
+            data.stats.pnl >= 0 ? "var(--up)" : "var(--down)",
+          ],
         ].map(([label, value, tone, Icon, accent]) => (
           <div key={label} className="glass stat" style={{ borderTop: `2px solid ${accent}` }}>
             <div className="stat-top">
@@ -114,15 +128,23 @@ export default function HistoryPage() {
         <div className="equity-head">
           <div>
             <span className="equity-label">Cumulative P/L</span>
-            <strong className={`mono ${equityUp ? 'up' : 'down'}`}>
+            <strong className={`mono ${equityUp ? "up" : "down"}`}>
               {equity.length ? money(equity[equity.length - 1].pnl) : money(0)}
             </strong>
           </div>
-          <span className="dim" style={{ fontSize: 11 }}>across all settled trades</span>
+          <span className="dim" style={{ fontSize: 11 }}>
+            across all settled trades
+          </span>
         </div>
         <div style={{ height: 120 }}>
           {equity.length >= 2 ? (
-            <EquityArea data={equity} up={equityUp} domain={[equityMin, equityMax]} gradientId="equityFill" fillOpacity={0.35} />
+            <EquityArea
+              data={equity}
+              up={equityUp}
+              domain={[equityMin, equityMax]}
+              gradientId="equityFill"
+              fillOpacity={0.35}
+            />
           ) : (
             <div className="equity-empty">Settle a few trades to chart your equity curve.</div>
           )}
@@ -130,21 +152,23 @@ export default function HistoryPage() {
       </div>
 
       <div className="glass" style={{ padding: 20 }}>
-        <div className="row-between" style={{ marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
+        <div className="row-between" style={{ marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
           <h3 style={{ margin: 0, fontSize: 16 }}>Trade history</h3>
-          <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
+          <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
             <div className="segmented">
               {FILTERS.map((f) => (
                 <button
                   key={f.id}
-                  className={`seg ${filter === f.id ? 'active' : ''}`}
+                  className={`seg ${filter === f.id ? "active" : ""}`}
                   onClick={() => setFilter(f.id)}
                 >
                   {f.label}
                 </button>
               ))}
             </div>
-            <button className="btn btn-sm btn-ghost" onClick={exportCsv}>CSV</button>
+            <button className="btn btn-sm btn-ghost" onClick={exportCsv}>
+              CSV
+            </button>
           </div>
         </div>
 
@@ -152,28 +176,40 @@ export default function HistoryPage() {
           <table className="data">
             <thead>
               <tr>
-                <th>Opened</th><th>Market</th><th>Side</th><th>Account</th><th>Stake</th>
-                <th>Entry</th><th>Exit</th><th>Expiry</th><th>Result</th><th>P/L</th>
+                <th>Opened</th>
+                <th>Market</th>
+                <th>Side</th>
+                <th>Account</th>
+                <th>Stake</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Expiry</th>
+                <th>Result</th>
+                <th>P/L</th>
               </tr>
             </thead>
             <tbody>
               {trades.map((t) => (
                 <tr key={t.id}>
                   <td className="dim">{fmtDate(t.createdAt)}</td>
-                  <td><strong>{t.symbol}</strong></td>
                   <td>
-                    <span className={`dir-pill ${t.direction === 'CALL' ? 'call' : 'put'}`}>
-                      {t.direction === 'CALL' ? 'CALL' : 'PUT'}
+                    <strong>{t.symbol}</strong>
+                  </td>
+                  <td>
+                    <span className={`dir-pill ${t.direction === "CALL" ? "call" : "put"}`}>
+                      {t.direction === "CALL" ? "CALL" : "PUT"}
                     </span>
                   </td>
                   <td>{t.accountType}</td>
                   <td className="mono">{money(t.stake)}</td>
                   <td className="mono">{fmtPrice(t.entryPrice, 4)}</td>
-                  <td className="mono">{t.exitPrice ? fmtPrice(t.exitPrice, 4) : '—'}</td>
+                  <td className="mono">{t.exitPrice ? fmtPrice(t.exitPrice, 4) : "—"}</td>
                   <td>{t.duration}s</td>
-                  <td><span className={STATUS[t.status] || 'badge'}>{t.status}</span></td>
-                  <td className={`mono ${t.profit > 0 ? 'up' : t.profit < 0 ? 'down' : ''}`}>
-                    {t.profit === null ? '—' : `${t.profit > 0 ? '+' : ''}${money(t.profit)}`}
+                  <td>
+                    <span className={STATUS[t.status] || "badge"}>{t.status}</span>
+                  </td>
+                  <td className={`mono ${t.profit > 0 ? "up" : t.profit < 0 ? "down" : ""}`}>
+                    {t.profit === null ? "—" : `${t.profit > 0 ? "+" : ""}${money(t.profit)}`}
                   </td>
                 </tr>
               ))}

@@ -53,11 +53,11 @@ Providers are the only data source the UI reads. Contracts live in
 `src/apex/providers/types.ts`; the active implementation is chosen in
 `src/apex/providers/index.ts`.
 
-| Interface | Mock today | To go live |
-| --- | --- | --- |
-| `AIAssistantProvider` | `providers/mock/ai.ts` — canned sentiment + scripted streaming replies | Implement `ask()` / `getSentiment()` against your model API and swap the factory in `providers/index.ts`, then set `source: 'live'`. The widget needs no change. |
-| `MetricsProvider` | **live** — `providers/live/metrics.ts` reads `/api/health/otc` (engine uptime, ticks, instruments streaming, measured round-trip) | Already real. A field the API does not return stays `null` and the tile reads "—". |
-| `MarketProvider` | **live** — `providers/live/market.ts` reads `/api/market/otc/payouts` | Already real. Backs the payout chips on the copy-trading leader cards. |
+| Interface             | Mock today                                                                                                                        | To go live                                                                                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AIAssistantProvider` | `providers/mock/ai.ts` — canned sentiment + scripted streaming replies                                                            | Implement `ask()` / `getSentiment()` against your model API and swap the factory in `providers/index.ts`, then set `source: 'live'`. The widget needs no change. |
+| `MetricsProvider`     | **live** — `providers/live/metrics.ts` reads `/api/health/otc` (engine uptime, ticks, instruments streaming, measured round-trip) | Already real. A field the API does not return stays `null` and the tile reads "—".                                                                               |
+| `MarketProvider`      | **live** — `providers/live/market.ts` reads `/api/market/otc/payouts`                                                             | Already real. Backs the payout chips on the copy-trading leader cards.                                                                                           |
 
 Nothing else changes: components import from `src/apex/providers`, never from a
 mock file directly.

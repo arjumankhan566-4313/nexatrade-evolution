@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type SocketStatus = 'idle' | 'connecting' | 'connected' | 'disconnected';
+export type SocketStatus = "idle" | "connecting" | "connected" | "disconnected";
 
 export interface DemoTick {
   seq: number;
@@ -21,7 +21,7 @@ interface ConnectionState {
 // Module 1 store: tracks the REST health probe and the Socket.io realtime
 // pipe. Later modules add market, auth and trading slices alongside this.
 export const useConnectionStore = create<ConnectionState>((set) => ({
-  socketStatus: 'idle',
+  socketStatus: "idle",
   apiHealth: null,
   lastTick: null,
   setSocketStatus: (socketStatus) => set({ socketStatus }),

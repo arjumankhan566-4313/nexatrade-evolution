@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { api, type AuthError, type AuthUser } from '../lib/api';
+import { create } from "zustand";
+import { api, type AuthError, type AuthUser } from "../lib/api";
 
-export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'guest';
+export type AuthStatus = "idle" | "loading" | "authenticated" | "guest";
 
 interface AuthState {
   user: AuthUser | null;
@@ -28,7 +28,7 @@ interface AuthState {
 function applyError(data: AuthError | null): Partial<AuthState> {
   if (!data) return { error: null, fields: null, requiresTwoFactor: false };
   return {
-    error: data.error ?? 'Something went wrong. Please try again.',
+    error: data.error ?? "Something went wrong. Please try again.",
     fields: data.fields ?? null,
     requiresTwoFactor: Boolean(data.requiresTwoFactor),
   };
@@ -44,11 +44,13 @@ const RETRY_MS = 700;
  * as "no session", because that silently signed the user out mid-session and
  * every trade then failed with "Insufficient … balance".
  */
-async function readSession(attempts: number): Promise<{ status: number; data: { user?: AuthUser } | null }> {
+async function readSession(
+  attempts: number,
+): Promise<{ status: number; data: { user?: AuthUser } | null }> {
   let last: { status: number; data: { user?: AuthUser } | null } = { status: 0, data: null };
   for (let i = 0; i < attempts; i++) {
     try {
-      const res = await api<{ user?: AuthUser }>('/auth/me');
+      const res = await api<{ user?: AuthUser }>("/auth/me");
       if (res.status === 200 || res.status === 401) return res;
       last = res;
     } catch {
@@ -61,39 +63,39 @@ async function readSession(attempts: number): Promise<{ status: number; data: { 
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  status: 'idle',
+  status: "idle",
   requiresTwoFactor: false,
   error: null,
   fields: null,
 
   bootstrap: async () => {
-    set({ status: 'loading' });
+    set({ status: "loading" });
     const { status, data } = await readSession(4);
     if (data?.user) {
-      set({ user: data.user, status: 'authenticated', error: null, fields: null });
+      set({ user: data.user, status: "authenticated", error: null, fields: null });
       return;
     }
     if (status === 401) {
-      set({ user: null, status: 'guest' });
+      set({ user: null, status: "guest" });
       return;
     }
     // API unreachable: keep the session we already have instead of signing out.
-    set((s) => ({ status: s.user ? 'authenticated' : 'loading' }));
+    set((s) => ({ status: s.user ? "authenticated" : "loading" }));
   },
 
   refresh: async () => {
     const { data } = await readSession(3);
-    if (data?.user) set({ user: data.user, status: 'authenticated' });
+    if (data?.user) set({ user: data.user, status: "authenticated" });
   },
 
   login: async (email, password, twoFactorCode) => {
     set({ error: null, fields: null, requiresTwoFactor: false });
-    const { status, data } = await api<{ user?: AuthUser } & AuthError>('/auth/login', {
-      method: 'POST',
+    const { status, data } = await api<{ user?: AuthUser } & AuthError>("/auth/login", {
+      method: "POST",
       body: { email, password, ...(twoFactorCode ? { twoFactorCode } : {}) },
     });
     if (status === 200 && data?.user) {
-      set({ user: data.user, status: 'authenticated', error: null, fields: null });
+      set({ user: data.user, status: "authenticated", error: null, fields: null });
       return true;
     }
     set(applyError(data));
@@ -102,12 +104,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   register: async (input) => {
     set({ error: null, fields: null });
-    const { status, data } = await api<{ user?: AuthUser } & AuthError>('/auth/register', {
-      method: 'POST',
+    const { status, data } = await api<{ user?: AuthUser } & AuthError>("/auth/register", {
+      method: "POST",
       body: input,
     });
     if (status === 201 && data?.user) {
-      set({ user: data.user, status: 'authenticated', error: null, fields: null });
+      set({ user: data.user, status: "authenticated", error: null, fields: null });
       return true;
     }
     set(applyError(data));
@@ -115,8 +117,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
-    await api('/auth/logout', { method: 'POST' });
-    set({ user: null, status: 'guest', error: null, fields: null, requiresTwoFactor: false });
+    await api("/auth/logout", { method: "POST" });
+    set({ user: null, status: "guest", error: null, fields: null, requiresTwoFactor: false });
   },
 
   resetErrors: () => set({ error: null, fields: null, requiresTwoFactor: false }),

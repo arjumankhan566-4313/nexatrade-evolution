@@ -6,35 +6,35 @@
  * fed straight into the engine, so the lab exercises the renderer — zoom, pan,
  * crosshair, theme, stress ticks — without touching the live OTC feed.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import SyntheticChart, { type EngineState } from '../../components/Chart/SyntheticChart';
-import { CHART_THEME } from '../../chart/theme';
-import type { Candle, ChartTheme } from '../../chart/types';
-import '../../styles/legacy-pages.css';
-import '../../styles/chart.css';
-import '../../styles/chart-lab.css';
+import { useEffect, useMemo, useRef, useState } from "react";
+import SyntheticChart, { type EngineState } from "../../components/Chart/SyntheticChart";
+import { CHART_THEME } from "../../chart/theme";
+import type { Candle, ChartTheme } from "../../chart/types";
+import "../../styles/legacy-pages.css";
+import "../../styles/chart.css";
+import "../../styles/chart-lab.css";
 
 /* Timeframe presets: candle length plus the drift scale the simulator uses. */
 const TF: Record<string, { interval: number; vol: number }> = {
-  '1m': { interval: 60, vol: 0.0009 },
-  '5m': { interval: 300, vol: 0.0016 },
-  '1h': { interval: 3600, vol: 0.0035 },
-  '1D': { interval: 86400, vol: 0.011 },
+  "1m": { interval: 60, vol: 0.0009 },
+  "5m": { interval: 300, vol: 0.0016 },
+  "1h": { interval: 3600, vol: 0.0035 },
+  "1D": { interval: 86400, vol: 0.011 },
 };
 
 const START = 1.08;
 
 const LIGHT_THEME: ChartTheme = {
-  bg: '#ffffff',
-  grid: 'rgba(15,23,42,0.08)',
-  axisText: '#5b6472',
-  up: '#0a9e6f',
-  down: '#dc3a44',
-  priceLine: '#2583ff',
-  priceLabelBg: '#2583ff',
-  priceLabelText: '#ffffff',
-  crosshair: '#94a3b8',
-  crosshairText: '#ffffff',
+  bg: "#ffffff",
+  grid: "rgba(15,23,42,0.08)",
+  axisText: "#5b6472",
+  up: "#0a9e6f",
+  down: "#dc3a44",
+  priceLine: "#2583ff",
+  priceLabelBg: "#2583ff",
+  priceLabelText: "#ffffff",
+  crosshair: "#94a3b8",
+  crosshairText: "#ffffff",
 };
 
 let seedCounter = 1;
@@ -49,7 +49,7 @@ function rng(seed: number) {
 }
 
 function genCandles(tf: string, n = 260, seed?: number): Candle[] {
-  const { interval, vol } = TF[tf] ?? TF['1m'];
+  const { interval, vol } = TF[tf] ?? TF["1m"];
   const rand = rng(seed ?? (seedCounter += 7));
   const lastBucket = Math.floor(Date.now() / 1000 / interval) * interval;
   const out: Candle[] = [];
@@ -73,8 +73,8 @@ function genCandles(tf: string, n = 260, seed?: number): Candle[] {
 }
 
 export default function ChartLabPage() {
-  const [tf, setTf] = useState('1m');
-  const [candles, setCandles] = useState<Candle[]>(() => genCandles('1m', 240, 42));
+  const [tf, setTf] = useState("1m");
+  const [candles, setCandles] = useState<Candle[]>(() => genCandles("1m", 240, 42));
   const [live, setLive] = useState(true);
   const [burst, setBurst] = useState(false);
   const [light, setLight] = useState(false);
@@ -90,14 +90,14 @@ export default function ChartLabPage() {
 
   const regenerate = (next: string) => {
     setTf(next);
-    setCandles(genCandles(next, next === '1m' ? 300 : 240, (seedCounter += 11)));
+    setCandles(genCandles(next, next === "1m" ? 300 : 240, (seedCounter += 11)));
     setTicks(0);
   };
 
   /* Live simulator — one tick per interval at the current timeframe. */
   useEffect(() => {
     if (!live) return undefined;
-    const { interval, vol } = TF[tfRef.current] ?? TF['1m'];
+    const { interval, vol } = TF[tfRef.current] ?? TF["1m"];
     const id = window.setInterval(() => {
       const prev = candlesRef.current;
       if (!prev.length) return;
@@ -130,7 +130,7 @@ export default function ChartLabPage() {
   /* ~40Hz micro-tick burst — the renderer's stress mode. */
   useEffect(() => {
     if (!burst) return undefined;
-    const { vol } = TF[tfRef.current] ?? TF['1m'];
+    const { vol } = TF[tfRef.current] ?? TF["1m"];
     const id = window.setInterval(() => {
       const prev = candlesRef.current;
       if (!prev.length) return;
@@ -166,7 +166,7 @@ export default function ChartLabPage() {
             <button
               key={key}
               type="button"
-              className={tf === key ? 'active' : ''}
+              className={tf === key ? "active" : ""}
               onClick={() => regenerate(key)}
             >
               {key}
@@ -177,21 +177,29 @@ export default function ChartLabPage() {
 
       <div className="lab-bar">
         <div className="lab-price">
-          <span className={`dot ${isUp ? 'up' : 'down'}`} />
-          <strong className="mono">{last ? last.close.toFixed(5) : '—'}</strong>
+          <span className={`dot ${isUp ? "up" : "down"}`} />
+          <strong className="mono">{last ? last.close.toFixed(5) : "—"}</strong>
           <em className="muted">
             {candles.length} candles · {tf} · {ticks} ticks
           </em>
         </div>
         <div className="lab-actions">
-          <button type="button" className={live ? 'active' : ''} onClick={() => setLive((v) => !v)}>
-            {live ? '⏸ Pause live' : '▶ Play live'}
+          <button type="button" className={live ? "active" : ""} onClick={() => setLive((v) => !v)}>
+            {live ? "⏸ Pause live" : "▶ Play live"}
           </button>
-          <button type="button" className={burst ? 'active' : ''} onClick={() => setBurst((v) => !v)}>
+          <button
+            type="button"
+            className={burst ? "active" : ""}
+            onClick={() => setBurst((v) => !v)}
+          >
             ⚡ 40Hz burst
           </button>
-          <button type="button" className={light ? 'active' : ''} onClick={() => setLight((v) => !v)}>
-            {light ? '☀ Light' : '☾ Dark'}
+          <button
+            type="button"
+            className={light ? "active" : ""}
+            onClick={() => setLight((v) => !v)}
+          >
+            {light ? "☀ Light" : "☾ Dark"}
           </button>
         </div>
       </div>
@@ -207,18 +215,20 @@ export default function ChartLabPage() {
         </div>
         <div>
           <span>Bar width</span>
-          <strong className="mono">{engineState ? `${engineState.barWidth.toFixed(1)}px` : '—'}</strong>
+          <strong className="mono">
+            {engineState ? `${engineState.barWidth.toFixed(1)}px` : "—"}
+          </strong>
         </div>
         <div>
           <span>Right-edge index</span>
-          <strong className="mono">{engineState ? engineState.viewRight.toFixed(1) : '—'}</strong>
+          <strong className="mono">{engineState ? engineState.viewRight.toFixed(1) : "—"}</strong>
         </div>
         <div>
           <span>Canvas</span>
           <strong className="mono">
             {engineState
               ? `${Math.round(engineState.cssW)}×${Math.round(engineState.cssH)} @ ${engineState.dpr.toFixed(2)}×`
-              : '—'}
+              : "—"}
           </strong>
         </div>
       </div>

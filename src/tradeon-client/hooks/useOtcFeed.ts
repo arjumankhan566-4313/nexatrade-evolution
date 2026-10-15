@@ -25,10 +25,10 @@
  * overwrite each other's subscription. The single-chart terminal keeps sharing
  * the app-wide socket.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Socket } from 'socket.io-client';
-import { createSocket, socket } from '../lib/socket';
-import { api } from '../lib/api';
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Socket } from "socket.io-client";
+import { createSocket, socket } from "../lib/socket";
+import { api } from "../lib/api";
 import {
   parseOtcReplay,
   parseOtcTick,
@@ -38,13 +38,13 @@ import {
   type OtcSnapshotPayload,
   type OtcTick,
   type OtcTickTuple,
-} from '../chart/types';
+} from "../chart/types";
 
 export interface FeedState {
   candles: Candle[];
   livePrice: number | null;
   sequence: number;
-  status: 'idle' | 'loading' | 'live' | 'error';
+  status: "idle" | "loading" | "live" | "error";
   error: string | null;
   /**
    * Server clock minus the local clock (ms), learned from each tick's
@@ -62,14 +62,14 @@ const OLDER_PAGE = 300;
 export function useOtcFeed(
   symbol: string,
   timeframe: string,
-  options: { dedicatedSocket?: boolean } = {}
+  options: { dedicatedSocket?: boolean } = {},
 ) {
   const ownSocket = options.dedicatedSocket === true;
   const [state, setState] = useState<FeedState>({
     candles: [],
     livePrice: null,
     sequence: 0,
-    status: 'idle',
+    status: "idle",
     error: null,
     serverTimeOffset: 0,
   });
@@ -88,49 +88,63 @@ export function useOtcFeed(
     const next = serverTime - Date.now();
     offsetRef.current = next;
     setState((s) =>
-      Math.abs(s.serverTimeOffset - next) > 250 ? { ...s, serverTimeOffset: next } : s
+      Math.abs(s.serverTimeOffset - next) > 250 ? { ...s, serverTimeOffset: next } : s,
     );
   }, []);
 
-  const mergeTick = useCallback((tick: OtcTick) => {
-    learnServerTime(tick.serverTime);
-    const list = candlesRef.current;
-    if (!list.length) return;
-    const tail = list[list.length - 1];
-    // The server owns candle formation: its `candle` is the forming bucket for
-    // this exact tick, so the client only replaces its forming entry with that
-    // snapshot — it never derives OHLC itself.
-    const forming: Candle = tick.candle
-      ? { ...tick.candle }
-      : { ...tail, close: tick.price, high: Math.max(tail.high, tick.price), low: Math.min(tail.low, tick.price) };
-    const next = list.slice();
-    const tailIdx = next.length - 1;
-    if (forming.time > tail.time) {
-      // New bucket: our forming candle just finalized. The server re-sends the
-      // last two finalized candles on every roll (and after each resubscribe),
-      // so append ONLY the candles we do not already hold. Appending the whole
-      // ring duplicated the edge candles and injected a backwards time step,
-      // which is what produced the repeated/flat candles at the right edge.
-      next[tailIdx] = { ...tail, finalized: true };
-      for (const c of tick.closedCandles ?? []) {
-        if (c.time > next[next.length - 1].time) next.push({ ...c });
+  const mergeTick = useCallback(
+    (tick: OtcTick) => {
+      learnServerTime(tick.serverTime);
+      const list = candlesRef.current;
+      if (!list.length) return;
+      const tail = list[list.length - 1];
+      // The server owns candle formation: its `candle` is the forming bucket for
+      // this exact tick, so the client only replaces its forming entry with that
+      // snapshot — it never derives OHLC itself.
+      const forming: Candle = tick.candle
+        ? { ...tick.candle }
+        : {
+            ...tail,
+            close: tick.price,
+            high: Math.max(tail.high, tick.price),
+            low: Math.min(tail.low, tick.price),
+          };
+      const next = list.slice();
+      const tailIdx = next.length - 1;
+      if (forming.time > tail.time) {
+        // New bucket: our forming candle just finalized. The server re-sends the
+        // last two finalized candles on every roll (and after each resubscribe),
+        // so append ONLY the candles we do not already hold. Appending the whole
+        // ring duplicated the edge candles and injected a backwards time step,
+        // which is what produced the repeated/flat candles at the right edge.
+        next[tailIdx] = { ...tail, finalized: true };
+        for (const c of tick.closedCandles ?? []) {
+          if (c.time > next[next.length - 1].time) next.push({ ...c });
+        }
+        next.push(forming);
+      } else if (forming.time === tail.time) {
+        // Same bucket: update the forming candle in place.
+        next[tailIdx] = forming;
+      } else {
+        // Tick for a bucket that is already closed (stale replay): refresh the
+        // live price only — history is immutable.
+        setState((s) => ({ ...s, livePrice: tick.price, sequence: tick.sequence, status: "live" }));
+        return;
       }
-      next.push(forming);
-    } else if (forming.time === tail.time) {
-      // Same bucket: update the forming candle in place.
-      next[tailIdx] = forming;
-    } else {
-      // Tick for a bucket that is already closed (stale replay): refresh the
-      // live price only — history is immutable.
-      setState((s) => ({ ...s, livePrice: tick.price, sequence: tick.sequence, status: 'live' }));
-      return;
-    }
-    // Cap the in-memory buffer (matches the live tail the engine holds).
-    if (next.length > MAX_CANDLES) next.splice(0, next.length - MAX_CANDLES);
-    candlesRef.current = next;
-    lastSeq.current = tick.sequence;
-    setState((s) => ({ ...s, candles: next, livePrice: tick.price, sequence: tick.sequence, status: 'live' }));
-  }, [learnServerTime]);
+      // Cap the in-memory buffer (matches the live tail the engine holds).
+      if (next.length > MAX_CANDLES) next.splice(0, next.length - MAX_CANDLES);
+      candlesRef.current = next;
+      lastSeq.current = tick.sequence;
+      setState((s) => ({
+        ...s,
+        candles: next,
+        livePrice: tick.price,
+        sequence: tick.sequence,
+        status: "live",
+      }));
+    },
+    [learnServerTime],
+  );
 
   // Open/close this feed's own connection (declared before the stream effect so
   // it has run by the time the subscription is emitted).
@@ -157,7 +171,7 @@ export function useOtcFeed(
       const limit = Math.min(OLDER_PAGE, MAX_CANDLES - list.length);
       const res = await api<{ candles: Candle[] }>(
         `/market/otc/candles?symbol=${encodeURIComponent(symbol)}` +
-          `&interval=${encodeURIComponent(timeframe)}&before=${oldest}&limit=${limit}`
+          `&interval=${encodeURIComponent(timeframe)}&before=${oldest}&limit=${limit}`,
       );
       const older = (res.data?.candles || []).filter((c) => c.time < oldest);
       if (!older.length) return;
@@ -176,17 +190,27 @@ export function useOtcFeed(
     let cancelled = false;
     // Shared feeds use the app-wide socket; dedicated ones their own.
     const sock = ownRef.current ?? socket;
-    setState({ candles: [], livePrice: null, sequence: 0, status: 'loading', error: null, serverTimeOffset: 0 });
+    setState({
+      candles: [],
+      livePrice: null,
+      sequence: 0,
+      status: "loading",
+      error: null,
+      serverTimeOffset: 0,
+    });
     candlesRef.current = [];
     lastSeq.current = 0;
 
-    api<{ candles: Candle[]; snapshot: { price: number; sequence: number; currentCandle: Candle | null } | null }>(
-      `/market/otc/candles?symbol=${encodeURIComponent(symbol)}&interval=${encodeURIComponent(timeframe)}&limit=300`
+    api<{
+      candles: Candle[];
+      snapshot: { price: number; sequence: number; currentCandle: Candle | null } | null;
+    }>(
+      `/market/otc/candles?symbol=${encodeURIComponent(symbol)}&interval=${encodeURIComponent(timeframe)}&limit=300`,
     )
       .then((res) => {
         if (cancelled) return;
         if (res.status >= 400) {
-          setState((s) => ({ ...s, status: 'error', error: 'Failed to load candles' }));
+          setState((s) => ({ ...s, status: "error", error: "Failed to load candles" }));
           return;
         }
         const candles = res.data.candles || [];
@@ -195,19 +219,20 @@ export function useOtcFeed(
         setState((s) => ({
           ...s,
           candles,
-          livePrice: res.data.snapshot?.price ?? (candles.length ? candles[candles.length - 1].close : null),
+          livePrice:
+            res.data.snapshot?.price ?? (candles.length ? candles[candles.length - 1].close : null),
           sequence: lastSeq.current,
-          status: candles.length ? 'live' : 'live',
+          status: candles.length ? "live" : "live",
         }));
 
-        sock.emit('otc:subscribe', {
+        sock.emit("otc:subscribe", {
           symbols: [symbol],
           timeframe,
           since: lastSeq.current,
         });
       })
       .catch(() => {
-        if (!cancelled) setState((s) => ({ ...s, status: 'error', error: 'Network error' }));
+        if (!cancelled) setState((s) => ({ ...s, status: "error", error: "Network error" }));
       });
 
     const onHello = (_p: OtcHelloPayload) => {};
@@ -219,7 +244,12 @@ export function useOtcFeed(
         const next = candlesRef.current.slice();
         next[next.length - 1] = { ...c };
         candlesRef.current = next;
-        setState((s) => ({ ...s, candles: next, livePrice: p.snapshot?.price ?? s.livePrice, sequence: p.snapshot?.sequence ?? s.sequence }));
+        setState((s) => ({
+          ...s,
+          candles: next,
+          livePrice: p.snapshot?.price ?? s.livePrice,
+          sequence: p.snapshot?.sequence ?? s.sequence,
+        }));
       }
     };
     // Micro-JSON tuple → readable tick, then merged exactly as before.
@@ -254,23 +284,23 @@ export function useOtcFeed(
     // from the last sequence we hold so the server can replay what we missed.
     const onConnect = () => {
       if (!candlesRef.current.length) return; // the history load emits its own subscribe
-      sock.emit('otc:subscribe', { symbols: [symbol], timeframe, since: lastSeq.current });
+      sock.emit("otc:subscribe", { symbols: [symbol], timeframe, since: lastSeq.current });
     };
-    sock.on('connect', onConnect);
+    sock.on("connect", onConnect);
 
-    sock.on('otc:hello', onHello);
-    sock.on('otc:snapshot', onSnapshot);
-    sock.on('otc:tick', onTick);
-    sock.on('otc:replay', onReplay);
+    sock.on("otc:hello", onHello);
+    sock.on("otc:snapshot", onSnapshot);
+    sock.on("otc:tick", onTick);
+    sock.on("otc:replay", onReplay);
 
     return () => {
       cancelled = true;
-      sock.emit('otc:unsubscribe', {});
-      sock.off('connect', onConnect);
-      sock.off('otc:hello', onHello);
-      sock.off('otc:snapshot', onSnapshot);
-      sock.off('otc:tick', onTick);
-      sock.off('otc:replay', onReplay);
+      sock.emit("otc:unsubscribe", {});
+      sock.off("connect", onConnect);
+      sock.off("otc:hello", onHello);
+      sock.off("otc:snapshot", onSnapshot);
+      sock.off("otc:tick", onTick);
+      sock.off("otc:replay", onReplay);
     };
   }, [symbol, timeframe, mergeTick, learnServerTime]);
 

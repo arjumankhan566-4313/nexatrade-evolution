@@ -5,9 +5,9 @@
  * chart simply draws no trade overlays. Refreshed on a slow poll so a settled
  * position turns from a hollow expiry projection into a recorded exit dot.
  */
-import { useEffect, useState } from 'react';
-import { fetchAllTrades, type UiTrade } from '../lib/trades';
-import { useAuthStore } from '../stores/authStore';
+import { useEffect, useState } from "react";
+import { fetchAllTrades, type UiTrade } from "../lib/trades";
+import { useAuthStore } from "../stores/authStore";
 
 const POLL_MS = 15_000;
 

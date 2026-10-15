@@ -26,9 +26,10 @@
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.35),
     0 1px 0 rgba(255, 255, 255, 0.04) inset;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.3s ease,
-              border-color 0.3s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 .nt-body .admin-risk .risk-card-3d:hover {
   transform: translateY(-2px);
@@ -50,17 +51,33 @@
   pointer-events: none;
   transition: opacity 0.4s ease;
 }
-.nt-body .admin-risk .risk-glow-cyan { background: radial-gradient(ellipse, rgba(0, 212, 255, 0.1) 0%, transparent 70%); }
-.nt-body .admin-risk .risk-glow-amber { background: radial-gradient(ellipse, rgba(245, 166, 35, 0.08) 0%, transparent 70%); }
-.nt-body .admin-risk .risk-glow-violet { background: radial-gradient(ellipse, rgba(139, 92, 246, 0.08) 0%, transparent 70%); }
-.nt-body .admin-risk .risk-glow-green { background: radial-gradient(ellipse, rgba(34, 197, 94, 0.08) 0%, transparent 70%); }
+.nt-body .admin-risk .risk-glow-cyan {
+  background: radial-gradient(ellipse, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+}
+.nt-body .admin-risk .risk-glow-amber {
+  background: radial-gradient(ellipse, rgba(245, 166, 35, 0.08) 0%, transparent 70%);
+}
+.nt-body .admin-risk .risk-glow-violet {
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+}
+.nt-body .admin-risk .risk-glow-green {
+  background: radial-gradient(ellipse, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+}
 
-.nt-body .admin-risk .card-pad { padding: 20px 22px; }
+.nt-body .admin-risk .card-pad {
+  padding: 20px 22px;
+}
 
 /* ── Card title with icon ── */
 .nt-body .admin-risk .card-title {
-  font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  color: #e8eef7; margin: 0 0 16px; display: flex; align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e8eef7;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 .nt-body .admin-risk .risk-card-icon {
@@ -68,35 +85,72 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px; height: 30px;
+  width: 30px;
+  height: 30px;
   border-radius: 9px;
   background: rgba(0, 212, 255, 0.08);
   border: 1px solid rgba(0, 212, 255, 0.15);
 }
 .nt-body .admin-risk .risk-live-pill {
   margin-left: auto;
-  font-size: 9.5px; font-weight: 700; letter-spacing: .1em;
-  padding: 3px 9px; border-radius: 20px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+  border-radius: 20px;
   background: rgba(0, 232, 167, 0.12);
   color: var(--long);
   border: 1px solid rgba(0, 232, 167, 0.2);
   animation: risk-pulse-live 2s ease-in-out infinite;
 }
 @keyframes risk-pulse-live {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* ── Setting rows ── */
 .nt-body .admin-risk .setting-row {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-soft);
 }
-.nt-body .admin-risk .setting-row:last-child { border-bottom: none; }
-.nt-body .admin-risk .setting-row .st { font-weight: 600; font-size: 13.5px; color: #d8dfe9; }
-.nt-body .admin-risk .setting-row .sd { color: var(--muted); font-size: 12px; margin-top: 3px; max-width: 560px; }
-.nt-body .admin-risk .setting-row .sc { flex-shrink: 0; min-width: 220px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-.nt-body .admin-risk .range-val { font-family: var(--mono); font-weight: 700; min-width: 52px; text-align: right; color: var(--cyan); }
+.nt-body .admin-risk .setting-row:last-child {
+  border-bottom: none;
+}
+.nt-body .admin-risk .setting-row .st {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #d8dfe9;
+}
+.nt-body .admin-risk .setting-row .sd {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 3px;
+  max-width: 560px;
+}
+.nt-body .admin-risk .setting-row .sc {
+  flex-shrink: 0;
+  min-width: 220px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+.nt-body .admin-risk .range-val {
+  font-family: var(--mono);
+  font-weight: 700;
+  min-width: 52px;
+  text-align: right;
+  color: var(--cyan);
+}
 
 /* ── Range sliders ── */
 .nt-body .admin-risk input[type="range"] {
@@ -109,7 +163,8 @@
 }
 .nt-body .admin-risk input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--cyan);
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
@@ -120,7 +175,8 @@
   box-shadow: 0 0 14px rgba(0, 212, 255, 0.7);
 }
 .nt-body .admin-risk input[type="range"]::-moz-range-thumb {
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--cyan);
   border: none;
@@ -129,17 +185,30 @@
 
 /* ── Segmented buttons ── */
 .nt-body .admin-risk .segmented {
-  display: inline-flex; background: var(--panel-2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 3px; gap: 3px;
+  display: inline-flex;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
 }
 .nt-body .admin-risk .segmented button {
-  padding: 7px 16px; border: none; background: none; border-radius: 7px;
-  font-size: 12px; font-weight: 700; color: var(--muted); transition: all .2s;
-  letter-spacing: .03em;
+  padding: 7px 16px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
 }
 .nt-body .admin-risk .segmented button.active {
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.05));
-  color: var(--cyan); box-shadow: inset 0 0 0 1px rgba(0, 212, 255, 0.3), 0 2px 8px rgba(0, 212, 255, 0.1);
+  color: var(--cyan);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 212, 255, 0.3),
+    0 2px 8px rgba(0, 212, 255, 0.1);
 }
 .nt-body .admin-risk .segmented button:hover:not(.active) {
   color: #d8dfe9;
@@ -148,29 +217,56 @@
 
 /* ── Toggle switch ── */
 .nt-body .admin-risk .switch {
-  position: relative; width: 44px; height: 24px; background: #333A49;
-  border: none; border-radius: 20px; transition: all .25s; flex-shrink: 0;
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #333a49;
+  border: none;
+  border-radius: 20px;
+  transition: all 0.25s;
+  flex-shrink: 0;
   cursor: pointer;
 }
 .nt-body .admin-risk .switch::after {
-  content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
-  border-radius: 50%; background: #fff; transition: transform .25s;
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 .nt-body .admin-risk .switch.on {
   background: linear-gradient(135deg, var(--long), #00b894);
   box-shadow: 0 0 12px rgba(0, 232, 167, 0.3);
 }
-.nt-body .admin-risk .switch.on::after { transform: translateX(20px); }
+.nt-body .admin-risk .switch.on::after {
+  transform: translateX(20px);
+}
 
-.nt-body .admin-risk button:disabled { opacity: .45; cursor: not-allowed; }
-.nt-body .admin-risk button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.nt-body .admin-risk button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.nt-body .admin-risk button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
 
 /* ── Input fields ── */
 .nt-body .admin-risk .input {
-  background: var(--panel-2); border: 1px solid var(--border); width: 120px;
-  padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  width: 120px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 .nt-body .admin-risk .input:focus {
   border-color: rgba(0, 212, 255, 0.4);
@@ -180,11 +276,17 @@
 /* ── Save button ── */
 .nt-body .admin-risk .risk-save-btn {
   background: linear-gradient(135deg, #00d4ff, #0090ff);
-  border: none; color: #fff;
-  padding: 12px 28px; border-radius: var(--radius-sm); font-size: 13px;
-  font-weight: 700; letter-spacing: .03em;
+  border: none;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   box-shadow: 0 4px 16px rgba(0, 144, 255, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   cursor: pointer;
 }
 .nt-body .admin-risk .risk-save-btn:hover:not(:disabled) {
@@ -195,8 +297,13 @@
   transform: translateY(0);
 }
 
-.nt-body .admin-risk .badge-gold { background: rgba(240,185,11,.14); color: #F0B90B; }
-.nt-body .admin-risk .save-row { margin-top: 18px; }
+.nt-body .admin-risk .badge-gold {
+  background: rgba(240, 185, 11, 0.14);
+  color: #f0b90b;
+}
+.nt-body .admin-risk .save-row {
+  margin-top: 18px;
+}
 
 /* ── Status message ── */
 .nt-body .admin-risk .risk-status-msg {
@@ -216,15 +323,31 @@
   gap: 0 18px;
   align-items: start;
 }
-.nt-body .admin-risk form > .card { margin-bottom: 18px; }
-.nt-body .admin-risk form > .card:last-child { grid-column: 1 / -1; }
+.nt-body .admin-risk form > .card {
+  margin-bottom: 18px;
+}
+.nt-body .admin-risk form > .card:last-child {
+  grid-column: 1 / -1;
+}
 
 /* ── Responsive ── */
 @media (max-width: 920px) {
-  .nt-body .admin-risk form { grid-template-columns: 1fr; }
+  .nt-body .admin-risk form {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 720px) {
-  .nt-body .admin-risk .setting-row { flex-wrap: wrap; }
-  .nt-body .admin-risk .setting-row .sc { min-width: 0; width: 100%; justify-content: flex-start; flex-wrap: wrap; }
-  .nt-body .admin-risk .segmented { max-width: 100%; flex-wrap: wrap; }
+  .nt-body .admin-risk .setting-row {
+    flex-wrap: wrap;
+  }
+  .nt-body .admin-risk .setting-row .sc {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .nt-body .admin-risk .segmented {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
 }

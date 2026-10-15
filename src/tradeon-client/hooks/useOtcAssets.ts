@@ -13,8 +13,8 @@
  * (`stores/payoutStore`, backed by `GET /api/market/otc/payouts`); this value
  * is only the cold-start fallback for a screen that has not polled yet.
  */
-import { useEffect, useState } from 'react';
-import { api } from '../lib/api';
+import { useEffect, useState } from "react";
+import { api } from "../lib/api";
 
 export interface OtcAsset {
   symbol: string;
@@ -31,16 +31,16 @@ export interface OtcAsset {
 }
 
 /** Drawer tab order — All, then the five catalogue categories. */
-export const MARKET_TABS = ['ALL', 'CRYPTO', 'STOCK', 'FOREX', 'INDEX', 'COMMODITY'] as const;
+export const MARKET_TABS = ["ALL", "CRYPTO", "STOCK", "FOREX", "INDEX", "COMMODITY"] as const;
 export type MarketTab = (typeof MARKET_TABS)[number];
 
 export const MARKET_TAB_LABELS: Record<MarketTab, string> = {
-  ALL: 'All',
-  CRYPTO: 'Crypto',
-  STOCK: 'Stocks',
-  FOREX: 'Currency',
-  INDEX: 'Indices',
-  COMMODITY: 'Commodities',
+  ALL: "All",
+  CRYPTO: "Crypto",
+  STOCK: "Stocks",
+  FOREX: "Currency",
+  INDEX: "Indices",
+  COMMODITY: "Commodities",
 };
 
 /** One shared request per page load — the catalogue is public and static. */
@@ -50,7 +50,7 @@ let inflight: Promise<OtcAsset[]> | null = null;
 function loadCatalogue(): Promise<OtcAsset[]> {
   if (cached) return Promise.resolve(cached);
   if (!inflight) {
-    inflight = api<{ assets: OtcAsset[] }>('/market/otc/assets')
+    inflight = api<{ assets: OtcAsset[] }>("/market/otc/assets")
       .then((res) => {
         cached = res.data?.assets ?? [];
         return cached;

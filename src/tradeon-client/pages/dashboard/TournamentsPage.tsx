@@ -1,25 +1,30 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSession } from '@/tradeon-client/components/dashboard/SessionProvider';
-import { useLiveEvents } from '@/tradeon-client/lib/realtimeClient';
-import { api, money, fmtDate } from '@/tradeon-client/lib/apiClient';
-import { useCachedApi } from '@/tradeon-client/lib/useCachedApi';
+import { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "@/tradeon-client/components/dashboard/SessionProvider";
+import { useLiveEvents } from "@/tradeon-client/lib/realtimeClient";
+import { api, money, fmtDate } from "@/tradeon-client/lib/apiClient";
+import { useCachedApi } from "@/tradeon-client/lib/useCachedApi";
 
-const STATUS_BADGE = { LIVE: 'badge-up', SCHEDULED: 'badge-gold', FINISHED: '', CANCELLED: 'badge-down' };
+const STATUS_BADGE = {
+  LIVE: "badge-up",
+  SCHEDULED: "badge-gold",
+  FINISHED: "",
+  CANCELLED: "badge-down",
+};
 
 /* Spec §2.3 — tier names use foil gradients, never a new solid hue */
 const tierFoil = (name) => {
-  const n = String(name || '').toUpperCase();
-  if (n === 'GOLD') return 'foil-gold';
-  if (n === 'VIP' || n === 'PLATINUM') return 'foil-vip';
+  const n = String(name || "").toUpperCase();
+  if (n === "GOLD") return "foil-gold";
+  if (n === "VIP" || n === "PLATINUM") return "foil-vip";
   return null;
 };
 const tierBorder = (name) => {
-  const n = String(name || '').toUpperCase();
-  if (n === 'GOLD') return 'foil-border-gold';
-  if (n === 'VIP' || n === 'PLATINUM') return 'foil-border-vip';
+  const n = String(name || "").toUpperCase();
+  if (n === "GOLD") return "foil-border-gold";
+  if (n === "VIP" || n === "PLATINUM") return "foil-border-vip";
   return null;
 };
 
@@ -29,29 +34,42 @@ const tierBorder = (name) => {
  */
 export default function TournamentsPage() {
   const { user, refresh } = useSession();
-  const { data: tData, refresh: refreshT } = useCachedApi('/api/tournaments', () => api('/api/tournaments'));
-  const { data: vData, refresh: refreshV } = useCachedApi('/api/vip', () => api('/api/vip'));
+  const { data: tData, refresh: refreshT } = useCachedApi("/api/tournaments", () =>
+    api("/api/tournaments"),
+  );
+  const { data: vData, refresh: refreshV } = useCachedApi("/api/vip", () => api("/api/vip"));
   const [tournaments, setTournaments] = useState([]);
   const [enabled, setEnabled] = useState(true);
   const [vip, setVip] = useState({ tiers: [], me: null });
   const [openId, setOpenId] = useState(null);
   const [detail, setDetail] = useState(null);
-  const [busy, setBusy] = useState('');
+  const [busy, setBusy] = useState("");
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    if (tData) { setTournaments(tData.tournaments || []); setEnabled(tData.enabled); }
+    if (tData) {
+      setTournaments(tData.tournaments || []);
+      setEnabled(tData.enabled);
+    }
   }, [tData]);
-  useEffect(() => { if (vData) setVip(vData); }, [vData]);
+  useEffect(() => {
+    if (vData) setVip(vData);
+  }, [vData]);
 
   useEffect(() => {
-    const t = setInterval(() => { refreshT(); refreshV(); }, 30_000);
+    const t = setInterval(() => {
+      refreshT();
+      refreshV();
+    }, 30_000);
     return () => clearInterval(t);
   }, [refreshT, refreshV]);
 
   useLiveEvents({
     onEvent: (e) => {
-      if (['tournaments', 'tiers', 'tier', 'balance'].includes(e.topic)) { refreshT(); refreshV(); }
+      if (["tournaments", "tiers", "tier", "balance"].includes(e.topic)) {
+        refreshT();
+        refreshV();
+      }
     },
   });
 
@@ -61,27 +79,33 @@ export default function TournamentsPage() {
     try {
       setDetail(await api(`/api/tournaments/${id}`));
     } catch (err) {
-      setToast({ kind: 'error', text: err.message });
+      setToast({ kind: "error", text: err.message });
     }
   };
 
   useEffect(() => {
     if (!openId) return undefined;
-    const t = setInterval(() => api(`/api/tournaments/${openId}`).then(setDetail).catch(() => {}), 30_000);
+    const t = setInterval(
+      () =>
+        api(`/api/tournaments/${openId}`)
+          .then(setDetail)
+          .catch(() => {}),
+      30_000,
+    );
     return () => clearInterval(t);
   }, [openId]);
 
   const join = async (t) => {
     setBusy(t.id);
     try {
-      await api('/api/tournaments', { method: 'POST', body: { tournamentId: t.id } });
-      setToast({ kind: 'ok', text: `You are in — ${t.name}. Every trade you place now counts.` });
+      await api("/api/tournaments", { method: "POST", body: { tournamentId: t.id } });
+      setToast({ kind: "ok", text: `You are in — ${t.name}. Every trade you place now counts.` });
       refresh();
       load();
     } catch (err) {
-      setToast({ kind: 'error', text: err.message });
+      setToast({ kind: "error", text: err.message });
     } finally {
-      setBusy('');
+      setBusy("");
       setTimeout(() => setToast(null), 4500);
     }
   };
@@ -94,7 +118,8 @@ export default function TournamentsPage() {
         <div>
           <h1>Tournaments &amp; VIP</h1>
           <p className="muted">
-            Compete for automated prize pools and climb the volume ladder for permanently higher payouts.
+            Compete for automated prize pools and climb the volume ladder for permanently higher
+            payouts.
           </p>
         </div>
       </header>
@@ -105,8 +130,8 @@ export default function TournamentsPage() {
         {me?.tier ? (
           <>
             <div className="vip-now">
-              <div className={`tier-badge ${tierFoil(me.tier.name) || ''}`}>
-                <span className={tierFoil(me.tier.name) ? 'foil-text' : ''}>{me.tier.name}</span>
+              <div className={`tier-badge ${tierFoil(me.tier.name) || ""}`}>
+                <span className={tierFoil(me.tier.name) ? "foil-text" : ""}>{me.tier.name}</span>
               </div>
               <div className="grow">
                 <div className="row-between">
@@ -118,13 +143,13 @@ export default function TournamentsPage() {
                     className="fill"
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, me.progress || 0)}%` }}
-                    transition={{ type: 'spring', stiffness: 60, damping: 18 }}
+                    transition={{ type: "spring", stiffness: 60, damping: 18 }}
                   />
                 </div>
                 <span className="dim sm">
                   {me.next
                     ? `${money(Math.max(0, me.next.minVolume - me.volume))} more volume to reach ${me.next.name} (+${me.next.payoutBonus}% payout)`
-                    : 'Top tier reached — maximum payout bonus active.'}
+                    : "Top tier reached — maximum payout bonus active."}
                 </span>
               </div>
               <div className="bonus">
@@ -143,10 +168,12 @@ export default function TournamentsPage() {
             const border = tierBorder(t.name);
             const current = me?.tier?.id === t.id;
             return (
-              <div key={t.id} className={`tier ${border || ''} ${current ? 'current' : ''}`}>
-                <strong className={`${foil ? `${foil} foil-text` : ''}`}>{t.name}</strong>
+              <div key={t.id} className={`tier ${border || ""} ${current ? "current" : ""}`}>
+                <strong className={`${foil ? `${foil} foil-text` : ""}`}>{t.name}</strong>
                 <span className="dim">from {money(t.minVolume)} volume</span>
-                <div className="perk">+{t.payoutBonus}% payout · {t.cashbackPct}% cashback</div>
+                <div className="perk">
+                  +{t.payoutBonus}% payout · {t.cashbackPct}% cashback
+                </div>
                 <p className="dim sm">{t.perks}</p>
               </div>
             );
@@ -157,39 +184,76 @@ export default function TournamentsPage() {
       {/* ── tournaments ── */}
       <section className="glass card">
         <h2>Tournament lobby</h2>
-        {!enabled && <div className="alert alert-warn">Tournaments are currently disabled by the platform.</div>}
-        {!tournaments.length && <div className="empty">No tournaments scheduled right now — check back soon.</div>}
+        {!enabled && (
+          <div className="alert alert-warn">
+            Tournaments are currently disabled by the platform.
+          </div>
+        )}
+        {!tournaments.length && (
+          <div className="empty">No tournaments scheduled right now — check back soon.</div>
+        )}
 
         <div className="lobby">
           {tournaments.map((t) => (
-            <motion.article key={t.id} className="event" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.article
+              key={t.id}
+              className="event"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               <div className="event-top">
                 <div>
                   <strong>{t.name}</strong>
-                  <span className="dim">{t.description || 'Highest net P/L wins.'}</span>
+                  <span className="dim">{t.description || "Highest net P/L wins."}</span>
                 </div>
-                <span className={`badge ${STATUS_BADGE[t.status] || ''}`}>{t.status}</span>
+                <span className={`badge ${STATUS_BADGE[t.status] || ""}`}>{t.status}</span>
               </div>
 
               <div className="event-grid">
-                <div><span>Prize pool</span><strong className="gold-text">{money(t.prizePool + t.guaranteed)}</strong></div>
-                <div><span>Entry</span><strong>{t.entryFee > 0 ? money(t.entryFee) : 'Free'}</strong></div>
-                <div><span>Account</span><strong>{t.accountType}</strong></div>
-                <div><span>Players</span><strong className="mono">{t.players}{t.maxPlayers > 0 ? ` / ${t.maxPlayers}` : ''}</strong></div>
-                <div><span>Ends</span><strong className="sm">{fmtDate(t.endsAt)}</strong></div>
+                <div>
+                  <span>Prize pool</span>
+                  <strong className="gold-text">{money(t.prizePool + t.guaranteed)}</strong>
+                </div>
+                <div>
+                  <span>Entry</span>
+                  <strong>{t.entryFee > 0 ? money(t.entryFee) : "Free"}</strong>
+                </div>
+                <div>
+                  <span>Account</span>
+                  <strong>{t.accountType}</strong>
+                </div>
+                <div>
+                  <span>Players</span>
+                  <strong className="mono">
+                    {t.players}
+                    {t.maxPlayers > 0 ? ` / ${t.maxPlayers}` : ""}
+                  </strong>
+                </div>
+                <div>
+                  <span>Ends</span>
+                  <strong className="sm">{fmtDate(t.endsAt)}</strong>
+                </div>
               </div>
 
               <div className="event-act">
-                <button className="btn btn-sm btn-ghost" onClick={() => openDetail(t.id)}>Standings</button>
+                <button className="btn btn-sm btn-ghost" onClick={() => openDetail(t.id)}>
+                  Standings
+                </button>
                 {t.joined ? (
                   <span className="badge badge-up">JOINED</span>
                 ) : (
                   <button
                     className="btn btn-sm btn-gold"
-                    disabled={!enabled || busy === t.id || !['LIVE', 'SCHEDULED'].includes(t.status)}
+                    disabled={
+                      !enabled || busy === t.id || !["LIVE", "SCHEDULED"].includes(t.status)
+                    }
                     onClick={() => join(t)}
                   >
-                    {busy === t.id ? 'Joining…' : t.entryFee > 0 ? `Join · ${money(t.entryFee)}` : 'Join free'}
+                    {busy === t.id
+                      ? "Joining…"
+                      : t.entryFee > 0
+                        ? `Join · ${money(t.entryFee)}`
+                        : "Join free"}
                   </button>
                 )}
               </div>
@@ -200,34 +264,67 @@ export default function TournamentsPage() {
 
       <AnimatePresence>
         {openId && (
-          <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpenId(null)}>
-            <motion.div className="glass modal" initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()}>
+          <motion.div
+            className="scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpenId(null)}
+          >
+            <motion.div
+              className="glass modal"
+              initial={{ scale: 0.95, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="row-between">
-                <h3>{detail?.tournament?.name || 'Standings'}</h3>
-                <button className="btn btn-sm btn-ghost" onClick={() => setOpenId(null)}>Close</button>
+                <h3>{detail?.tournament?.name || "Standings"}</h3>
+                <button className="btn btn-sm btn-ghost" onClick={() => setOpenId(null)}>
+                  Close
+                </button>
               </div>
               {!detail && <div className="empty">Loading standings…</div>}
               {detail && (
                 <>
                   <p className="muted" style={{ fontSize: 12.5 }}>
-                    Prize pool {money(detail.tournament.prizePool + detail.tournament.guaranteed)} · split{' '}
-                    {detail.tournament.prizeSplit.map((s) => `${s}%`).join(' / ')} · ends {fmtDate(detail.tournament.endsAt)}
+                    Prize pool {money(detail.tournament.prizePool + detail.tournament.guaranteed)} ·
+                    split {detail.tournament.prizeSplit.map((s) => `${s}%`).join(" / ")} · ends{" "}
+                    {fmtDate(detail.tournament.endsAt)}
                   </p>
                   <div className="table-wrap">
                     <table className="data">
-                      <thead><tr><th>#</th><th>Player</th><th>P/L</th><th>Win rate</th><th>Trades</th><th>Prize</th></tr></thead>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Player</th>
+                          <th>P/L</th>
+                          <th>Win rate</th>
+                          <th>Trades</th>
+                          <th>Prize</th>
+                        </tr>
+                      </thead>
                       <tbody>
                         {detail.standings.map((s) => (
-                          <tr key={s.userId} className={s.userId === user?.id ? 'me-row' : ''}>
+                          <tr key={s.userId} className={s.userId === user?.id ? "me-row" : ""}>
                             <td className="mono">{s.rank}</td>
-                            <td>{s.name}{s.userId === user?.id && <em className="me"> you</em>}</td>
-                            <td className={`mono ${s.pnl >= 0 ? 'up' : 'down'}`}>{money(s.pnl)}</td>
+                            <td>
+                              {s.name}
+                              {s.userId === user?.id && <em className="me"> you</em>}
+                            </td>
+                            <td className={`mono ${s.pnl >= 0 ? "up" : "down"}`}>{money(s.pnl)}</td>
                             <td className="mono">{s.winRate}%</td>
                             <td className="mono">{s.trades}</td>
-                            <td className="mono gold-text">{s.prize > 0 ? money(s.prize) : '—'}</td>
+                            <td className="mono gold-text">{s.prize > 0 ? money(s.prize) : "—"}</td>
                           </tr>
                         ))}
-                        {!detail.standings.length && <tr><td colSpan={6} className="empty">No entries yet.</td></tr>}
+                        {!detail.standings.length && (
+                          <tr>
+                            <td colSpan={6} className="empty">
+                              No entries yet.
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -240,7 +337,12 @@ export default function TournamentsPage() {
 
       <AnimatePresence>
         {toast && (
-          <motion.div className={`toast ${toast.kind}`} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+          <motion.div
+            className={`toast ${toast.kind}`}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
             {toast.text}
           </motion.div>
         )}

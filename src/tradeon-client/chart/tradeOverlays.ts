@@ -10,15 +10,15 @@
  *                projection dot (at the entry price, like the legacy chart).
  * Closed trades → exit line at the recorded exit price + entry/exit dots.
  */
-import type { Candle, ChartOverlays, OverlayDot, OverlayLine } from './types';
-import type { UiTrade } from '../lib/trades';
+import type { Candle, ChartOverlays, OverlayDot, OverlayLine } from "./types";
+import type { UiTrade } from "../lib/trades";
 
-const CALL_ENTRY = '#26a69a';
-const PUT_ENTRY = '#ef5350';
-const PROJECTION = '#f5c542';
-const WIN_EXIT = '#26a69a';
-const LOSS_EXIT = '#ef5350';
-const PAST_ENTRY_DOT = '#8b95a7';
+const CALL_ENTRY = "#26a69a";
+const PUT_ENTRY = "#ef5350";
+const PROJECTION = "#f5c542";
+const WIN_EXIT = "#26a69a";
+const LOSS_EXIT = "#ef5350";
+const PAST_ENTRY_DOT = "#8b95a7";
 /** The legacy chart shows the running positions plus the eight most recent. */
 const MAX_CLOSED = 8;
 
@@ -54,7 +54,7 @@ export function indexForTime(candles: Candle[], timeMs: number, bucketMs: number
 
 /** A usable positive price, else the fallback (pending rows carry price 0). */
 function usablePrice(v: number | null | undefined, fallback: number): number {
-  return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : fallback;
+  return typeof v === "number" && Number.isFinite(v) && v > 0 ? v : fallback;
 }
 
 /**
@@ -70,14 +70,14 @@ export function buildTradeOverlays(
   trades: UiTrade[],
   candles: Candle[],
   bucketMs: number,
-  symbol?: string
+  symbol?: string,
 ): ChartOverlays {
   const lines: OverlayLine[] = [];
   const dots: OverlayDot[] = [];
   if (!candles.length || !trades.length) return { lines, dots };
 
   const scoped = trades.filter(
-    (t) => (!symbol || t.symbol === symbol) && Number.isFinite(t.entryPrice) && t.entryPrice > 0
+    (t) => (!symbol || t.symbol === symbol) && Number.isFinite(t.entryPrice) && t.entryPrice > 0,
   );
   if (!scoped.length) return { lines, dots };
 
@@ -89,13 +89,13 @@ export function buildTradeOverlays(
     lines.push(line);
   };
 
-  const open = scoped.filter((t) => t.status === 'OPEN');
-  const closed = scoped.filter((t) => t.status !== 'OPEN').slice(0, MAX_CLOSED);
+  const open = scoped.filter((t) => t.status === "OPEN");
+  const closed = scoped.filter((t) => t.status !== "OPEN").slice(0, MAX_CLOSED);
 
   for (const t of open) {
     const entryIdx = indexForTime(candles, new Date(t.createdAt).getTime(), bucketMs);
     const expiryIdx = indexForTime(candles, new Date(t.expiresAt).getTime(), bucketMs);
-    const entryColor = t.direction === 'CALL' ? CALL_ENTRY : PUT_ENTRY;
+    const entryColor = t.direction === "CALL" ? CALL_ENTRY : PUT_ENTRY;
     pushLine({
       id: `${t.id}:entry`,
       price: t.entryPrice,
@@ -104,14 +104,20 @@ export function buildTradeOverlays(
       dashed: true,
       index: entryIdx,
     });
-    dots.push({ id: `${t.id}:entry-dot`, index: entryIdx, price: t.entryPrice, color: entryColor, label: 'E' });
+    dots.push({
+      id: `${t.id}:entry-dot`,
+      index: entryIdx,
+      price: t.entryPrice,
+      color: entryColor,
+      label: "E",
+    });
     dots.push({
       id: `${t.id}:expiry-dot`,
       index: expiryIdx,
       price: t.entryPrice,
       color: PROJECTION,
       hollow: true,
-      label: 'X',
+      label: "X",
     });
   }
 
@@ -119,7 +125,7 @@ export function buildTradeOverlays(
     const entryIdx = indexForTime(candles, new Date(t.createdAt).getTime(), bucketMs);
     const exitIdx = indexForTime(candles, new Date(t.expiresAt).getTime(), bucketMs);
     const exitPrice = usablePrice(t.exitPrice, t.entryPrice);
-    const exitColor = t.status === 'WON' ? WIN_EXIT : LOSS_EXIT;
+    const exitColor = t.status === "WON" ? WIN_EXIT : LOSS_EXIT;
     pushLine({
       id: `${t.id}:exit`,
       price: exitPrice,
@@ -128,8 +134,21 @@ export function buildTradeOverlays(
       dashed: true,
       index: exitIdx,
     });
-    dots.push({ id: `${t.id}:entry-dot`, index: entryIdx, price: t.entryPrice, color: PAST_ENTRY_DOT, label: 'E' });
-    dots.push({ id: `${t.id}:exit-dot`, index: exitIdx, price: exitPrice, color: exitColor, hollow: true, label: 'X' });
+    dots.push({
+      id: `${t.id}:entry-dot`,
+      index: entryIdx,
+      price: t.entryPrice,
+      color: PAST_ENTRY_DOT,
+      label: "E",
+    });
+    dots.push({
+      id: `${t.id}:exit-dot`,
+      index: exitIdx,
+      price: exitPrice,
+      color: exitColor,
+      hollow: true,
+      label: "X",
+    });
   }
 
   return { lines, dots };

@@ -6,12 +6,12 @@ export interface ApiResponse<T = unknown> {
 
 export async function api<T = unknown>(
   path: string,
-  options: { method?: string; body?: unknown } = {}
+  options: { method?: string; body?: unknown } = {},
 ): Promise<ApiResponse<T>> {
   const res = await fetch(`/api${path}`, {
-    method: options.method ?? 'GET',
-    credentials: 'include',
-    headers: options.body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+    method: options.method ?? "GET",
+    credentials: "include",
+    headers: options.body !== undefined ? { "Content-Type": "application/json" } : undefined,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
   let data: any = null;

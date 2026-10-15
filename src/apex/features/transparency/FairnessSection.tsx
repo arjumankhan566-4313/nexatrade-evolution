@@ -1,7 +1,13 @@
-import { Disclaimer, GlassCard, SectionHeading, SectionShell, TiltCard } from '../../components/primitives';
-import { FAIRNESS_FLOW } from '../../config/content.config';
-import FairnessVerifier from './FairnessVerifier';
-import MetricsStrip from './MetricsStrip';
+import {
+  Disclaimer,
+  GlassCard,
+  SectionHeading,
+  SectionShell,
+  TiltCard,
+} from "../../components/primitives";
+import { FAIRNESS_FLOW } from "../../config/content.config";
+import FairnessVerifier from "./FairnessVerifier";
+import MetricsStrip from "./MetricsStrip";
 
 /** Feature 4 — Transparency Centre: the fairness model, its verifier and metrics. */
 export default function FairnessSection() {
@@ -24,8 +30,12 @@ export default function FairnessSection() {
             <TiltCard intensity={0.6} className="h-full">
               <GlassCard className="flex h-full flex-col p-5">
                 <span className="font-mono text-xs text-apex-cyan">{`0${index + 1}`}</span>
-                <h3 className="mt-2 font-apex text-base font-semibold text-apex-ink">{step.title}</h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-apex-muted">{step.description}</p>
+                <h3 className="mt-2 font-apex text-base font-semibold text-apex-ink">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-apex-muted">
+                  {step.description}
+                </p>
               </GlassCard>
             </TiltCard>
           </li>

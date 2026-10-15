@@ -1,7 +1,7 @@
-import { ErrorState, Skeleton } from '../../components/primitives';
-import { useResource } from '../../hooks/useResource';
-import { metricsProvider } from '../../providers';
-import type { MetricSample } from '../../providers/types';
+import { ErrorState, Skeleton } from "../../components/primitives";
+import { useResource } from "../../hooks/useResource";
+import { metricsProvider } from "../../providers";
+import type { MetricSample } from "../../providers/types";
 
 /**
  * Feature 4 — system metrics.
@@ -17,9 +17,9 @@ import type { MetricSample } from '../../providers/types';
  */
 
 function formatValue(sample: MetricSample): string {
-  if (sample.value === null) return '—';
+  if (sample.value === null) return "—";
   // Grouped thousands keep a large counter readable at tile size.
-  return sample.value.toLocaleString('en-US', {
+  return sample.value.toLocaleString("en-US", {
     minimumFractionDigits: sample.precision,
     maximumFractionDigits: sample.precision,
   });
@@ -27,10 +27,10 @@ function formatValue(sample: MetricSample): string {
 
 /** Short local clock time — a raw ISO stamp is unreadable at tile size. */
 function formatMeasuredAt(iso: string | null): string {
-  if (!iso) return '';
+  if (!iso) return "";
   const at = new Date(iso);
-  if (Number.isNaN(at.getTime())) return '';
-  return at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (Number.isNaN(at.getTime())) return "";
+  return at.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function MetricTile({ sample }: { sample: MetricSample }) {
@@ -46,9 +46,9 @@ function MetricTile({ sample }: { sample: MetricSample }) {
       <p className="mt-3 flex min-w-0 flex-wrap items-baseline gap-x-1.5 font-apex">
         <span
           className={`min-w-0 break-words text-xl font-semibold tabular-nums sm:text-2xl ${
-            unmeasured ? 'text-apex-faint' : 'text-apex-ink'
+            unmeasured ? "text-apex-faint" : "text-apex-ink"
           }`}
-          title={unmeasured ? 'Not measured yet' : undefined}
+          title={unmeasured ? "Not measured yet" : undefined}
         >
           {formatValue(sample)}
         </span>
@@ -56,7 +56,7 @@ function MetricTile({ sample }: { sample: MetricSample }) {
       </p>
       <p className="mt-1 text-[11px] text-apex-faint">
         {unmeasured
-          ? 'Awaiting a measurement source'
+          ? "Awaiting a measurement source"
           : `Measured at ${formatMeasuredAt(sample.measuredAt)}`}
       </p>
     </div>
@@ -66,10 +66,10 @@ function MetricTile({ sample }: { sample: MetricSample }) {
 export default function MetricsStrip() {
   const { data, status, error, reload } = useResource(
     () => metricsProvider.getSystemMetrics(),
-    metricsProvider.id
+    metricsProvider.id,
   );
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {[0, 1, 2, 3].map((index) => (
@@ -83,11 +83,11 @@ export default function MetricsStrip() {
     );
   }
 
-  if (status === 'error') {
+  if (status === "error") {
     return (
       <ErrorState
         title="Metrics unavailable"
-        description={error ?? 'The metrics provider did not respond.'}
+        description={error ?? "The metrics provider did not respond."}
         actionLabel="Retry"
         onAction={reload}
       />

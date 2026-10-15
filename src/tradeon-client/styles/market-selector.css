@@ -21,7 +21,12 @@
   position: absolute;
   inset: 0;
   z-index: 70;
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Click-catcher: the chart stays visible behind the list. */
@@ -77,9 +82,14 @@
   background: transparent;
   color: var(--mkt-muted);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
-.mkt__close:hover { background: rgba(255, 255, 255, 0.06); color: var(--mkt-text); }
+.mkt__close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mkt-text);
+}
 
 /* ── Search ── */
 .mkt__search-wrap {
@@ -92,7 +102,9 @@
   border: 1px solid var(--mkt-line-2);
   background: var(--mkt-elev);
   color: var(--mkt-dim);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 .mkt__search-wrap:focus-within {
   border-color: rgba(41, 134, 255, 0.55);
@@ -110,7 +122,9 @@
   letter-spacing: 0.02em;
   outline: none;
 }
-.mkt__search::placeholder { color: var(--mkt-dim); }
+.mkt__search::placeholder {
+  color: var(--mkt-dim);
+}
 
 /* ── Category tabs ── */
 .mkt__tabs {
@@ -137,14 +151,17 @@
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-.mkt__tab:hover { color: var(--mkt-text); border-color: rgba(255, 255, 255, 0.18); }
+.mkt__tab:hover {
+  color: var(--mkt-text);
+  border-color: rgba(255, 255, 255, 0.18);
+}
 .mkt__tab.is-active {
   color: var(--mkt-text);
   border-color: rgba(41, 134, 255, 0.5);
   background: rgba(41, 134, 255, 0.1);
 }
 .mkt__tab.is-active::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 14%;
   right: 14%;
@@ -159,7 +176,9 @@
   font-weight: 800;
   color: var(--mkt-dim);
 }
-.mkt__tab.is-active em { color: rgba(255, 255, 255, 0.6); }
+.mkt__tab.is-active em {
+  color: rgba(255, 255, 255, 0.6);
+}
 
 /* ── Column head + list ── */
 .mkt__colhead {
@@ -185,9 +204,13 @@
   padding: 4px 8px;
   border-radius: var(--mkt-radius);
   border: 1px solid transparent;
-  transition: background 0.14s ease, border-color 0.14s ease;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
 }
-.mkt__row:hover { background: var(--mkt-panel-2); }
+.mkt__row:hover {
+  background: var(--mkt-panel-2);
+}
 .mkt__row.is-active {
   background: rgba(41, 134, 255, 0.08);
   border-color: rgba(41, 134, 255, 0.3);
@@ -203,10 +226,17 @@
   background: transparent;
   color: #4c5566;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
-.mkt__star:hover { color: var(--mkt-gold); background: rgba(245, 197, 66, 0.1); }
-.mkt__star.is-on { color: var(--mkt-gold); }
+.mkt__star:hover {
+  color: var(--mkt-gold);
+  background: rgba(245, 197, 66, 0.1);
+}
+.mkt__star.is-on {
+  color: var(--mkt-gold);
+}
 .mkt__pick {
   flex: 1;
   min-width: 0;
@@ -265,17 +295,29 @@
 
 /* ── Animations ── */
 @keyframes mktSlideIn {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 @keyframes mktSlide {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* ── Mobile: bottom sheet ── */
 @media (max-width: 900px) {
-  .mkt { position: fixed; }
+  .mkt {
+    position: fixed;
+  }
   .mkt__panel {
     left: 0;
     right: 0;
@@ -292,5 +334,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mkt__panel { animation: none; }
+  .mkt__panel {
+    animation: none;
+  }
 }

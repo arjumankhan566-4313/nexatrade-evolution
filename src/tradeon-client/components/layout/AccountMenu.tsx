@@ -8,17 +8,17 @@
  * missing from one screen while showing on the other — the terminal topbar used
  * to be a bare mode toggle with no panel at all.
  */
-import { useEffect, useRef, useState } from 'react';
-import { Link } from '@/tradeon-client/compat/react-router-dom';
-import { useAuthStore } from '../../stores/authStore';
-import { useAccountModeStore } from '../../stores/accountModeStore';
-import '../../styles/chart-shell.css';
+import { useEffect, useRef, useState } from "react";
+import { Link } from "@/tradeon-client/compat/react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
+import { useAccountModeStore } from "../../stores/accountModeStore";
+import "../../styles/chart-shell.css";
 
 function money(n: number): string {
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' | 'terminal' }) {
+export default function AccountMenu({ variant = "chart" }: { variant?: "chart" | "terminal" }) {
   const { user, logout } = useAuthStore();
   const { mode, setMode } = useAccountModeStore();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,29 +31,34 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false);
+      if (e.key === "Escape") setMenuOpen(false);
     };
-    document.addEventListener('mousedown', onDocClick);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener('mousedown', onDocClick);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
     };
   }, [menuOpen]);
 
-  if (!user) return variant === 'chart' ? <Link to="/login" className="chdr__signin">Sign in</Link> : null;
+  if (!user)
+    return variant === "chart" ? (
+      <Link to="/login" className="chdr__signin">
+        Sign in
+      </Link>
+    ) : null;
 
-  const balance = mode === 'real' ? user.balanceReal : user.balanceDemo;
-  const shown = (n: number) => (hidden ? '••••••' : money(n));
+  const balance = mode === "real" ? user.balanceReal : user.balanceDemo;
+  const shown = (n: number) => (hidden ? "••••••" : money(n));
 
   return (
     <div className="chdr__account" ref={menuRef}>
-      {variant === 'terminal' ? (
+      {variant === "terminal" ? (
         <div className="terminal-account-display">
-          <span className="account-label">{mode === 'real' ? 'REAL' : 'DEMO'}</span>
+          <span className="account-label">{mode === "real" ? "REAL" : "DEMO"}</span>
           <button
             type="button"
-            className={`account-balance-btn ${menuOpen ? 'is-open' : ''}`}
+            className={`account-balance-btn ${menuOpen ? "is-open" : ""}`}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             aria-label="Account menu"
@@ -61,7 +66,15 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
           >
             <span className={`account-mode-dot ${mode}`} />
             <span className="mono">{shown(balance)}</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            >
               <path d="M6 9l6 6 6-6" />
             </svg>
           </button>
@@ -69,16 +82,24 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
       ) : (
         <button
           type="button"
-          className={`chdr__account-btn ${menuOpen ? 'is-open' : ''}`}
+          className={`chdr__account-btn ${menuOpen ? "is-open" : ""}`}
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
         >
           <span className="chdr__account-text">
-            <small>{mode === 'real' ? 'LIVE ACCOUNT' : 'DEMO ACCOUNT'}</small>
+            <small>{mode === "real" ? "LIVE ACCOUNT" : "DEMO ACCOUNT"}</small>
             <strong>{shown(balance)}</strong>
           </span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          >
             <path d="M6 9l6 6 6-6" />
           </svg>
         </button>
@@ -88,7 +109,7 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
         <div className="chdr__menu" role="menu" aria-label="Account">
           <div className="chdr__menu-head">
             <div className="chdr__menu-id">
-              <span className="chdr__menu-tier">{user.isStaff ? 'STAFF' : 'STANDARD'}</span>
+              <span className="chdr__menu-tier">{user.isStaff ? "STAFF" : "STANDARD"}</span>
               <strong>{user.fullName}</strong>
               <span className="chdr__menu-mail">{user.email}</span>
               <span className="chdr__menu-uid">UID: {user.id.slice(0, 8)}</span>
@@ -96,10 +117,18 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
             <button
               type="button"
               className="chdr__menu-eye"
-              aria-label={hidden ? 'Show balances' : 'Hide balances'}
+              aria-label={hidden ? "Show balances" : "Hide balances"}
               onClick={() => setHidden((v) => !v)}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              >
                 <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
                 <circle cx="12" cy="12" r="3" />
                 {hidden && <path d="M3 3l18 18" />}
@@ -110,9 +139,9 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
           <button
             type="button"
             role="menuitemradio"
-            aria-checked={mode === 'real'}
-            className={`chdr__acct ${mode === 'real' ? 'is-active' : ''}`}
-            onClick={() => setMode('real')}
+            aria-checked={mode === "real"}
+            className={`chdr__acct ${mode === "real" ? "is-active" : ""}`}
+            onClick={() => setMode("real")}
           >
             <span className="chdr__acct-radio" />
             <span className="chdr__acct-body">
@@ -124,9 +153,9 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
           <button
             type="button"
             role="menuitemradio"
-            aria-checked={mode === 'demo'}
-            className={`chdr__acct is-demo ${mode === 'demo' ? 'is-active' : ''}`}
-            onClick={() => setMode('demo')}
+            aria-checked={mode === "demo"}
+            className={`chdr__acct is-demo ${mode === "demo" ? "is-active" : ""}`}
+            onClick={() => setMode("demo")}
           >
             <span className="chdr__acct-radio" />
             <span className="chdr__acct-body">
@@ -139,24 +168,46 @@ export default function AccountMenu({ variant = 'chart' }: { variant?: 'chart' |
               aria-label="Account settings"
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
               </svg>
             </Link>
           </button>
 
           <nav className="chdr__menu-links" aria-label="User panel">
-            <Link to="/dashboard" role="menuitem" onClick={() => setMenuOpen(false)}>My Account</Link>
-            <Link to="/dashboard/wallet" role="menuitem" onClick={() => setMenuOpen(false)}>Wallet &amp; payments</Link>
-            <Link to="/dashboard/kyc" role="menuitem" onClick={() => setMenuOpen(false)}>Profile &amp; Address</Link>
-            <Link to="/dashboard/history" role="menuitem" onClick={() => setMenuOpen(false)}>Trade history</Link>
-            <Link to="/dashboard/security" role="menuitem" onClick={() => setMenuOpen(false)}>Security</Link>
+            <Link to="/dashboard" role="menuitem" onClick={() => setMenuOpen(false)}>
+              My Account
+            </Link>
+            <Link to="/dashboard/wallet" role="menuitem" onClick={() => setMenuOpen(false)}>
+              Wallet &amp; payments
+            </Link>
+            <Link to="/dashboard/kyc" role="menuitem" onClick={() => setMenuOpen(false)}>
+              Profile &amp; Address
+            </Link>
+            <Link to="/dashboard/history" role="menuitem" onClick={() => setMenuOpen(false)}>
+              Trade history
+            </Link>
+            <Link to="/dashboard/security" role="menuitem" onClick={() => setMenuOpen(false)}>
+              Security
+            </Link>
           </nav>
 
           <button
             type="button"
             className="chdr__menu-out"
-            onClick={() => { setMenuOpen(false); void logout(); }}
+            onClick={() => {
+              setMenuOpen(false);
+              void logout();
+            }}
           >
             Log out
           </button>

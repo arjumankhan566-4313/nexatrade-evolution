@@ -5,15 +5,15 @@
  * quick-access tab after a reload. The header renders one tab per favorite
  * (in star order, newest first).
  */
-import { create } from 'zustand';
+import { create } from "zustand";
 
-const STORAGE_KEY = 'nexa.chart.favorites';
+const STORAGE_KEY = "nexa.chart.favorites";
 
 function read(): string[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.filter((s): s is string => typeof s === 'string') : [];
+    return Array.isArray(list) ? list.filter((s): s is string => typeof s === "string") : [];
   } catch {
     return [];
   }

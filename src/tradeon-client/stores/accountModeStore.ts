@@ -2,9 +2,9 @@
  * Account mode store — tracks whether the user is trading with their REAL
  * or DEMO balance. Ported from legacy AccountModeProvider context.
  */
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type AccountMode = 'real' | 'demo';
+export type AccountMode = "real" | "demo";
 
 interface AccountModeState {
   mode: AccountMode;
@@ -12,6 +12,6 @@ interface AccountModeState {
 }
 
 export const useAccountModeStore = create<AccountModeState>((set) => ({
-  mode: 'demo',
+  mode: "demo",
   setMode: (mode) => set({ mode }),
 }));

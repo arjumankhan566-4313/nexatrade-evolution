@@ -6,11 +6,11 @@
  * mounts the native Canvas engine (CanvasChart) with its own OTC instrument and
  * timeframe, and the engine owns that cell's live OTC subscription.
  */
-import { useEffect, useMemo, useState } from 'react';
-import CanvasChart from '../../components/Chart/CanvasChart';
-import { api } from '../../lib/api';
-import '../../styles/legacy-pages.css';
-import '../../styles/multi-chart.css';
+import { useEffect, useMemo, useState } from "react";
+import CanvasChart from "../../components/Chart/CanvasChart";
+import { api } from "../../lib/api";
+import "../../styles/legacy-pages.css";
+import "../../styles/multi-chart.css";
 
 interface OtcAsset {
   symbol: string;
@@ -25,24 +25,24 @@ interface Slot {
 
 /* Display labels for the OTC asset categories (mirrors lib/assetCatalog). */
 const CATEGORY_LABELS: Record<string, string> = {
-  CRYPTO: 'Crypto',
-  FOREX: 'Currency',
-  STOCK: 'Stocks',
-  COMMODITY: 'Commodities',
-  INDEX: 'Indices',
+  CRYPTO: "Crypto",
+  FOREX: "Currency",
+  STOCK: "Stocks",
+  COMMODITY: "Commodities",
+  INDEX: "Indices",
 };
 
 const LAYOUTS = [
-  { id: 1, label: '1 chart' },
-  { id: 2, label: '2 charts' },
-  { id: 4, label: '4 charts' },
+  { id: 1, label: "1 chart" },
+  { id: 2, label: "2 charts" },
+  { id: 4, label: "4 charts" },
 ];
-const TIMEFRAMES = ['1m', '5m', '15m', '1h'];
+const TIMEFRAMES = ["1m", "5m", "15m", "1h"];
 const DEFAULT_SLOTS: Slot[] = [
-  { symbol: 'BTCUSD-OTC', timeframe: '1m' },
-  { symbol: 'ETHUSD-OTC', timeframe: '1m' },
-  { symbol: 'EURUSD-OTC', timeframe: '1m' },
-  { symbol: 'XAUUSD-OTC', timeframe: '1m' },
+  { symbol: "BTCUSD-OTC", timeframe: "1m" },
+  { symbol: "ETHUSD-OTC", timeframe: "1m" },
+  { symbol: "EURUSD-OTC", timeframe: "1m" },
+  { symbol: "XAUUSD-OTC", timeframe: "1m" },
 ];
 
 export default function MultiChartPage() {
@@ -51,7 +51,7 @@ export default function MultiChartPage() {
   const [assets, setAssets] = useState<OtcAsset[]>([]);
 
   useEffect(() => {
-    api<{ assets: OtcAsset[] }>('/market/otc/assets')
+    api<{ assets: OtcAsset[] }>("/market/otc/assets")
       .then((res) => {
         if (res.data?.assets) setAssets(res.data.assets);
       })
@@ -88,7 +88,7 @@ export default function MultiChartPage() {
             <button
               key={l.id}
               type="button"
-              className={layout === l.id ? 'active' : ''}
+              className={layout === l.id ? "active" : ""}
               onClick={() => setLayout(l.id)}
             >
               {l.label}
@@ -123,7 +123,7 @@ export default function MultiChartPage() {
                   <button
                     key={t}
                     type="button"
-                    className={slot.timeframe === t ? 'active' : ''}
+                    className={slot.timeframe === t ? "active" : ""}
                     onClick={() => update(index, { timeframe: t })}
                   >
                     {t}

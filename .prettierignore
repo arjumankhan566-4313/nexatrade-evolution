@@ -6,3 +6,14 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+# Tool/runtime scratch dirs that live inside the checkout.
+.cline-home
+.tmpcheck
+# Archived legacy monorepo — kept verbatim for reference, not part of this app.
+tradeon
+# Generated SQL dumps / config.
+database-export
+drizzle
+supabase
+# Static artwork (icons, favicons, brand assets).
+public

@@ -1,15 +1,15 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, LineChart } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
-import AIAssistantWidget from '../features/ai-assistant/AIAssistantWidget';
-import CopyTradingSection from '../features/copy-trading/CopyTradingSection';
-import GamificationSection from '../features/gamification/GamificationSection';
-import InstitutionalSection from '../features/institutional/InstitutionalSection';
-import LiveSocialTicker from '../features/social-ticker/LiveSocialTicker';
-import FairnessSection from '../features/transparency/FairnessSection';
-import { Disclaimer, GlassCard, SectionShell, TiltCard } from '../components/primitives';
-import SpatialBackground from '../components/SpatialBackground';
-import TradeonLogo from '../components/TradeonLogo';
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, ArrowUpRight, LineChart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import AIAssistantWidget from "../features/ai-assistant/AIAssistantWidget";
+import CopyTradingSection from "../features/copy-trading/CopyTradingSection";
+import GamificationSection from "../features/gamification/GamificationSection";
+import InstitutionalSection from "../features/institutional/InstitutionalSection";
+import LiveSocialTicker from "../features/social-ticker/LiveSocialTicker";
+import FairnessSection from "../features/transparency/FairnessSection";
+import { Disclaimer, GlassCard, SectionShell, TiltCard } from "../components/primitives";
+import SpatialBackground from "../components/SpatialBackground";
+import TradeonLogo from "../components/TradeonLogo";
 import {
   APEX_PILLARS,
   BRAND,
@@ -18,8 +18,8 @@ import {
   PILLAR_STATUS_LABEL,
   RISK_DISCLOSURES,
   claimViewModel,
-} from '../config/content.config';
-import type { PillarStatus } from '../config/content.config';
+} from "../config/content.config";
+import type { PillarStatus } from "../config/content.config";
 
 /**
  * TRADEON landing surface.
@@ -30,9 +30,9 @@ import type { PillarStatus } from '../config/content.config';
  */
 
 const STATUS_STYLE: Record<PillarStatus, string> = {
-  live: 'text-apex-emerald bg-apex-emerald/12 ring-apex-emerald/30',
-  preview: 'text-apex-cyan bg-apex-cyan/12 ring-apex-cyan/30',
-  planned: 'text-apex-faint bg-white/5 ring-white/12',
+  live: "text-apex-emerald bg-apex-emerald/12 ring-apex-emerald/30",
+  preview: "text-apex-cyan bg-apex-cyan/12 ring-apex-cyan/30",
+  planned: "text-apex-faint bg-white/5 ring-white/12",
 };
 
 function PillarCard({
@@ -145,7 +145,7 @@ export default function ApexLandingPage() {
               className="mt-8 font-apex text-[2rem] font-semibold leading-[1.08] tracking-tight sm:mt-10 sm:text-6xl"
               initial={reduceMotion ? false : { opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 170, damping: 24, delay: 0.18 }}
+              transition={{ type: "spring", stiffness: 170, damping: 24, delay: 0.18 }}
             >
               {BRAND.headline}
             </motion.h1>
@@ -205,7 +205,9 @@ export default function ApexLandingPage() {
                       )}
                     </dd>
                     {claim.note ? (
-                      <p className="mt-2 text-[11px] leading-relaxed text-apex-faint">{claim.note}</p>
+                      <p className="mt-2 text-[11px] leading-relaxed text-apex-faint">
+                        {claim.note}
+                      </p>
                     ) : null}
                   </div>
                 );
@@ -258,10 +260,16 @@ export default function ApexLandingPage() {
               <Disclaimer className="mt-4">{RISK_DISCLOSURES.trading}</Disclaimer>
             </div>
             <nav aria-label="Footer" className="flex flex-wrap gap-x-8 gap-y-3 text-[13px]">
-              <Link to="/chart" className="apex-focusable rounded text-apex-muted hover:text-apex-ink">
+              <Link
+                to="/chart"
+                className="apex-focusable rounded text-apex-muted hover:text-apex-ink"
+              >
                 Live chart
               </Link>
-              <Link to="/login" className="apex-focusable rounded text-apex-muted hover:text-apex-ink">
+              <Link
+                to="/login"
+                className="apex-focusable rounded text-apex-muted hover:text-apex-ink"
+              >
                 Sign in
               </Link>
               <Link

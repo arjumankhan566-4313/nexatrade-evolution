@@ -1,4 +1,4 @@
-import type { MarketProvider } from '../types';
+import type { MarketProvider } from "../types";
 
 /**
  * Live market provider — the OTC payout board.
@@ -12,12 +12,12 @@ type PayoutsPayload = { payouts?: Record<string, unknown> };
 
 export function createLiveMarketProvider(): MarketProvider {
   return {
-    id: 'live-otc-market',
-    source: 'live',
+    id: "live-otc-market",
+    source: "live",
 
     async getPayouts(): Promise<Record<string, number>> {
-      const response = await fetch('/api/market/otc/payouts', {
-        headers: { accept: 'application/json' },
+      const response = await fetch("/api/market/otc/payouts", {
+        headers: { accept: "application/json" },
       });
       if (!response.ok) {
         throw new Error(`The payout feed answered with HTTP ${response.status}.`);
@@ -27,8 +27,8 @@ export function createLiveMarketProvider(): MarketProvider {
       const entries = Object.entries(payload.payouts ?? {});
       return Object.fromEntries(
         entries
-          .filter(([, rate]) => typeof rate === 'number' && Number.isFinite(rate))
-          .map(([symbol, rate]) => [symbol, rate as number])
+          .filter(([, rate]) => typeof rate === "number" && Number.isFinite(rate))
+          .map(([symbol, rate]) => [symbol, rate as number]),
       );
     },
   };

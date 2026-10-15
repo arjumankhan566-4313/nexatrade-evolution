@@ -1,4 +1,4 @@
-import { formatPrice } from '../../chart/format';
+import { formatPrice } from "../../chart/format";
 
 interface Props {
   symbol: string;
@@ -33,9 +33,16 @@ export default function ChartToolbar({
         >
           <span className="chart-market-btn__text">
             <strong>{assetName || symbol}</strong>
-            <small>{symbol.replace('-OTC', '')}</small>
+            <small>{symbol.replace("-OTC", "")}</small>
           </span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M6 9l6 6 6-6" />
           </svg>
         </button>
@@ -43,15 +50,14 @@ export default function ChartToolbar({
       <div className="chart-toolbar__right">
         {livePrice != null && (
           <span className="chart-price" data-status={status}>
-            {symbol.replace('-OTC', '')} {formatPrice(livePrice)}
+            {symbol.replace("-OTC", "")} {formatPrice(livePrice)}
           </span>
         )}
         <span className={`chart-status chart-status--${status}`} title="OTC live stream">
           <i className="chart-status__dot" />
-          {status === 'live' ? 'OTC LIVE' : status.toUpperCase()}
+          {status === "live" ? "OTC LIVE" : status.toUpperCase()}
         </span>
       </div>
     </div>
   );
 }
-

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { api, useLiveEvents } from '../lib/legacyInfra';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api, useLiveEvents } from "../lib/legacyInfra";
 
 /** Read live admin state without blanking the catalogue on each refresh. */
 export function useAdminOtcConsole() {
@@ -13,13 +13,13 @@ export function useAdminOtcConsole() {
     const controller = new AbortController();
     request.current = controller;
     try {
-      const result = await api('/api/admin/otc', { signal: controller.signal });
+      const result = await api("/api/admin/otc", { signal: controller.signal });
       if (!controller.signal.aborted) {
         setData(result);
         setError(null);
       }
     } catch (err: any) {
-      if (!controller.signal.aborted) setError(err?.message || 'Failed to load OTC console.');
+      if (!controller.signal.aborted) setError(err?.message || "Failed to load OTC console.");
     } finally {
       if (request.current === controller) {
         request.current = null;
@@ -28,7 +28,13 @@ export function useAdminOtcConsole() {
     }
   }, []);
 
-  useLiveEvents({ scope: 'admin', topics: ['assets', 'settings'], onEvent: () => { void load(); } });
+  useLiveEvents({
+    scope: "admin",
+    topics: ["assets", "settings"],
+    onEvent: () => {
+      void load();
+    },
+  });
 
   useEffect(() => {
     void load();

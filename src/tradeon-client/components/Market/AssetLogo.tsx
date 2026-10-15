@@ -3,7 +3,7 @@
  * currency flags), with a professional monogram badge instead of a broken
  * image when the artwork is missing or fails to load.
  */
-import { useState } from 'react';
+import { useState } from "react";
 
 interface Props {
   icon?: string | null;
@@ -14,12 +14,16 @@ interface Props {
 
 export default function AssetLogo({ icon, name, size = 24, className }: Props) {
   const [failed, setFailed] = useState(false);
-  const monogram = name.replace(/\s*\(OTC\)/i, '').trim().slice(0, 2).toUpperCase();
+  const monogram = name
+    .replace(/\s*\(OTC\)/i, "")
+    .trim()
+    .slice(0, 2)
+    .toUpperCase();
 
   if (!icon || failed) {
     return (
       <span
-        className={`asset-logo asset-logo--mono ${className ?? ''}`}
+        className={`asset-logo asset-logo--mono ${className ?? ""}`}
         style={{ width: size, height: size, fontSize: Math.max(9, size * 0.42) }}
         aria-hidden="true"
       >
@@ -30,7 +34,7 @@ export default function AssetLogo({ icon, name, size = 24, className }: Props) {
 
   return (
     <img
-      className={`asset-logo ${className ?? ''}`}
+      className={`asset-logo ${className ?? ""}`}
       src={icon}
       alt=""
       width={size}

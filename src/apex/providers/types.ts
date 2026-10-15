@@ -7,9 +7,9 @@
  */
 
 /** 'demo' → value produced locally and illustrative; 'live' → real measurement. */
-export type ProviderSource = 'live' | 'demo';
+export type ProviderSource = "live" | "demo";
 
-export type ResourceStatus = 'loading' | 'ready' | 'error';
+export type ResourceStatus = "loading" | "ready" | "error";
 
 export type ResourceState<T> = {
   data: T | null;

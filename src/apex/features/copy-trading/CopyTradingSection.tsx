@@ -1,15 +1,21 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Check, Copy as CopyIcon, ShieldAlert, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Check, Copy as CopyIcon, ShieldAlert, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   COPY_HUB_FEATURES,
   COPY_MODES,
   COPY_SAMPLE_LEADERS,
   RISK_DISCLOSURES,
-} from '../../config/content.config';
-import { Disclaimer, GlassCard, SectionHeading, SectionShell, TiltCard } from '../../components/primitives';
-import { useResource } from '../../hooks/useResource';
-import { marketProvider } from '../../providers';
+} from "../../config/content.config";
+import {
+  Disclaimer,
+  GlassCard,
+  SectionHeading,
+  SectionShell,
+  TiltCard,
+} from "../../components/primitives";
+import { useResource } from "../../hooks/useResource";
+import { marketProvider } from "../../providers";
 
 /**
  * Feature 3 — Copy trading & social hub.
@@ -20,7 +26,7 @@ import { marketProvider } from '../../providers';
  * invented performance figure.
  */
 
-const PANEL_ID = 'apex-allocation-panel';
+const PANEL_ID = "apex-allocation-panel";
 
 /** Live payout rate for one symbol, or null while the feed is loading. */
 function usePayouts() {
@@ -39,9 +45,9 @@ function MarketChip({
 }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-apex-muted ring-1 ring-inset ring-white/10">
-      <span className="font-mono text-[10px] text-apex-ink">{symbol.replace('-OTC', '')}</span>
+      <span className="font-mono text-[10px] text-apex-ink">{symbol.replace("-OTC", "")}</span>
       <span className="text-apex-cyan">
-        {pending ? '·' : payout === null ? '—' : `${payout.toFixed(0)}%`}
+        {pending ? "·" : payout === null ? "—" : `${payout.toFixed(0)}%`}
       </span>
     </span>
   );
@@ -59,7 +65,7 @@ export default function CopyTradingSection() {
   const [confirmed, setConfirmed] = useState(false);
 
   const leader = COPY_SAMPLE_LEADERS.find((entry) => entry.id === leaderId) ?? null;
-  const payoutPending = payoutStatus === 'loading';
+  const payoutPending = payoutStatus === "loading";
 
   function open(entryId: string) {
     setLeaderId(entryId);
@@ -78,10 +84,10 @@ export default function CopyTradingSection() {
   useEffect(() => {
     if (!leader) return;
     function handleKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') close();
+      if (event.key === "Escape") close();
     }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [leader]);
 
   return (
@@ -99,7 +105,7 @@ export default function CopyTradingSection() {
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {COPY_SAMPLE_LEADERS.map((entry, index) => {
-          const pending = payoutStatus === 'loading';
+          const pending = payoutStatus === "loading";
           return (
             <motion.div
               key={entry.id}
@@ -120,7 +126,7 @@ export default function CopyTradingSection() {
                       </p>
                     </div>
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-apex-cyan/12 font-apex text-xs font-bold text-apex-cyan ring-1 ring-inset ring-apex-cyan/25">
-                      {entry.name.split(' ')[1]}
+                      {entry.name.split(" ")[1]}
                     </span>
                   </div>
 
@@ -159,7 +165,9 @@ export default function CopyTradingSection() {
         {COPY_HUB_FEATURES.map((feature) => (
           <GlassCard key={feature.id} className="p-5" depth={false}>
             <h3 className="font-apex text-sm font-semibold text-apex-ink">{feature.title}</h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-apex-muted">{feature.description}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-apex-muted">
+              {feature.description}
+            </p>
           </GlassCard>
         ))}
       </div>
@@ -185,7 +193,7 @@ export default function CopyTradingSection() {
               initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 240, damping: 26 }}
+              transition={{ type: "spring", stiffness: 240, damping: 26 }}
               onClick={(event) => event.stopPropagation()}
             >
               <header className="flex items-start justify-between gap-4">
@@ -214,8 +222,8 @@ export default function CopyTradingSection() {
                     Allocation prepared
                   </p>
                   <p className="mx-auto mt-2 max-w-sm text-[13px] leading-relaxed text-apex-muted">
-                    {leader.name} ·{' '}
-                    {mode === COPY_MODES[0].id ? `${ratio}% of every stake` : 'fixed stake'} capped
+                    {leader.name} ·{" "}
+                    {mode === COPY_MODES[0].id ? `${ratio}% of every stake` : "fixed stake"} capped
                     at ${maxStake} per trade. Live copy links are created through the social
                     service, which this surface does not call yet.
                   </p>
@@ -242,8 +250,8 @@ export default function CopyTradingSection() {
                           aria-pressed={mode === option.id}
                           className={`apex-focusable rounded-apex border p-3.5 text-left transition-colors ${
                             mode === option.id
-                              ? 'border-apex-cyan/40 bg-apex-cyan/8'
-                              : 'border-white/10 bg-white/4 hover:bg-white/8'
+                              ? "border-apex-cyan/40 bg-apex-cyan/8"
+                              : "border-white/10 bg-white/4 hover:bg-white/8"
                           }`}
                         >
                           <span className="font-apex text-sm font-semibold text-apex-ink">
@@ -301,8 +309,8 @@ export default function CopyTradingSection() {
                         aria-hidden="true"
                         className="mr-1.5 inline h-3.5 w-3.5 text-apex-crimson"
                       />
-                      I understand that copying mirrors losses as well as wins, and that my capital is
-                      at risk.
+                      I understand that copying mirrors losses as well as wins, and that my capital
+                      is at risk.
                     </span>
                   </label>
 

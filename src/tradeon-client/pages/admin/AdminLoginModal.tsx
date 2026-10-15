@@ -7,18 +7,18 @@
  * tilt, gold accent gradient, and background blur — matching the legacy
  * admin portal's visual language.
  */
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, LockKeyhole, ArrowRight, ShieldAlert } from 'lucide-react';
-import BrandMark from '@/tradeon-client/components/BrandMark';
-import { useAdminAuthStore } from '@/tradeon-client/stores/adminAuthStore';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff, LockKeyhole, ArrowRight, ShieldAlert } from "lucide-react";
+import BrandMark from "@/tradeon-client/components/BrandMark";
+import { useAdminAuthStore } from "@/tradeon-client/stores/adminAuthStore";
 
 export default function AdminLoginModal() {
   const login = useAdminAuthStore((s) => s.login);
   const error = useAdminAuthStore((s) => s.error);
   const fields = useAdminAuthStore((s) => s.fields);
   const requiresTwoFactor = useAdminAuthStore((s) => s.requiresTwoFactor);
-  const [form, setForm] = useState({ email: '', password: '', twoFactorCode: '' });
+  const [form, setForm] = useState({ email: "", password: "", twoFactorCode: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -47,7 +47,7 @@ export default function AdminLoginModal() {
           initial={{ scale: 0.85, rotateX: 12, opacity: 0, y: 30 }}
           animate={{ scale: 1, rotateX: 0, opacity: 1, y: 0 }}
           exit={{ scale: 0.85, opacity: 0, y: 20 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+          transition={{ type: "spring", stiffness: 260, damping: 22 }}
           style={{ transformPerspective: 1200 }}
         >
           {/* Glow orbs */}
@@ -61,7 +61,9 @@ export default function AdminLoginModal() {
           </div>
 
           <h1>Admin Sign In</h1>
-          <p className="muted">Enter your administrator credentials to access the control center.</p>
+          <p className="muted">
+            Enter your administrator credentials to access the control center.
+          </p>
 
           {error && (
             <div className="alert alert-error" style={{ marginTop: 16 }} role="alert">
@@ -73,14 +75,14 @@ export default function AdminLoginModal() {
             <label htmlFor="modal-admin-email">Administrator email</label>
             <input
               id="modal-admin-email"
-              className={`input ${fields?.email ? 'input-error' : ''}`}
+              className={`input ${fields?.email ? "input-error" : ""}`}
               type="email"
               autoComplete="username"
               placeholder="you@example.com"
               required
               disabled={busy}
               value={form.email}
-              onChange={set('email')}
+              onChange={set("email")}
             />
             {fields?.email && <span className="field-error">{fields.email}</span>}
           </div>
@@ -90,19 +92,19 @@ export default function AdminLoginModal() {
             <div className="admin-password-wrap">
               <input
                 id="modal-admin-password"
-                className={`input ${fields?.password ? 'input-error' : ''}`}
-                type={showPassword ? 'text' : 'password'}
+                className={`input ${fields?.password ? "input-error" : ""}`}
+                type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Enter your password"
                 required
                 disabled={busy}
                 value={form.password}
-                onChange={set('password')}
+                onChange={set("password")}
               />
               <button
                 className="admin-password-toggle"
                 type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((v) => !v)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -122,14 +124,22 @@ export default function AdminLoginModal() {
                 autoComplete="one-time-code"
                 autoFocus
                 value={form.twoFactorCode}
-                onChange={set('twoFactorCode')}
+                onChange={set("twoFactorCode")}
                 placeholder="6-digit code or backup code"
               />
             </div>
           )}
 
           <button type="submit" className="btn btn-gold btn-block" disabled={busy} aria-busy={busy}>
-            {busy ? <><span className="spinner" /> Signing in…</> : <>Access Control Center <ArrowRight size={17} /></>}
+            {busy ? (
+              <>
+                <span className="spinner" /> Signing in…
+              </>
+            ) : (
+              <>
+                Access Control Center <ArrowRight size={17} />
+              </>
+            )}
           </button>
 
           <p className="admin-login-note">

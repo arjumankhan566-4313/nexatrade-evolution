@@ -44,10 +44,17 @@
   padding: 6px 0;
   gap: 2px;
 }
-.rail-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
 .rail-nav-item {
-  width: 36px; height: 36px;
-  display: grid; place-items: center;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
   border-radius: 9px;
   border: 1px solid transparent;
   background: transparent;
@@ -83,8 +90,13 @@
   background: #232930;
   margin: 2px 0;
 }
-.rail-logout { color: #ff7a7a; }
-.rail-logout:hover { color: #ff9494; background: rgba(255, 90, 90, 0.1); }
+.rail-logout {
+  color: #ff7a7a;
+}
+.rail-logout:hover {
+  color: #ff9494;
+  background: rgba(255, 90, 90, 0.1);
+}
 
 /* The chart controls render like the rail's nav icons; the SAME markup floats
    over the plot on phones (components/Chart/ChartControls.tsx). */
@@ -106,8 +118,14 @@
   color: var(--muted);
   opacity: 1;
 }
-.chart-controls--rail .chart-tf-btn { font-size: 10px; font-weight: 800; letter-spacing: 0.02em; }
-.chart-controls--rail .chart-tf-btn svg { display: none; }
+.chart-controls--rail .chart-tf-btn {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.chart-controls--rail .chart-tf-btn svg {
+  display: none;
+}
 .chart-controls--rail .chart-tf-btn:hover,
 .chart-controls--rail .chart-tool-btn:hover {
   background: rgba(255, 255, 255, 0.05);
@@ -152,27 +170,41 @@
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .035);
+  background: rgba(255, 255, 255, 0.035);
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: border-color 160ms ease, background 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
   flex-shrink: 0;
 }
 .active-market-trigger:hover {
-  border-color: rgba(245, 197, 66, .65);
-  background: rgba(245, 197, 66, .08);
+  border-color: rgba(245, 197, 66, 0.65);
+  background: rgba(245, 197, 66, 0.08);
 }
 .active-market-trigger strong,
 .active-market-trigger small {
   display: block;
   white-space: nowrap;
 }
-.active-market-trigger strong { font-size: 13px; line-height: 1.1; }
-.active-market-trigger small { margin-top: 1px; color: #8f9bb0; font-size: 10px; font-weight: 600; }
-.active-market-trigger > svg { margin-left: 2px; color: #f5c542; flex-shrink: 0; }
+.active-market-trigger strong {
+  font-size: 13px;
+  line-height: 1.1;
+}
+.active-market-trigger small {
+  margin-top: 1px;
+  color: #8f9bb0;
+  font-size: 10px;
+  font-weight: 600;
+}
+.active-market-trigger > svg {
+  margin-left: 2px;
+  color: #f5c542;
+  flex-shrink: 0;
+}
 
 .chart-canvas-area {
   flex: 1;
@@ -190,7 +222,11 @@
   color: #b26b00;
   animation: countdownPulse 1s ease-in-out infinite;
 }
-@keyframes countdownPulse { 50% { opacity: 0.6; } }
+@keyframes countdownPulse {
+  50% {
+    opacity: 0.6;
+  }
+}
 
 /* ── Floating chart tools bar (bottom-left) — phones only: from 768px up the
       four controls live at the bottom of the left rail instead ── */
@@ -203,10 +239,14 @@
   align-items: center;
   gap: 5px;
 }
-.terminal-mobile-tools { display: none; }
+.terminal-mobile-tools {
+  display: none;
+}
 
 /* Timeframe dropdown */
-.chart-tf-control { position: relative; }
+.chart-tf-control {
+  position: relative;
+}
 .chart-tf-btn {
   display: inline-flex;
   align-items: center;
@@ -220,9 +260,13 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
-.chart-tf-btn:hover { border-color: rgba(255, 255, 255, 0.2); }
+.chart-tf-btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
 .chart-tf-btn.active {
   border-color: rgba(245, 197, 66, 0.35);
   background: rgba(245, 197, 66, 0.12);
@@ -254,7 +298,10 @@
   cursor: pointer;
   transition: all 0.12s ease;
 }
-.chart-tf-opt:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+.chart-tf-opt:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
 .chart-tf-opt.active {
   background: rgba(245, 197, 66, 0.15);
   color: #f5c542;
@@ -272,9 +319,14 @@
   place-items: center;
   cursor: pointer;
   opacity: 0.85;
-  transition: opacity 0.15s ease, border-color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
 }
-.chart-tool-btn:hover { opacity: 1; border-color: rgba(245, 197, 66, 0.35); }
+.chart-tool-btn:hover {
+  opacity: 1;
+  border-color: rgba(245, 197, 66, 0.35);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RIGHT TRADING PANEL — ported 1:1 from legacy trading-workspace.css
@@ -301,8 +353,17 @@
   border-bottom: 1px solid #2a2f36;
   margin-bottom: 8px;
 }
-.ticket-asset-icon { width: 24px; height: 24px; display: grid; place-items: center; flex-shrink: 0; }
-.ticket-asset-info { flex: 1; min-width: 0; }
+.ticket-asset-icon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.ticket-asset-info {
+  flex: 1;
+  min-width: 0;
+}
 .ticket-asset-info strong {
   font-size: 12px;
   display: block;
@@ -336,7 +397,9 @@
 }
 
 /* ── Expiry dropdown (legacy TradeExpiry component) ── */
-.expiry-ctrl { position: relative; }
+.expiry-ctrl {
+  position: relative;
+}
 .expiry-trigger {
   width: 100%;
   display: flex;
@@ -352,7 +415,9 @@
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
-.expiry-trigger:hover { border-color: #3a4048; }
+.expiry-trigger:hover {
+  border-color: #3a4048;
+}
 .expiry-popup {
   position: absolute;
   top: calc(100% + 6px);
@@ -366,7 +431,11 @@
   backdrop-filter: blur(14px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
 }
-.expiry-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.expiry-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
 .expiry-tabs button {
   flex: 1;
   padding: 7px 4px;
@@ -383,7 +452,11 @@
   background: rgba(245, 197, 66, 0.16);
   color: #f5c542;
 }
-.expiry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.expiry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
 .expiry-opt {
   padding: 9px 4px;
   border-radius: 7px;
@@ -397,7 +470,10 @@
   font-variant-numeric: tabular-nums;
   transition: all 0.12s ease;
 }
-.expiry-opt:hover { background: rgba(255, 255, 255, 0.07); color: #e0e4ec; }
+.expiry-opt:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #e0e4ec;
+}
 .expiry-opt.active {
   background: rgba(245, 197, 66, 0.18);
   color: #f5c542;
@@ -422,7 +498,9 @@
   font-weight: 700;
   cursor: pointer;
 }
-.ticket-amount-control button:hover { background: rgba(255, 255, 255, 0.1); }
+.ticket-amount-control button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 .ticket-amount-control input {
   flex: 1;
   border: 0;
@@ -437,10 +515,17 @@
   -moz-appearance: textfield;
 }
 .ticket-amount-control input::-webkit-outer-spin-button,
-.ticket-amount-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ticket-amount-control input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 /* ── Quick stakes ── */
-.ticket-quick-stakes { display: flex; gap: 3px; margin-top: 4px; }
+.ticket-quick-stakes {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+}
 .ticket-quick-btn {
   flex: 1;
   padding: 4px 7px;
@@ -453,7 +538,10 @@
   cursor: pointer;
   transition: all 0.12s ease;
 }
-.ticket-quick-btn:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.18); }
+.ticket-quick-btn:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.18);
+}
 .ticket-quick-btn.active {
   background: rgba(245, 197, 66, 0.12);
   color: #f5c542;
@@ -467,7 +555,8 @@
   gap: 8px;
   margin: 10px 0;
 }
-.ticket-buy-btn, .ticket-sell-btn {
+.ticket-buy-btn,
+.ticket-sell-btn {
   position: relative;
   overflow: hidden;
   touch-action: manipulation;
@@ -483,15 +572,38 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
 }
-.ticket-buy-btn { background: #00b57f; --trade-feedback: #37e6b1; }
-.ticket-buy-btn:hover { background: #00a070; }
-.ticket-sell-btn { background: #f03d3d; --trade-feedback: #ff7979; }
-.ticket-sell-btn:hover { background: #d93535; }
-.ticket-buy-btn:active:not(:disabled), .ticket-sell-btn:active:not(:disabled) { transform: scale(0.97); }
-.ticket-buy-btn:focus-visible, .ticket-sell-btn:focus-visible { outline: 2px solid var(--trade-feedback); outline-offset: 2px; }
-.ticket-buy-btn:disabled, .ticket-sell-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ticket-buy-btn {
+  background: #00b57f;
+  --trade-feedback: #37e6b1;
+}
+.ticket-buy-btn:hover {
+  background: #00a070;
+}
+.ticket-sell-btn {
+  background: #f03d3d;
+  --trade-feedback: #ff7979;
+}
+.ticket-sell-btn:hover {
+  background: #d93535;
+}
+.ticket-buy-btn:active:not(:disabled),
+.ticket-sell-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.ticket-buy-btn:focus-visible,
+.ticket-sell-btn:focus-visible {
+  outline: 2px solid var(--trade-feedback);
+  outline-offset: 2px;
+}
+.ticket-buy-btn:disabled,
+.ticket-sell-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 .ticket-click-feedback {
   position: absolute;
   inset: 0;
@@ -500,10 +612,23 @@
   box-shadow: inset 0 0 0 3px var(--trade-feedback);
   animation: ticket-click 260ms ease-out forwards;
 }
-@keyframes ticket-click { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ticket-click {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .ticket-buy-btn, .ticket-sell-btn { transition: none; }
-  .ticket-buy-btn:active:not(:disabled), .ticket-sell-btn:active:not(:disabled) { transform: none; }
+  .ticket-buy-btn,
+  .ticket-sell-btn {
+    transition: none;
+  }
+  .ticket-buy-btn:active:not(:disabled),
+  .ticket-sell-btn:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 .ticket-trade-error {
@@ -524,7 +649,10 @@
   margin-bottom: 8px;
   font-size: 12px;
 }
-.ticket-payout-row strong { color: #f5c542; font-size: 13px; }
+.ticket-payout-row strong {
+  color: #f5c542;
+  font-size: 13px;
+}
 
 /* ── Tabs (legacy: border-bottom style, NOT pill) ── */
 .ticket-tabs {
@@ -543,7 +671,9 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   text-decoration: none;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 .ticket-tab.active {
   color: var(--text);
@@ -563,14 +693,39 @@
   padding: 7px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
-.ticket-trade-row strong { font-size: 11px; display: block; }
-.ticket-trade-row .dim { font-size: 10px; color: var(--dim); display: block; margin-top: 2px; }
-.countdown { font-weight: 700; color: var(--muted); font-size: 12px; }
-.countdown.urgent { color: #f5c542; animation: countdown-pulse 1s ease-in-out infinite; }
-@keyframes countdown-pulse { 50% { opacity: 0.55; } }
-.up { color: #10b981; }
-.down { color: #f43f5e; }
-.muted { color: var(--dim); }
+.ticket-trade-row strong {
+  font-size: 11px;
+  display: block;
+}
+.ticket-trade-row .dim {
+  font-size: 10px;
+  color: var(--dim);
+  display: block;
+  margin-top: 2px;
+}
+.countdown {
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 12px;
+}
+.countdown.urgent {
+  color: #f5c542;
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+@keyframes countdown-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+.up {
+  color: #10b981;
+}
+.down {
+  color: #f43f5e;
+}
+.muted {
+  color: var(--dim);
+}
 
 .ticket-empty-state {
   display: flex;
@@ -581,7 +736,11 @@
   padding: 36px 0;
   color: var(--dim);
 }
-.ticket-empty-state span { font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+.ticket-empty-state span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Terminal topbar styles (from legacy trading-workspace.css)
@@ -621,7 +780,10 @@
   place-items: center;
   flex-shrink: 0;
 }
-.dash-terminal-logo img { display: block; object-fit: contain; }
+.dash-terminal-logo img {
+  display: block;
+  object-fit: contain;
+}
 #terminal-asset-slot {
   display: flex;
   align-items: center;
@@ -649,9 +811,16 @@
   place-items: center;
   flex-shrink: 0;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
-.terminal-bell-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); border-color: #3a4048; }
+.terminal-bell-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border-color: #3a4048;
+}
 /* Notification bell (components/layout/NotificationCenter) in the terminal
    topbar; the dropdown panel itself is styled in alerts.css. */
 .terminal-bell-btn.nx-bell-btn {
@@ -662,8 +831,13 @@
   background: rgba(255, 255, 255, 0.04);
   color: var(--muted);
 }
-.terminal-bell-btn.nx-bell-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
-.account-balance-btn.is-open { border-color: rgba(41, 134, 255, 0.45); }
+.terminal-bell-btn.nx-bell-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+.account-balance-btn.is-open {
+  border-color: rgba(41, 134, 255, 0.45);
+}
 .terminal-bell-dot {
   position: absolute;
   top: 6px;
@@ -699,17 +873,28 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
-.account-balance-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: #3a4048; }
+.account-balance-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #3a4048;
+}
 .account-mode-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-.account-mode-dot.real { background: #f5c542; box-shadow: 0 0 6px rgba(245, 197, 66, 0.5); }
-.account-mode-dot.demo { background: #22d3ee; box-shadow: 0 0 6px rgba(34, 211, 238, 0.5); }
+.account-mode-dot.real {
+  background: #f5c542;
+  box-shadow: 0 0 6px rgba(245, 197, 66, 0.5);
+}
+.account-mode-dot.demo {
+  background: #22d3ee;
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.5);
+}
 
 /* Deposit + Withdraw buttons (legacy) */
 .terminal-deposit-btn {
@@ -725,7 +910,9 @@
   align-items: center;
   transition: background 0.15s ease;
 }
-.terminal-deposit-btn:hover { background: #00a070; }
+.terminal-deposit-btn:hover {
+  background: #00a070;
+}
 .terminal-withdraw-link {
   font-size: 12px;
   font-weight: 600;
@@ -733,7 +920,9 @@
   text-decoration: none;
   transition: color 0.15s ease;
 }
-.terminal-withdraw-link:hover { color: var(--text); }
+.terminal-withdraw-link:hover {
+  color: var(--text);
+}
 
 /* ── Terminal content: no padding, full height ── */
 .dash-terminal-content {
@@ -750,12 +939,16 @@
 
 /* Large desktop */
 @media (min-width: 1200px) {
-  .terminal-main { grid-template-columns: 60px minmax(0, 1fr) 270px; }
+  .terminal-main {
+    grid-template-columns: 60px minmax(0, 1fr) 270px;
+  }
 }
 
 /* Tablet: the rail narrows; the market pop-up is unaffected. */
 @media (max-width: 1023px) {
-  .terminal-main { grid-template-columns: 52px minmax(0, 1fr) 210px; }
+  .terminal-main {
+    grid-template-columns: 52px minmax(0, 1fr) 210px;
+  }
 }
 
 /* Phone */
@@ -771,9 +964,15 @@
     overflow: visible;
     gap: 8px;
   }
-  .terminal-left-rail { display: none; }
-  .chart-center { min-height: 50vh; }
-  .terminal-mobile-tools { display: block; }
+  .terminal-left-rail {
+    display: none;
+  }
+  .chart-center {
+    min-height: 50vh;
+  }
+  .terminal-mobile-tools {
+    display: block;
+  }
   .terminal-ticket {
     width: 100%;
     border-left: none;
@@ -786,12 +985,26 @@
     max-height: none;
     padding: 10px;
   }
-  .ticket-asset-header { grid-column: 1 / -1; }
-  .ticket-trade-actions { grid-column: 1 / -1; }
-  .ticket-payout-row { grid-column: 1 / -1; }
-  .ticket-tabs { grid-column: 1 / -1; }
-  .ticket-trade-list { grid-column: 1 / -1; }
-  .dash-terminal-topbar { height: 48px; min-height: 48px; padding: 0 10px; }
+  .ticket-asset-header {
+    grid-column: 1 / -1;
+  }
+  .ticket-trade-actions {
+    grid-column: 1 / -1;
+  }
+  .ticket-payout-row {
+    grid-column: 1 / -1;
+  }
+  .ticket-tabs {
+    grid-column: 1 / -1;
+  }
+  .ticket-trade-list {
+    grid-column: 1 / -1;
+  }
+  .dash-terminal-topbar {
+    height: 48px;
+    min-height: 48px;
+    padding: 0 10px;
+  }
   .dash-terminal-content {
     height: auto;
     min-height: calc(100svh - 48px);
@@ -799,5 +1012,7 @@
     overflow: auto;
     overscroll-behavior: contain;
   }
-  .terminal-topbar-right .terminal-withdraw-link { display: none; }
+  .terminal-topbar-right .terminal-withdraw-link {
+    display: none;
+  }
 }

@@ -1,6 +1,7 @@
 # TRADEON — Lovable-এ পোর্ট রোডম্যাপ
 
 ## সম্পন্ন ✅
+
 - [x] পুরো প্রজেক্ট ফাইল এখানে আনা (ক্লায়েন্ট ১৭০, সার্ভার ১০৪, ৬৪৪ ছবি/আইকন)
 - [x] প্রিভিউতে ল্যান্ডিং পেজ চালু
 - [x] /api/* ও /socket.io/* ফরওয়ার্ডার রুট (Vite প্রক্সি বন্ধ থাকায়)
@@ -10,6 +11,7 @@
 - [x] যাচাই: লগইন, রেজিস্টার→ড্যাশবোর্ড, হিস্টোরি/ওয়ালেট/অ্যাফিলিয়েট/KYC/সিকিউরিটি, অ্যাডমিন লগইন + অ্যাডমিন পেজ — সব OK, ০ console এরর
 
 ## সম্পন্ন ✅ (চার্ট ইঞ্জিন রিরাইট — B1–B5)
+
 - [x] B1: নকল ডেটা জেনারেটর নেই — চার্ট শুধু আসল WebSocket OTC স্ট্রিম + সার্ভার হিস্টোরি থেকে চলে (Chart Lab পেজটি ইচ্ছাকৃত টেস্টিং টুল, অক্ষত)
 - [x] B2: Pivot zoom — হুইল শুধু targetBarWidth সেট করে (×1.05/×0.95 প্রতি টিক), rAF লুপে tau=80ms এক্সপোনেনশিয়াল ইজিং, কার্সরের নিচের টাইম প্রতি ফ্রেমে পুনঃঅ্যাংকর
 - [x] B3: Infinite left scroll — before= কার্সর, এক ইন-ফ্লাইট, টাইমস্ট্যাম্প ডেডুপ, স্থির অ্যাংকর (আগে থেকেই ছিল, যাচাই করা)
@@ -18,41 +20,50 @@
 - [x] যাচাই: বিল্ড OK; ব্রাউজারে জুম ইজিং (9.00→12.68→13.43 ধাপে), প্রাইস লাইন/পিল গ্যাপ, ০ console এরর
 
 ## সম্পন্ন ✅ (অ্যাডমিন টাইমার রঙ)
+
 - [x] সার্ভার: system_settings-এ chart_timer_bg কলাম (বুটস্ট্র্যাপ প্যাচ + সরাসরি ALTER), PATCH /admin/settings-এ হেক্স যাচাই, পাবলিক GET /api/market/otc/config
 - [x] ক্লায়েন্ট: chartConfigStore.loadFromServer() (fetch + rt:settings রিয়েলটাইম), CanvasChart মাউন্টে ডাক
 - [x] অ্যাডমিন UI: /admin/risk-এ "Chart appearance" কার্ড — কালার-পিকার + Apply
 - [x] যাচাই: অ্যাডমিনে #22C55E সেট → নতুন ইউজারের টার্মিনালে পিল সবুজ (rgb(34,197,94)), টেক্সট অটো-সাদা, ০ এরর
 
 ## সম্পন্ন ✅ (ইউজার প্যানেল পলিশ)
+
 - [x] KYC স্টেপার: স্টাইলবিহীন CSS ক্লাস ঠিক — গোল্ড অ্যাক্টিভ পিল, সবুজ ডান ধাপ, সংযোগকারী লাইন
 - [x] হিস্টোরি: স্ট্যাট কার্ডে আইকন + অ্যাকসেন্ট টপ-বর্ডার + হোভার লিফট
 - [x] অ্যাফিলিয়েট: ফর্মের উপরে ৩টি সুবিধার কার্ড (৪০% কমিশন, লাইফটাইম আর্নিং, সাপ্তাহিক পেআউট)
 - [x] ওয়ালেট ও সিকিউরিটি আগে থেকেই পলিশড — যাচাই করা, ০ console এরর
 
 ## সম্পন্ন ✅ (চার্ট ইঞ্জিন ফাইনাল অডিট — Principal Canvas Engineer ব্রিফ)
+
 - [x] ৪ পয়েন্টের বিপরীতে পূর্ণ অডিট: fluid tick physics, pivot zoom, infinite left scroll, প্রাইস লাইন+টাইমার পিল, pixel-snapping/dpr, একক rAF লুপ — সব আগে থেকেই ঠিক
 - [x] নতুন ফিক্স: ক্যান্ডেল রোলওভার সিমলেস — নতুন ক্যান্ডেল খুললে eased close নতুন ওপেনে (= পুরোনো ক্লোজ) স্ন্যাপ, নবজাত বারে বডি-ঝাঁপ/ফ্লিকার নেই (ChartEngine.setCandles)
 - [x] যাচাই: বিল্ড OK; ব্রাউজারে সিনথেটিক রোলওভার → displayed == new open (PASS), টিক গ্লাইড ওভারশুট ছাড়া (PASS), স্ক্রিনশটে লাইভ চার্ট+পিল+প্রাইস লাইন ঠিক
 
 ## পরবর্তী (ইউজার চাইলে)
+
 - [ ] হোস্টিং/পাবলিশ — ইউজার এখন চায় না
 
 ## All-device responsive pass ✅ (2026-10-07)
+
 - Verified /, /login, /register, /chart, /dashboard, /wallet, /history, /kyc, /admin at 390/820/1366/1920px — zero horizontal overflow.
 - Fixed wallet on phones: balance cards stack 1-col (≤640px), mode switch + rails stack (≤480px), min-width:0 guards stop panel/tab overflow.
 - Fixed landing header: Sign in / Create account no longer wrap on phones (whitespace-nowrap).
 
 ## সম্পন্ন ✅ (টাইমার পিল ডানদিকো — ক্রিটিক্যাল বাগ ১)
+
 - [x] `.chart-live-timer` ডানদিকো নেওয়া হয়েছে (`right: 78px`); ড্যাশড প্রাইস লাইন এখন বাঁ থেকে শুরু হয়ে পিলের 12px আগে শেষ (`plotRight - countdownInset`)
 - [x] যাচাই (ব্রাউজার): পিলের ডান কিনারা 842px = প্লটের ডান কিনারা (দাম অ্যাাক্ষিসের ঠিক আগে), inset 81 = পিল 69 + গ্যাপ 12; লাইভ টিক চলছ (81973.82 → 82506.10); Bitcoin→Ethereum সুইচে দাম 83004 → 2503, ৩০০টি ক্যান্ডেল পুনরায় লোড
 - [x] লাইভ ডেট সার্ভার: `tradeon/server`-এ `bun install` + `npx tsx src/index.ts` (:4000) — DATABASE_URL=$SUPABASE_DB_URL, SUPER_ADMIN_PASSWORD, JWT_SECRET, CORS_ORIGINS=http://localhost:8080, NODE_TLS_REJECT_UNAUTHORIZED=0
 
 ## চলছব — গুটহাব
+
 ে পুরো প্রজেক্ট (A to Z)
+
 - [x] ডাটাবেসের তথ্যের কপি প্রজেক্টে যোগ (`database-export/`): স্কিমা + ২৫টো টেবিলের লাইভ তথ্য (বড় ফিড টেবিল দুটো বাদে)
 - [ ] কপি থেকে ফিরাইয়ে আনার নিয়ম লেখা (`database-export/README.md`)
 - [ ] গুটহাব রিপোয় সব পৌঁছয়েছ কিনা য়াচাই
 - [ ] ইউজারকে বলব: কপিতো অ্য্যাকাউন্টের তথ্য নিয়ে রাকবে — রিপো নিজি (private) রাকত হব
 
 ## পরবরতী
+
 - [ ] প্রজেক্ট ডাওয়নলোড: GitHub `nexatrade-evolution` → Code → Download ZIP, সাথের `/mnt/documents`-এ ক্লিন সোর্স ZIP

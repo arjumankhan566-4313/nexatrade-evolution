@@ -10,10 +10,10 @@
  * Drop-in for both top bars (chart header and terminal topbar); each passes its
  * own trigger class so its pill matches the bar it sits in.
  */
-import { useCallback, useEffect, useState } from 'react';
-import NotificationCenter from './NotificationCenter';
-import { api } from '../../lib/api';
-import '../../styles/alerts.css';
+import { useCallback, useEffect, useState } from "react";
+import NotificationCenter from "./NotificationCenter";
+import { api } from "../../lib/api";
+import "../../styles/alerts.css";
 
 interface Row {
   id: string;
@@ -26,12 +26,12 @@ interface Row {
 
 /** Server `kind` → NotificationCenter severity (WIN/LOSS are the trade kinds). */
 const SEVERITY: Record<string, string> = {
-  INFO: 'info',
-  SUCCESS: 'success',
-  WIN: 'success',
-  WARNING: 'warning',
-  LOSS: 'warning',
-  CRITICAL: 'critical',
+  INFO: "info",
+  SUCCESS: "success",
+  WIN: "success",
+  WARNING: "warning",
+  LOSS: "warning",
+  CRITICAL: "critical",
 };
 
 /** A new deposit/withdrawal decision lands within this window. */
@@ -39,15 +39,16 @@ const POLL_MS = 30_000;
 
 interface Props {
   buttonClassName?: string;
-  align?: 'left' | 'right';
+  align?: "left" | "right";
 }
 
-export default function NotificationsBell({ buttonClassName = '', align = 'right' }: Props) {
+export default function NotificationsBell({ buttonClassName = "", align = "right" }: Props) {
   const [rows, setRows] = useState<Row[]>([]);
 
   const load = useCallback(async () => {
-    const res = await api<{ notifications: Row[] }>('/notifications');
-    if (res.status === 200 && Array.isArray(res.data?.notifications)) setRows(res.data.notifications);
+    const res = await api<{ notifications: Row[] }>("/notifications");
+    if (res.status === 200 && Array.isArray(res.data?.notifications))
+      setRows(res.data.notifications);
   }, []);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function NotificationsBell({ buttonClassName = '', align = 'right
 
   const items = rows.map((r) => ({
     id: r.id,
-    severity: SEVERITY[r.kind] ?? 'info',
+    severity: SEVERITY[r.kind] ?? "info",
     title: r.title,
     message: r.body,
     timestamp: r.createdAt,
@@ -67,17 +68,17 @@ export default function NotificationsBell({ buttonClassName = '', align = 'right
 
   const onDismiss = useCallback(async (id: string) => {
     setRows((prev) => prev.filter((r) => r.id !== id));
-    await api('/notifications', { method: 'DELETE', body: { ids: [id] } });
+    await api("/notifications", { method: "DELETE", body: { ids: [id] } });
   }, []);
 
   const onMarkAllRead = useCallback(async () => {
     setRows((prev) => prev.map((r) => ({ ...r, isRead: true })));
-    await api('/notifications', { method: 'POST', body: {} });
+    await api("/notifications", { method: "POST", body: {} });
   }, []);
 
   const onClearAll = useCallback(async () => {
     setRows([]);
-    await api('/notifications', { method: 'DELETE' });
+    await api("/notifications", { method: "DELETE" });
   }, []);
 
   return (

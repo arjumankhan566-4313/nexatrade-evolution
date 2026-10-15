@@ -1,8 +1,12 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { Clock, Trophy } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { ONBOARDING_MILESTONES, RISK_DISCLOSURES, TOURNAMENT_ROTATION } from '../../config/content.config';
-import { Disclaimer, GlassCard, SectionHeading, SectionShell } from '../../components/primitives';
+import { motion, useReducedMotion } from "framer-motion";
+import { Clock, Trophy } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  ONBOARDING_MILESTONES,
+  RISK_DISCLOSURES,
+  TOURNAMENT_ROTATION,
+} from "../../config/content.config";
+import { Disclaimer, GlassCard, SectionHeading, SectionShell } from "../../components/primitives";
 
 /**
  * Feature 5 — Guided onboarding & tournaments.
@@ -20,9 +24,9 @@ function nextRoundAt(now: number): number {
 
 function formatCountdown(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));
-  const hours = String(Math.floor(total / 3600)).padStart(2, '0');
-  const minutes = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
-  const seconds = String(total % 60).padStart(2, '0');
+  const hours = String(Math.floor(total / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+  const seconds = String(total % 60).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
 }
 
@@ -105,7 +109,7 @@ export default function GamificationSection() {
 
             <p className="mt-4 flex items-center gap-2 font-mono text-3xl font-semibold text-apex-ink tabular-nums">
               <Clock aria-hidden="true" className="h-5 w-5 text-apex-cyan" />
-              {remaining === null ? '--:--:--' : formatCountdown(remaining)}
+              {remaining === null ? "--:--:--" : formatCountdown(remaining)}
             </p>
             <p className="mt-1.5 text-[11px] text-apex-faint">
               Until the next round rolls, every {TOURNAMENT_ROTATION.cadenceHours} hours.

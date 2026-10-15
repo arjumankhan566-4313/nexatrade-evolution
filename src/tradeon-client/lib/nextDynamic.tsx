@@ -4,7 +4,7 @@
  * Uses React.lazy + Suspense to lazy-load a component module, matching the
  * legacy `dynamic(() => import(...), { ssr, loading })` signature.
  */
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from "react";
 
 export default function dynamic(loader, opts = {}) {
   const Lazy = lazy(loader);

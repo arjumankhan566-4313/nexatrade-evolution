@@ -1,7 +1,7 @@
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
-import { RefreshCw, ShieldAlert } from 'lucide-react';
-import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
-import { useRef } from 'react';
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { RefreshCw, ShieldAlert } from "lucide-react";
+import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import { useRef } from "react";
 
 /** Spatial UI primitives shared by every Apex feature. */
 
@@ -20,14 +20,14 @@ type GlassCardProps = {
 
 export function GlassCard({
   children,
-  className = '',
+  className = "",
   strong = false,
   depth = true,
 }: GlassCardProps) {
   return (
     <div
-      className={`apex-glass apex-hairline ${strong ? 'apex-glass--strong' : ''} ${
-        depth ? '' : '[box-shadow:none]'
+      className={`apex-glass apex-hairline ${strong ? "apex-glass--strong" : ""} ${
+        depth ? "" : "[box-shadow:none]"
       } ${className}`}
     >
       {children}
@@ -46,20 +46,14 @@ type TiltCardProps = {
  * Pointer-driven 3D tilt with Framer Motion spring physics. Falls back to a
  * static card when the user prefers reduced motion.
  */
-export function TiltCard({ children, className = '', intensity = 1 }: TiltCardProps) {
+export function TiltCard({ children, className = "", intensity = 1 }: TiltCardProps) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const pointerX = useMotionValue(0.5);
   const pointerY = useMotionValue(0.5);
   const max = TILT_MAX_DEG * intensity;
-  const rotateX = useSpring(
-    useTransform(pointerY, [0, 1], [max, -max]),
-    TILT_SPRING
-  );
-  const rotateY = useSpring(
-    useTransform(pointerX, [0, 1], [-max, max]),
-    TILT_SPRING
-  );
+  const rotateX = useSpring(useTransform(pointerY, [0, 1], [max, -max]), TILT_SPRING);
+  const rotateY = useSpring(useTransform(pointerX, [0, 1], [-max, max]), TILT_SPRING);
 
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     if (reduceMotion) return;
@@ -78,9 +72,7 @@ export function TiltCard({ children, className = '', intensity = 1 }: TiltCardPr
     <motion.div
       ref={ref}
       className={`apex-tilt ${className}`}
-      style={
-        reduceMotion ? {} : { rotateX, rotateY, transformPerspective: TILT_PERSPECTIVE }
-      }
+      style={reduceMotion ? {} : { rotateX, rotateY, transformPerspective: TILT_PERSPECTIVE }}
       onPointerMove={handlePointerMove}
       onPointerLeave={reset}
       onPointerCancel={reset}
@@ -96,9 +88,12 @@ type SectionShellProps = {
   className?: string;
 };
 
-export function SectionShell({ id, children, className = '' }: SectionShellProps) {
+export function SectionShell({ id, children, className = "" }: SectionShellProps) {
   return (
-    <section id={id} className={`relative mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 ${className}`}>
+    <section
+      id={id}
+      className={`relative mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 ${className}`}
+    >
       {children}
     </section>
   );
@@ -131,7 +126,7 @@ export function SectionHeading({ eyebrow, title, description, aside }: SectionHe
   );
 }
 
-export function Skeleton({ className = '' }: { className?: string }) {
+export function Skeleton({ className = "" }: { className?: string }) {
   return <span aria-hidden="true" className={`apex-skeleton block ${className}`} />;
 }
 
@@ -149,7 +144,11 @@ export function EmptyState({ title, description, actionLabel, onAction }: StateP
       <p className="font-apex text-sm font-semibold text-apex-ink">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-apex-muted">{description}</p>
       {actionLabel && onAction ? (
-        <button type="button" className="apex-btn apex-btn--ghost mt-5 px-4 py-2 text-sm" onClick={onAction}>
+        <button
+          type="button"
+          className="apex-btn apex-btn--ghost mt-5 px-4 py-2 text-sm"
+          onClick={onAction}
+        >
           {actionLabel}
         </button>
       ) : null}
@@ -168,7 +167,11 @@ export function ErrorState({ title, description, actionLabel, onAction }: StateP
       <p className="mt-3 font-apex text-sm font-semibold text-apex-ink">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-apex-muted">{description}</p>
       {actionLabel && onAction ? (
-        <button type="button" className="apex-btn apex-btn--ghost mt-5 px-4 py-2 text-sm" onClick={onAction}>
+        <button
+          type="button"
+          className="apex-btn apex-btn--ghost mt-5 px-4 py-2 text-sm"
+          onClick={onAction}
+        >
           <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
           {actionLabel}
         </button>
@@ -178,8 +181,12 @@ export function ErrorState({ title, description, actionLabel, onAction }: StateP
 }
 
 /** Risk / honesty note. Required beside trading stats, AI output and copy trading. */
-export function Disclaimer({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return (
-    <p className={`text-[11px] leading-relaxed text-apex-faint ${className}`}>{children}</p>
-  );
+export function Disclaimer({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <p className={`text-[11px] leading-relaxed text-apex-faint ${className}`}>{children}</p>;
 }

@@ -2,10 +2,10 @@
  * ModalAlertHost — 1:1 port of legacy src/components/alerts/ModalAlertHost.jsx.
  * Blocking Center Modal — dead center of the screen, dimmed + blurred backdrop.
  */
-import { useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, ShieldAlert, Info, CheckCircle2, X } from 'lucide-react';
-import { useAlertStore } from '@/tradeon-client/lib/useAlertStore';
+import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, ShieldAlert, Info, CheckCircle2, X } from "lucide-react";
+import { useAlertStore } from "@/tradeon-client/lib/useAlertStore";
 
 const ICONS = {
   critical: ShieldAlert,
@@ -33,14 +33,14 @@ export default function ModalAlertHost() {
   useEffect(() => {
     if (!modal) return undefined;
     const onKey = (e) => {
-      if (e.key === 'Escape' && modal.dismissible) cancel();
+      if (e.key === "Escape" && modal.dismissible) cancel();
     };
-    document.addEventListener('keydown', onKey);
+    document.addEventListener("keydown", onKey);
     const t = setTimeout(() => confirmRef.current?.focus(), 30);
     const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener("keydown", onKey);
       clearTimeout(t);
       document.body.style.overflow = prevOverflow;
     };
@@ -48,7 +48,14 @@ export default function ModalAlertHost() {
   }, [modal?.id]);
 
   const Icon = ICONS[modal?.severity] || AlertTriangle;
-  const tone = modal?.severity === 'critical' ? 'critical' : modal?.severity === 'success' ? 'success' : modal?.severity === 'info' ? 'info' : 'warning';
+  const tone =
+    modal?.severity === "critical"
+      ? "critical"
+      : modal?.severity === "success"
+        ? "success"
+        : modal?.severity === "info"
+          ? "info"
+          : "warning";
 
   return (
     <AnimatePresence>
@@ -74,7 +81,7 @@ export default function ModalAlertHost() {
             initial={{ opacity: 0, scale: 0.92, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+            transition={{ type: "spring", stiffness: 320, damping: 26 }}
             onMouseDown={(e) => e.stopPropagation()}
           >
             {modal.dismissible && (
@@ -87,8 +94,14 @@ export default function ModalAlertHost() {
               <Icon size={30} strokeWidth={1.9} />
             </span>
 
-            <h3 id="nx-modal-title" className="nx-modal-title">{modal.title}</h3>
-            {modal.message && <p id="nx-modal-desc" className="nx-modal-msg">{modal.message}</p>}
+            <h3 id="nx-modal-title" className="nx-modal-title">
+              {modal.title}
+            </h3>
+            {modal.message && (
+              <p id="nx-modal-desc" className="nx-modal-msg">
+                {modal.message}
+              </p>
+            )}
 
             <div className="nx-modal-actions">
               {modal.cancelLabel && (
@@ -99,7 +112,7 @@ export default function ModalAlertHost() {
               <button
                 ref={confirmRef}
                 type="button"
-                className={`nx-btn ${tone === 'critical' ? 'nx-btn-crimson' : 'nx-btn-gold'}`}
+                className={`nx-btn ${tone === "critical" ? "nx-btn-crimson" : "nx-btn-gold"}`}
                 onClick={confirm}
               >
                 {modal.confirmLabel}

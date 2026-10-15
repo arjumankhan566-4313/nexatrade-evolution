@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { Link } from '@/tradeon-client/compat/react-router-dom';
-import { socket } from '../lib/socket';
-import { useAuthStore } from '../stores/authStore';
-import { useConnectionStore } from '../stores/connectionStore';
-import '../styles/home.css';
+import { useEffect } from "react";
+import { Link } from "@/tradeon-client/compat/react-router-dom";
+import { socket } from "../lib/socket";
+import { useAuthStore } from "../stores/authStore";
+import { useConnectionStore } from "../stores/connectionStore";
+import "../styles/home.css";
 
 // Module status panel: proves the REST endpoint, the Socket.io realtime pipe
 // and the Auth session are wired end to end. Replaced page by page as
@@ -14,21 +14,19 @@ export default function HomePage() {
   const { user, status, logout } = useAuthStore();
 
   useEffect(() => {
-    fetch('/api/health')
+    fetch("/api/health")
       .then((res) => res.json())
       .then((body) => setApiHealth(JSON.stringify(body)))
-      .catch(() => setApiHealth('unreachable'));
+      .catch(() => setApiHealth("unreachable"));
 
-    setSocketStatus('connecting');
-    socket.on('connect', () => setSocketStatus('connected'));
-    socket.on('disconnect', () => setSocketStatus('disconnected'));
-    socket.on('tick:demo', (tick: any) =>
-      setLastTick(tick)
-    );
+    setSocketStatus("connecting");
+    socket.on("connect", () => setSocketStatus("connected"));
+    socket.on("disconnect", () => setSocketStatus("disconnected"));
+    socket.on("tick:demo", (tick: any) => setLastTick(tick));
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('tick:demo');
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("tick:demo");
     };
   }, [setApiHealth, setLastTick, setSocketStatus]);
 
@@ -45,12 +43,12 @@ export default function HomePage() {
         <div className="row">
           <span>Auth session</span>
           <code>
-            {status === 'loading'
-              ? 'loading…'
+            {status === "loading"
+              ? "loading…"
               : user
                 ? `${user.fullName} (${user.email}) · ${user.role} · demo $${user.balanceDemo.toLocaleString()}`
-                : 'guest · '}
-            {!user && status !== 'loading' && (
+                : "guest · "}
+            {!user && status !== "loading" && (
               <span>
                 <Link to="/login">sign in</Link> · <Link to="/register">register</Link>
               </span>
@@ -67,7 +65,7 @@ export default function HomePage() {
         )}
         <div className="row">
           <span>REST /api/health</span>
-          <code>{apiHealth ?? 'loading…'}</code>
+          <code>{apiHealth ?? "loading…"}</code>
         </div>
         <div className="row">
           <span>Socket.io status</span>
@@ -78,8 +76,8 @@ export default function HomePage() {
           <code>
             {lastTick
               ? `${lastTick.symbol} @ ${lastTick.price.toFixed(2)} · seq ${lastTick.seq}`
-              : 'waiting…'}
-            </code>
+              : "waiting…"}
+          </code>
         </div>
       </section>
     </main>

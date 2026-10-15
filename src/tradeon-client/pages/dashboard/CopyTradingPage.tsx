@@ -1,24 +1,24 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import dynamic from '@/tradeon-client/lib/nextDynamic';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "@/tradeon-client/lib/nextDynamic";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, TrendingUp } from "lucide-react";
 
 // Recharts is only needed for the trader profile equity curve — lazy-load it so
 // the leaderboard ships without the charting package.
-const EquityArea = dynamic(() => import('@/tradeon-client/components/charts/EquityArea'), {
+const EquityArea = dynamic(() => import("@/tradeon-client/components/charts/EquityArea"), {
   ssr: false,
   loading: () => <div className="chart-empty" aria-hidden="true" />,
 });
-import { useSession } from '@/tradeon-client/components/dashboard/SessionProvider';
-import { useLiveEvents } from '@/tradeon-client/lib/realtimeClient';
-import { api, money, timeAgo } from '@/tradeon-client/lib/apiClient';
-import { useCachedApi } from '@/tradeon-client/lib/useCachedApi';
-import { getCached, setCached } from '@/tradeon-client/lib/apiCache';
+import { useSession } from "@/tradeon-client/components/dashboard/SessionProvider";
+import { useLiveEvents } from "@/tradeon-client/lib/realtimeClient";
+import { api, money, timeAgo } from "@/tradeon-client/lib/apiClient";
+import { useCachedApi } from "@/tradeon-client/lib/useCachedApi";
+import { getCached, setCached } from "@/tradeon-client/lib/apiCache";
 
 /* Spec §6.3 — foil rank medals for #1–#3 (gold / silver / bronze) */
-const MEDALS = { 1: 'foil-gold', 2: 'foil-vip', 3: 'foil-bronze' };
+const MEDALS = { 1: "foil-gold", 2: "foil-vip", 3: "foil-bronze" };
 function RankMedal({ rank }) {
   const foil = MEDALS[rank];
   if (!foil) return <div className="rank-num">#{rank}</div>;
@@ -30,9 +30,9 @@ function RankMedal({ rank }) {
 }
 
 const WINDOWS = [
-  { days: 7, label: '7 days' },
-  { days: 30, label: '30 days' },
-  { days: 90, label: '90 days' },
+  { days: 7, label: "7 days" },
+  { days: 30, label: "30 days" },
+  { days: 90, label: "90 days" },
 ];
 
 /**
@@ -43,14 +43,27 @@ export default function CopyTradingPage() {
   const { user } = useSession();
   const [days, setDays] = useState(30);
   const boardKey = `/api/social/leaderboard?days=${days}&limit=50`;
-  const { data: board, refresh: refreshBoard } = useCachedApi(boardKey, () => api(boardKey), { deps: [days] });
-  const safeBoard = board || { traders: [], following: [], enabled: true, copyTradingEnabled: true };
-  const copyKey = '/api/social/copy';
+  const { data: board, refresh: refreshBoard } = useCachedApi(boardKey, () => api(boardKey), {
+    deps: [days],
+  });
+  const safeBoard = board || {
+    traders: [],
+    following: [],
+    enabled: true,
+    copyTradingEnabled: true,
+  };
+  const copyKey = "/api/social/copy";
   const { data: copyData, refresh: refreshCopy } = useCachedApi(copyKey, () => api(copyKey));
   const [links, setLinks] = useState([]);
   const [target, setTarget] = useState(null);
   const [profile, setProfile] = useState(null); // { trader, loading } — profile drawer
-  const [form, setForm] = useState({ mode: 'RATIO', ratio: 50, fixedStake: 5, maxStake: 50, accountType: 'DEMO' });
+  const [form, setForm] = useState({
+    mode: "RATIO",
+    ratio: 50,
+    fixedStake: 5,
+    maxStake: 50,
+    accountType: "DEMO",
+  });
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -81,25 +94,30 @@ export default function CopyTradingPage() {
   const load = refreshBoard;
 
   useEffect(() => {
-    const t = setInterval(() => { refreshBoard(); }, 30_000);
+    const t = setInterval(() => {
+      refreshBoard();
+    }, 30_000);
     return () => clearInterval(t);
   }, [refreshBoard]);
 
   useLiveEvents({
     onEvent: (e) => {
-      if (['trade', 'copy', 'leaderboard', 'settings'].includes(e.topic)) refreshBoard();
-      if (e.topic === 'copy') refreshCopy();
+      if (["trade", "copy", "leaderboard", "settings"].includes(e.topic)) refreshBoard();
+      if (e.topic === "copy") refreshCopy();
     },
   });
 
-  const followingMap = useMemo(() => Object.fromEntries(links.map((l) => [l.leaderId, l])), [links]);
+  const followingMap = useMemo(
+    () => Object.fromEntries(links.map((l) => [l.leaderId, l])),
+    [links],
+  );
 
   const submit = async () => {
     if (!target) return;
     setBusy(true);
     try {
-      const res = await api('/api/social/copy', {
-        method: 'POST',
+      const res = await api("/api/social/copy", {
+        method: "POST",
         body: {
           leaderId: target.userId,
           mode: form.mode,
@@ -111,11 +129,14 @@ export default function CopyTradingPage() {
       });
       setCached(copyKey, res);
       setLinks(res.following);
-      setToast({ kind: 'ok', text: `Now auto-copying ${target.name}. New positions mirror instantly.` });
+      setToast({
+        kind: "ok",
+        text: `Now auto-copying ${target.name}. New positions mirror instantly.`,
+      });
       setTarget(null);
       load();
     } catch (err) {
-      setToast({ kind: 'error', text: err.message });
+      setToast({ kind: "error", text: err.message });
     } finally {
       setBusy(false);
       setTimeout(() => setToast(null), 4500);
@@ -124,18 +145,21 @@ export default function CopyTradingPage() {
 
   const stop = async (leaderId) => {
     try {
-      const res = await api(`/api/social/copy?leaderId=${leaderId}`, { method: 'DELETE' });
+      const res = await api(`/api/social/copy?leaderId=${leaderId}`, { method: "DELETE" });
       setCached(copyKey, res);
       setLinks(res.following);
-      setToast({ kind: 'ok', text: 'Copy trading stopped.' });
+      setToast({ kind: "ok", text: "Copy trading stopped." });
       setTimeout(() => setToast(null), 3000);
     } catch (err) {
-      setToast({ kind: 'error', text: err.message });
+      setToast({ kind: "error", text: err.message });
     }
   };
 
   const toggle = async (link) => {
-    const res = await api('/api/social/copy', { method: 'PATCH', body: { leaderId: link.leaderId, isActive: !link.isActive } });
+    const res = await api("/api/social/copy", {
+      method: "PATCH",
+      body: { leaderId: link.leaderId, isActive: !link.isActive },
+    });
     setCached(copyKey, res);
     setLinks(res.following);
   };
@@ -146,13 +170,18 @@ export default function CopyTradingPage() {
         <div>
           <h1>Social &amp; copy trading</h1>
           <p className="muted">
-            Rankings are computed from settled trades on this platform — nothing is simulated. Follow a trader and every
-            position they open is mirrored into your account within a second.
+            Rankings are computed from settled trades on this platform — nothing is simulated.
+            Follow a trader and every position they open is mirrored into your account within a
+            second.
           </p>
         </div>
         <div className="row" style={{ gap: 6 }}>
           {WINDOWS.map((w) => (
-            <button key={w.days} className={`tf ${days === w.days ? 'active' : ''}`} onClick={() => setDays(w.days)}>
+            <button
+              key={w.days}
+              className={`tf ${days === w.days ? "active" : ""}`}
+              onClick={() => setDays(w.days)}
+            >
               {w.label}
             </button>
           ))}
@@ -160,31 +189,56 @@ export default function CopyTradingPage() {
       </header>
 
       {!safeBoard.copyTradingEnabled && (
-        <div className="alert alert-warn">Copy trading is temporarily disabled by the platform.</div>
+        <div className="alert alert-warn">
+          Copy trading is temporarily disabled by the platform.
+        </div>
       )}
 
       {links.length > 0 && (
         <section className="glass card">
-          <h2>You are copying {links.length} trader{links.length > 1 ? 's' : ''}</h2>
+          <h2>
+            You are copying {links.length} trader{links.length > 1 ? "s" : ""}
+          </h2>
           <div className="table-wrap">
             <table className="data">
               <thead>
-                <tr><th>Trader</th><th>Sizing</th><th>Account</th><th>Copied</th><th>P/L</th><th>State</th><th /></tr>
+                <tr>
+                  <th>Trader</th>
+                  <th>Sizing</th>
+                  <th>Account</th>
+                  <th>Copied</th>
+                  <th>P/L</th>
+                  <th>State</th>
+                  <th />
+                </tr>
               </thead>
               <tbody>
                 {links.map((l) => (
                   <tr key={l.id}>
-                    <td><strong>{l.leaderName || l.leaderId.slice(0, 8)}</strong></td>
-                    <td className="mono">{l.mode === 'FIXED' ? `${money(l.fixedStake)} fixed` : `${l.ratio}% of stake`} · max {money(l.maxStake)}</td>
-                    <td><span className="badge">{l.accountType}</span></td>
-                    <td className="mono">{l.copied}</td>
-                    <td className={`mono ${l.pnl >= 0 ? 'up' : 'down'}`}>{money(l.pnl)}</td>
                     <td>
-                      <span className={`badge ${l.isActive ? 'badge-up' : ''}`}>{l.isActive ? 'ACTIVE' : 'PAUSED'}</span>
+                      <strong>{l.leaderName || l.leaderId.slice(0, 8)}</strong>
+                    </td>
+                    <td className="mono">
+                      {l.mode === "FIXED" ? `${money(l.fixedStake)} fixed` : `${l.ratio}% of stake`}{" "}
+                      · max {money(l.maxStake)}
+                    </td>
+                    <td>
+                      <span className="badge">{l.accountType}</span>
+                    </td>
+                    <td className="mono">{l.copied}</td>
+                    <td className={`mono ${l.pnl >= 0 ? "up" : "down"}`}>{money(l.pnl)}</td>
+                    <td>
+                      <span className={`badge ${l.isActive ? "badge-up" : ""}`}>
+                        {l.isActive ? "ACTIVE" : "PAUSED"}
+                      </span>
                     </td>
                     <td className="right">
-                      <button className="btn btn-sm btn-ghost" onClick={() => toggle(l)}>{l.isActive ? 'Pause' : 'Resume'}</button>
-                      <button className="btn btn-sm btn-ghost" onClick={() => stop(l.leaderId)}>Stop</button>
+                      <button className="btn btn-sm btn-ghost" onClick={() => toggle(l)}>
+                        {l.isActive ? "Pause" : "Resume"}
+                      </button>
+                      <button className="btn btn-sm btn-ghost" onClick={() => stop(l.leaderId)}>
+                        Stop
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -196,33 +250,57 @@ export default function CopyTradingPage() {
 
       <section className="glass card">
         <h2>Global leaderboard</h2>
-        {!safeBoard.traders.length && <div className="empty">No trader has enough settled trades in this window yet.</div>}
+        {!safeBoard.traders.length && (
+          <div className="empty">No trader has enough settled trades in this window yet.</div>
+        )}
         <div className="board">
           {safeBoard.traders.map((t) => {
             const link = followingMap[t.userId];
             return (
               <motion.article
                 key={t.userId}
-                className={`trader ${t.rank <= 3 ? 'podium' : ''}`}
+                className={`trader ${t.rank <= 3 ? "podium" : ""}`}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay: Math.min(t.rank * 0.02, 0.3) }}
               >
                 <RankMedal rank={t.rank} />
                 <div className="who">
-                  <strong>{t.name} {t.isMe && <em className="me">you</em>}</strong>
-                  <span className="dim">{t.country || '—'} · {t.tier} · {t.followers} follower{t.followers === 1 ? '' : 's'}</span>
+                  <strong>
+                    {t.name} {t.isMe && <em className="me">you</em>}
+                  </strong>
+                  <span className="dim">
+                    {t.country || "—"} · {t.tier} · {t.followers} follower
+                    {t.followers === 1 ? "" : "s"}
+                  </span>
                 </div>
-                <div className="metric"><span>Win rate</span><strong className={t.winRate >= 50 ? 'up' : ''}>{t.winRate}%</strong></div>
-                <div className="metric"><span>Net P/L</span><strong className={t.pnl >= 0 ? 'up' : 'down'}>{money(t.pnl)}</strong></div>
-                <div className="metric hide-sm"><span>Volume</span><strong className="mono">{money(t.volume)}</strong></div>
-                <div className="metric hide-sm"><span>Trades</span><strong className="mono">{t.trades}</strong></div>
-                <div className="metric hide-sm"><span>Last</span><strong className="mono sm">{timeAgo(t.lastTrade)}</strong></div>
+                <div className="metric">
+                  <span>Win rate</span>
+                  <strong className={t.winRate >= 50 ? "up" : ""}>{t.winRate}%</strong>
+                </div>
+                <div className="metric">
+                  <span>Net P/L</span>
+                  <strong className={t.pnl >= 0 ? "up" : "down"}>{money(t.pnl)}</strong>
+                </div>
+                <div className="metric hide-sm">
+                  <span>Volume</span>
+                  <strong className="mono">{money(t.volume)}</strong>
+                </div>
+                <div className="metric hide-sm">
+                  <span>Trades</span>
+                  <strong className="mono">{t.trades}</strong>
+                </div>
+                <div className="metric hide-sm">
+                  <span>Last</span>
+                  <strong className="mono sm">{timeAgo(t.lastTrade)}</strong>
+                </div>
                 <div className="act">
                   {t.isMe ? (
                     <span className="badge badge-gold">YOUR RANK</span>
                   ) : link ? (
-                    <button className="btn btn-sm btn-ghost" onClick={() => stop(t.userId)}>Copying ✓</button>
+                    <button className="btn btn-sm btn-ghost" onClick={() => stop(t.userId)}>
+                      Copying ✓
+                    </button>
                   ) : (
                     <button
                       className="btn btn-sm btn-gold"
@@ -242,7 +320,13 @@ export default function CopyTradingPage() {
       {/* Spec §6.3 — trader profile drawer (real equity curve) */}
       <AnimatePresence>
         {profile && (
-          <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setProfile(null)}>
+          <motion.div
+            className="scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setProfile(null)}
+          >
             <motion.div
               className="glass modal profile-modal"
               initial={{ x: 40, opacity: 0 }}
@@ -253,21 +337,43 @@ export default function CopyTradingPage() {
               <div className="profile-head">
                 <div>
                   <h3>{profile.trader.name}</h3>
-                  <span className="dim">{profile.trader.country || '—'} · {profile.trader.tier} tier</span>
+                  <span className="dim">
+                    {profile.trader.country || "—"} · {profile.trader.tier} tier
+                  </span>
                 </div>
-                <button className="icon-btn" onClick={() => setProfile(null)} aria-label="Close"><X size={18} /></button>
+                <button className="icon-btn" onClick={() => setProfile(null)} aria-label="Close">
+                  <X size={18} />
+                </button>
               </div>
 
               <div className="profile-chips">
-                <div><span>Win rate</span><strong className="up">{profile.trader.winRate}%</strong></div>
-                <div><span>Net P/L</span><strong className={profile.trader.pnl >= 0 ? 'up' : 'down'}>{money(profile.trader.pnl)}</strong></div>
-                <div><span>Trades</span><strong className="mono">{profile.trader.trades}</strong></div>
-                <div><span>Volume</span><strong className="mono">{money(profile.trader.volume)}</strong></div>
+                <div>
+                  <span>Win rate</span>
+                  <strong className="up">{profile.trader.winRate}%</strong>
+                </div>
+                <div>
+                  <span>Net P/L</span>
+                  <strong className={profile.trader.pnl >= 0 ? "up" : "down"}>
+                    {money(profile.trader.pnl)}
+                  </strong>
+                </div>
+                <div>
+                  <span>Trades</span>
+                  <strong className="mono">{profile.trader.trades}</strong>
+                </div>
+                <div>
+                  <span>Volume</span>
+                  <strong className="mono">{money(profile.trader.volume)}</strong>
+                </div>
               </div>
 
               <div className="profile-range">
                 {[7, 30, 90].map((r) => (
-                  <button key={r} className={`tf ${profile.range === r ? 'active' : ''}`} onClick={() => openProfile(profile.trader, r)}>
+                  <button
+                    key={r}
+                    className={`tf ${profile.range === r ? "active" : ""}`}
+                    onClick={() => openProfile(profile.trader, r)}
+                  >
                     {r}d
                   </button>
                 ))}
@@ -275,9 +381,17 @@ export default function CopyTradingPage() {
 
               <div className="profile-chart">
                 {profile.loading ? (
-                  <div className="chart-empty"><span className="spinner" /></div>
+                  <div className="chart-empty">
+                    <span className="spinner" />
+                  </div>
                 ) : profile.trader.equity && profile.trader.equity.length >= 2 ? (
-                  <EquityArea data={profile.trader.equity} up={profile.trader.pnl >= 0} domain={['dataMin', 'dataMax']} gradientId="traderFill" fillOpacity={0.3} />
+                  <EquityArea
+                    data={profile.trader.equity}
+                    up={profile.trader.pnl >= 0}
+                    domain={["dataMin", "dataMax"]}
+                    gradientId="traderFill"
+                    fillOpacity={0.3}
+                  />
                 ) : (
                   <div className="chart-empty">No settled-trade history in this window yet.</div>
                 )}
@@ -289,7 +403,10 @@ export default function CopyTradingPage() {
                 onClick={() => {
                   setTarget(profile.trader);
                   setProfile(null);
-                  setForm((f) => ({ ...f, accountType: user?.kycStatus === 'VERIFIED' ? f.accountType : 'DEMO' }));
+                  setForm((f) => ({
+                    ...f,
+                    accountType: user?.kycStatus === "VERIFIED" ? f.accountType : "DEMO",
+                  }));
                 }}
               >
                 <TrendingUp size={15} /> Start copying
@@ -301,7 +418,13 @@ export default function CopyTradingPage() {
 
       <AnimatePresence>
         {target && (
-          <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setTarget(null)}>
+          <motion.div
+            className="scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setTarget(null)}
+          >
             <motion.div
               className="glass modal"
               initial={{ scale: 0.94, y: 18 }}
@@ -311,55 +434,87 @@ export default function CopyTradingPage() {
             >
               <h3>Copy {target.name}</h3>
               <p className="muted" style={{ fontSize: 12.5 }}>
-                {target.winRate}% win rate · {target.trades} trades · {money(target.pnl)} net over the window.
+                {target.winRate}% win rate · {target.trades} trades · {money(target.pnl)} net over
+                the window.
               </p>
 
               <div className="field">
                 <label>Sizing mode</label>
                 <div className="row" style={{ gap: 6 }}>
-                  {['RATIO', 'FIXED'].map((m) => (
-                    <button key={m} className={`tf ${form.mode === m ? 'active' : ''}`} onClick={() => setForm({ ...form, mode: m })}>
-                      {m === 'RATIO' ? '% of their stake' : 'Fixed amount'}
+                  {["RATIO", "FIXED"].map((m) => (
+                    <button
+                      key={m}
+                      className={`tf ${form.mode === m ? "active" : ""}`}
+                      onClick={() => setForm({ ...form, mode: m })}
+                    >
+                      {m === "RATIO" ? "% of their stake" : "Fixed amount"}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {form.mode === 'RATIO' ? (
+              {form.mode === "RATIO" ? (
                 <div className="field">
                   <label>Copy ratio — {form.ratio}% of every position they open</label>
-                  <input type="range" min="5" max="200" step="5" value={form.ratio} onChange={(e) => setForm({ ...form, ratio: e.target.value })} />
+                  <input
+                    type="range"
+                    min="5"
+                    max="200"
+                    step="5"
+                    value={form.ratio}
+                    onChange={(e) => setForm({ ...form, ratio: e.target.value })}
+                  />
                 </div>
               ) : (
                 <div className="field">
                   <label>Fixed stake per copied trade (USD)</label>
-                  <input className="input mono" type="number" min="1" value={form.fixedStake} onChange={(e) => setForm({ ...form, fixedStake: e.target.value })} />
+                  <input
+                    className="input mono"
+                    type="number"
+                    min="1"
+                    value={form.fixedStake}
+                    onChange={(e) => setForm({ ...form, fixedStake: e.target.value })}
+                  />
                 </div>
               )}
 
               <div className="grid2">
                 <div className="field">
                   <label>Max stake per trade</label>
-                  <input className="input mono" type="number" min="1" value={form.maxStake} onChange={(e) => setForm({ ...form, maxStake: e.target.value })} />
+                  <input
+                    className="input mono"
+                    type="number"
+                    min="1"
+                    value={form.maxStake}
+                    onChange={(e) => setForm({ ...form, maxStake: e.target.value })}
+                  />
                 </div>
                 <div className="field">
                   <label>Account</label>
-                  <select className="input" value={form.accountType} onChange={(e) => setForm({ ...form, accountType: e.target.value })}>
+                  <select
+                    className="input"
+                    value={form.accountType}
+                    onChange={(e) => setForm({ ...form, accountType: e.target.value })}
+                  >
                     <option value="DEMO">Demo</option>
-                    <option value="REAL" disabled={user?.kycStatus !== 'VERIFIED'}>Real {user?.kycStatus !== 'VERIFIED' ? '(KYC required)' : ''}</option>
+                    <option value="REAL" disabled={user?.kycStatus !== "VERIFIED"}>
+                      Real {user?.kycStatus !== "VERIFIED" ? "(KYC required)" : ""}
+                    </option>
                   </select>
                 </div>
               </div>
 
               <div className="row" style={{ gap: 8, marginTop: 14 }}>
                 <button className="btn btn-gold btn-block" disabled={busy} onClick={submit}>
-                  {busy ? 'Starting…' : 'Start copying'}
+                  {busy ? "Starting…" : "Start copying"}
                 </button>
-                <button className="btn btn-ghost" onClick={() => setTarget(null)}>Cancel</button>
+                <button className="btn btn-ghost" onClick={() => setTarget(null)}>
+                  Cancel
+                </button>
               </div>
               <p className="dim" style={{ fontSize: 11.5, marginTop: 10 }}>
-                Copied positions are opened with your own balance and follow the same market conditions. You can pause or
-                stop at any time; open positions run to expiry.
+                Copied positions are opened with your own balance and follow the same market
+                conditions. You can pause or stop at any time; open positions run to expiry.
               </p>
             </motion.div>
           </motion.div>
@@ -368,7 +523,12 @@ export default function CopyTradingPage() {
 
       <AnimatePresence>
         {toast && (
-          <motion.div className={`toast ${toast.kind}`} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+          <motion.div
+            className={`toast ${toast.kind}`}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
             {toast.text}
           </motion.div>
         )}

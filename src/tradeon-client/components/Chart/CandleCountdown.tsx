@@ -9,9 +9,9 @@
  *    (default '#FFFFFF'); the text switches between light and dark by the
  *    background's WCAG relative luminance so it stays readable on any color.
  */
-import { useEffect, useState } from 'react';
-import { readableTextColor } from '../../chart/luminance';
-import { useChartConfigStore } from '../../stores/chartConfigStore';
+import { useEffect, useState } from "react";
+import { readableTextColor } from "../../chart/luminance";
+import { useChartConfigStore } from "../../stores/chartConfigStore";
 
 interface Props {
   /** Candle bucket size in milliseconds */
@@ -29,7 +29,10 @@ export default function CandleCountdown({ bucketMs, serverTimeOffset }: Props) {
       // Server time = local time + the offset learned from the feed.
       const srvNow = Date.now() + (serverTimeOffset ?? 0);
       const ms = Number(bucketMs);
-      if (!Number.isFinite(ms) || ms <= 0) { setRemaining(0); return; }
+      if (!Number.isFinite(ms) || ms <= 0) {
+        setRemaining(0);
+        return;
+      }
       const next = Math.ceil(srvNow / ms) * ms;
       setRemaining(Math.max(0, next - srvNow));
     };
@@ -39,36 +42,46 @@ export default function CandleCountdown({ bucketMs, serverTimeOffset }: Props) {
   }, [bucketMs, serverTimeOffset]);
 
   const totalSec = Math.ceil(remaining / 1000);
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
-  const ss = String(totalSec % 60).padStart(2, '0');
+  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const ss = String(totalSec % 60).padStart(2, "0");
   const isUrgent = remaining <= 3000 && remaining > 0;
 
   // Text color follows the admin-chosen background's luminance; the urgent
   // state keeps its amber warning only where it stays readable.
-  const textColor = isUrgent ? '#b26b00' : readableTextColor(timerBgColor);
+  const textColor = isUrgent ? "#b26b00" : readableTextColor(timerBgColor);
 
   return (
     <span
-      className={`candle-countdown ${isUrgent ? 'urgent' : ''}`}
+      className={`candle-countdown ${isUrgent ? "urgent" : ""}`}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
+        display: "inline-flex",
+        alignItems: "center",
         gap: 4,
-        padding: '3px 8px',
+        padding: "3px 8px",
         borderRadius: 6,
         background: timerBgColor,
-        border: '1px solid #e3e7ee',
+        border: "1px solid #e3e7ee",
         color: textColor,
         fontSize: 12,
         fontWeight: 700,
-        fontVariantNumeric: 'tabular-nums',
-        fontFamily: 'ui-monospace, Menlo, monospace',
-        transition: 'color 0.3s ease, background 0.3s ease',
-        userSelect: 'none',
-        pointerEvents: 'none',
+        fontVariantNumeric: "tabular-nums",
+        fontFamily: "ui-monospace, Menlo, monospace",
+        transition: "color 0.3s ease, background 0.3s ease",
+        userSelect: "none",
+        pointerEvents: "none",
       }}
     >
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+      <svg
+        width="11"
+        height="11"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ opacity: 0.7 }}
+      >
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 14 14" />
       </svg>

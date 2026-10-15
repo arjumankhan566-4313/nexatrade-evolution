@@ -15,7 +15,7 @@ export function isStale(key) {
 }
 
 function notify(key) {
-  listeners.get(key)?.forEach(callback => callback(getCached(key)));
+  listeners.get(key)?.forEach((callback) => callback(getCached(key)));
 }
 
 export function setCached(key, data, ttl = DEFAULT_TTL) {
@@ -48,12 +48,15 @@ export function invalidateAll() {
 
 function fetchFresh(key, fetcher, ttl) {
   if (inFlight.has(key)) return inFlight.get(key);
-  const request = Promise.resolve().then(fetcher).then(data => {
-    if (inFlight.get(key) === request) setCached(key, data, ttl);
-    return data;
-  }).finally(() => {
-    if (inFlight.get(key) === request) inFlight.delete(key);
-  });
+  const request = Promise.resolve()
+    .then(fetcher)
+    .then((data) => {
+      if (inFlight.get(key) === request) setCached(key, data, ttl);
+      return data;
+    })
+    .finally(() => {
+      if (inFlight.get(key) === request) inFlight.delete(key);
+    });
   // Store pending requests even on a cold cache (including warmup + page mount).
   inFlight.set(key, request);
   return request;

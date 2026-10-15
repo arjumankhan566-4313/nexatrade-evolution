@@ -1,18 +1,21 @@
-import { useReducedMotion } from 'framer-motion';
-import { Suspense, lazy } from 'react';
+import { useReducedMotion } from "framer-motion";
+import { Suspense, lazy } from "react";
 
 /**
  * Fixed deep-space backdrop: static gradient first (always painted), animated
  * canvas lazily loaded on top. Reduced motion users, and anyone whose browser
  * never resolves the lazy chunk, simply keep the static gradient.
  */
-const AmbientCanvas = lazy(() => import('./AmbientCanvas'));
+const AmbientCanvas = lazy(() => import("./AmbientCanvas"));
 
 export default function SpatialBackground() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div aria-hidden="true" className="apex-space pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      aria-hidden="true"
+      className="apex-space pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    >
       {reduceMotion ? null : (
         <Suspense fallback={null}>
           <AmbientCanvas />

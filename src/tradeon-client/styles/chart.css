@@ -35,7 +35,9 @@
   font-family: inherit;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 .chart-market-btn:hover {
   border-color: #3a465c;
@@ -78,7 +80,9 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 .chart-tf:hover {
   color: #e6e9ef;
@@ -94,7 +98,7 @@
   font-weight: 700;
   color: #e6e9ef;
 }
-.chart-price[data-status='live'] {
+.chart-price[data-status="live"] {
   color: #26a69a;
 }
 
@@ -126,8 +130,13 @@
   color: #ef5350;
 }
 @keyframes chartPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .chart-canvas-wrap {

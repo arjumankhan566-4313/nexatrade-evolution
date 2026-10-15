@@ -7,17 +7,17 @@
  *   • styled-jsx `<style jsx>` → a plain scoped `<style>` (Vite has no styled-jsx).
  *   • next/navigation useRouter → aliased shim (react-router navigate).
  */
-import { useState } from 'react';
-import { useNavigate } from '@/tradeon-client/compat/react-router-dom';
-import { Eye, EyeOff, LockKeyhole, ArrowRight } from 'lucide-react';
-import BrandMark from '@/tradeon-client/components/BrandMark';
-import { useAdminAuthStore } from '@/tradeon-client/stores/adminAuthStore';
-import '@/tradeon-client/styles/admin.css';
+import { useState } from "react";
+import { useNavigate } from "@/tradeon-client/compat/react-router-dom";
+import { Eye, EyeOff, LockKeyhole, ArrowRight } from "lucide-react";
+import BrandMark from "@/tradeon-client/components/BrandMark";
+import { useAdminAuthStore } from "@/tradeon-client/stores/adminAuthStore";
+import "@/tradeon-client/styles/admin.css";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
   const login = useAdminAuthStore((s) => s.login);
-  const [form, setForm] = useState({ email: '', password: '', twoFactorCode: '' });
+  const [form, setForm] = useState({ email: "", password: "", twoFactorCode: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
     setBusy(true);
     const ok = await login(form.email, form.password, form.twoFactorCode || undefined);
     if (ok) {
-      navigate('/admin', { replace: true });
+      navigate("/admin", { replace: true });
       return;
     }
     setBusy(false);
@@ -44,7 +44,9 @@ export default function AdminLoginPage() {
     <div className="wrap nt-login">
       <form className="glass card admin-login-card" onSubmit={submit}>
         <BrandMark size={34} subtitle="Control Center" />
-        <div className="admin-login-eyebrow"><LockKeyhole size={14} /> ADMINISTRATION</div>
+        <div className="admin-login-eyebrow">
+          <LockKeyhole size={14} /> ADMINISTRATION
+        </div>
         <h1>Welcome to Control Center</h1>
         <p className="muted">Sign in with your administrator account to manage your platform.</p>
 
@@ -58,14 +60,14 @@ export default function AdminLoginPage() {
           <label htmlFor="admin-email">Administrator email</label>
           <input
             id="admin-email"
-            className={`input ${fields.email ? 'input-error' : ''}`}
+            className={`input ${fields.email ? "input-error" : ""}`}
             type="email"
             autoComplete="username"
             placeholder="you@example.com"
             required
             disabled={busy}
             value={form.email}
-            onChange={set('email')}
+            onChange={set("email")}
           />
           {fields.email && <span className="field-error">{fields.email}</span>}
         </div>
@@ -75,16 +77,22 @@ export default function AdminLoginPage() {
           <div className="admin-password-wrap">
             <input
               id="admin-password"
-              className={`input ${fields.password ? 'input-error' : ''}`}
-              type={showPassword ? 'text' : 'password'}
+              className={`input ${fields.password ? "input-error" : ""}`}
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Enter your password"
               required
               disabled={busy}
               value={form.password}
-              onChange={set('password')}
+              onChange={set("password")}
             />
-            <button className="admin-password-toggle" type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword((v) => !v)}>
+            <button
+              className="admin-password-toggle"
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              onClick={() => setShowPassword((v) => !v)}
+            >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
@@ -102,16 +110,26 @@ export default function AdminLoginPage() {
               autoComplete="one-time-code"
               autoFocus
               value={form.twoFactorCode}
-              onChange={set('twoFactorCode')}
+              onChange={set("twoFactorCode")}
               placeholder="6-digit code or backup code"
             />
           </div>
         )}
 
         <button className="btn btn-gold btn-block" disabled={busy} aria-busy={busy}>
-          {busy ? <><span className="spinner" /> Signing in…</> : <>Access Control Center <ArrowRight size={17} /></>}
+          {busy ? (
+            <>
+              <span className="spinner" /> Signing in…
+            </>
+          ) : (
+            <>
+              Access Control Center <ArrowRight size={17} />
+            </>
+          )}
         </button>
-        <p className="admin-login-note"><LockKeyhole size={12} /> Secure administrator session</p>
+        <p className="admin-login-note">
+          <LockKeyhole size={12} /> Secure administrator session
+        </p>
       </form>
 
       <style>{`

@@ -11,8 +11,8 @@
  *  2. the realtime `rt:settings` broadcast — an admin save lands in ~1s
  *     without a reload.
  */
-import { create } from 'zustand';
-import { socket } from '../lib/socket';
+import { create } from "zustand";
+import { socket } from "../lib/socket";
 
 interface ChartConfigState {
   /** Countdown pill background (any #rgb/#rrggbb). Default pure white. */
@@ -27,25 +27,25 @@ let realtimeBound = false;
 function bindRealtime(set: (partial: Partial<ChartConfigState>) => void) {
   if (realtimeBound) return;
   realtimeBound = true;
-  socket.emit('join:rt', 'settings');
-  socket.on('rt:settings', (event: { payload?: { settings?: { chart_timer_bg?: string } } }) => {
+  socket.emit("join:rt", "settings");
+  socket.on("rt:settings", (event: { payload?: { settings?: { chart_timer_bg?: string } } }) => {
     const color = event?.payload?.settings?.chart_timer_bg;
-    if (typeof color === 'string' && /^#[0-9a-fA-F]{6}$/.test(color)) {
+    if (typeof color === "string" && /^#[0-9a-fA-F]{6}$/.test(color)) {
       set({ timerBgColor: color });
     }
   });
 }
 
 export const useChartConfigStore = create<ChartConfigState>((set) => ({
-  timerBgColor: '#FFFFFF',
+  timerBgColor: "#FFFFFF",
   setTimerBgColor: (color) => set({ timerBgColor: color }),
   loadFromServer: async () => {
     bindRealtime(set);
     try {
-      const res = await fetch('/api/market/otc/config', { credentials: 'include' });
+      const res = await fetch("/api/market/otc/config", { credentials: "include" });
       if (!res.ok) return;
       const data = (await res.json()) as { chartTimerBg?: string };
-      if (typeof data.chartTimerBg === 'string' && /^#[0-9a-fA-F]{6}$/.test(data.chartTimerBg)) {
+      if (typeof data.chartTimerBg === "string" && /^#[0-9a-fA-F]{6}$/.test(data.chartTimerBg)) {
         set({ timerBgColor: data.chartTimerBg });
       }
     } catch {

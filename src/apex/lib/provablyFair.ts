@@ -33,33 +33,38 @@ const encoder = new TextEncoder();
 
 function toHex(buffer: ArrayBuffer): string {
   return Array.from(new Uint8Array(buffer))
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('');
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 /** True when the page runs in a context where Web Crypto's subtle API exists. */
 export function isWebCryptoAvailable(): boolean {
-  return typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.subtle !== 'undefined';
+  return (
+    typeof globalThis.crypto !== "undefined" && typeof globalThis.crypto.subtle !== "undefined"
+  );
 }
 
 export async function sha256Hex(text: string): Promise<string> {
-  const digest = await globalThis.crypto.subtle.digest('SHA-256', encoder.encode(text));
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", encoder.encode(text));
   return toHex(digest);
 }
 
 export async function hmacSha256Hex(key: string, message: string): Promise<string> {
   const cryptoKey = await globalThis.crypto.subtle.importKey(
-    'raw',
+    "raw",
     encoder.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
+    { name: "HMAC", hash: "SHA-256" },
     false,
-    ['sign']
+    ["sign"],
   );
-  const signature = await globalThis.crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(message));
+  const signature = await globalThis.crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(message));
   return toHex(signature);
 }
 
-export function fairnessMessage({ clientSeed, nonce }: Pick<FairnessInput, 'clientSeed' | 'nonce'>): string {
+export function fairnessMessage({
+  clientSeed,
+  nonce,
+}: Pick<FairnessInput, "clientSeed" | "nonce">): string {
   return `${clientSeed}:${nonce}`;
 }
 
@@ -77,7 +82,7 @@ export async function computeResultHash(input: FairnessInput): Promise<string> {
  */
 export async function verifyFairness(
   input: FairnessInput,
-  publishedHash: string
+  publishedHash: string,
 ): Promise<FairnessOutcome> {
   const [commitment, resultHash] = await Promise.all([
     computeCommitment(input.serverSeed),

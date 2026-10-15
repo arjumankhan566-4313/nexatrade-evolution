@@ -23,7 +23,12 @@
   border-radius: 12px;
   box-shadow: 0 22px 54px rgba(0, 0, 0, 0.6);
   color: var(--tp-text);
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   animation: toolpopIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -49,8 +54,14 @@
 }
 
 @keyframes toolpopIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Click-catcher — the chart stays visible behind the card. */
@@ -73,14 +84,23 @@
   padding: 12px 12px 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.toolpop__titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.toolpop__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 .toolpop__title {
   margin: 0;
   font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
-.toolpop__hint { color: var(--tp-dim); font-size: 10.5px; font-weight: 600; }
+.toolpop__hint {
+  color: var(--tp-dim);
+  font-size: 10.5px;
+  font-weight: 600;
+}
 .toolpop__close {
   display: grid;
   place-items: center;
@@ -92,9 +112,14 @@
   background: transparent;
   color: var(--tp-muted);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
-.toolpop__close:hover { background: rgba(255, 255, 255, 0.06); color: var(--tp-text); }
+.toolpop__close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--tp-text);
+}
 
 /* ── Sections ── */
 .toolpop__body {
@@ -105,7 +130,11 @@
   max-height: min(340px, calc(100vh - 140px));
   overflow-y: auto;
 }
-.toolpop__section { display: flex; flex-direction: column; gap: 4px; }
+.toolpop__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .toolpop__section-title {
   margin: 0 0 2px;
   font-size: 9.5px;
@@ -114,7 +143,10 @@
   text-transform: uppercase;
   color: var(--tp-dim);
 }
-.toolpop__grid { display: grid; gap: 3px; }
+.toolpop__grid {
+  display: grid;
+  gap: 3px;
+}
 
 .toolpop__opt {
   display: flex;
@@ -131,17 +163,34 @@
   font-weight: 700;
   text-align: left;
   cursor: pointer;
-  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease;
 }
-.toolpop__opt:hover { background: var(--tp-elev); color: var(--tp-text); }
+.toolpop__opt:hover {
+  background: var(--tp-elev);
+  color: var(--tp-text);
+}
 .toolpop__opt.is-active {
   border-color: rgba(41, 134, 255, 0.5);
   background: rgba(41, 134, 255, 0.12);
   color: var(--tp-text);
 }
-.toolpop__opt-icon { display: grid; place-items: center; color: currentColor; flex-shrink: 0; }
-.toolpop__opt-label { flex: 1; min-width: 0; }
-.toolpop__opt-check { color: var(--tp-accent); flex-shrink: 0; }
+.toolpop__opt-icon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  flex-shrink: 0;
+}
+.toolpop__opt-label {
+  flex: 1;
+  min-width: 0;
+}
+.toolpop__opt-check {
+  color: var(--tp-accent);
+  flex-shrink: 0;
+}
 
 /* ── Small screens: the card becomes a bottom sheet ── */
 @media (max-width: 768px) {
@@ -154,9 +203,13 @@
     bottom: calc(var(--nxt-sheet-peek, 64px) + 8px);
     width: auto;
   }
-  .toolpop__body { max-height: min(52dvh, 340px); }
+  .toolpop__body {
+    max-height: min(52dvh, 340px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .toolpop { animation: none; }
+  .toolpop {
+    animation: none;
+  }
 }

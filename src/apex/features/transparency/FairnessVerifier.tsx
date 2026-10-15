@@ -1,12 +1,12 @@
-import { CheckCircle2, Loader2, ShieldQuestion, XCircle } from 'lucide-react';
-import { useState } from 'react';
-import { Disclaimer } from '../../components/primitives';
-import { FAIRNESS_SAMPLE } from '../../config/content.config';
-import { isWebCryptoAvailable, verifyFairness } from '../../lib/provablyFair';
-import type { FairnessOutcome } from '../../lib/provablyFair';
+import { CheckCircle2, Loader2, ShieldQuestion, XCircle } from "lucide-react";
+import { useState } from "react";
+import { Disclaimer } from "../../components/primitives";
+import { FAIRNESS_SAMPLE } from "../../config/content.config";
+import { isWebCryptoAvailable, verifyFairness } from "../../lib/provablyFair";
+import type { FairnessOutcome } from "../../lib/provablyFair";
 
 const FIELD_CLASS =
-  'apex-focusable mt-1.5 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 font-mono text-[12px] text-apex-ink placeholder:text-apex-faint focus:border-apex-cyan/50';
+  "apex-focusable mt-1.5 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 font-mono text-[12px] text-apex-ink placeholder:text-apex-faint focus:border-apex-cyan/50";
 
 type FieldProps = {
   id: string;
@@ -58,13 +58,13 @@ export default function FairnessVerifier() {
     try {
       if (!isWebCryptoAvailable()) {
         throw new Error(
-          'Web Crypto is unavailable in this browser context, so the hash cannot be computed honestly.'
+          "Web Crypto is unavailable in this browser context, so the hash cannot be computed honestly.",
         );
       }
       setOutcome(await verifyFairness({ serverSeed, clientSeed, nonce }, publishedHash));
     } catch (cause: unknown) {
       setOutcome(null);
-      setFailure(cause instanceof Error ? cause.message : 'Verification failed unexpectedly.');
+      setFailure(cause instanceof Error ? cause.message : "Verification failed unexpectedly.");
     } finally {
       setBusy(false);
     }
@@ -80,10 +80,10 @@ export default function FairnessVerifier() {
   }
 
   function clearAll() {
-    setServerSeed('');
-    setClientSeed('');
-    setNonce('1');
-    setPublishedHash('');
+    setServerSeed("");
+    setClientSeed("");
+    setNonce("1");
+    setPublishedHash("");
     setOutcome(null);
     setFailure(null);
   }
@@ -144,12 +144,20 @@ export default function FairnessVerifier() {
             disabled={busy || !ready}
           >
             {busy ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : null}
-            {busy ? 'Computing…' : 'Compute SHA-256'}
+            {busy ? "Computing…" : "Compute SHA-256"}
           </button>
-          <button type="button" className="apex-btn apex-btn--ghost px-4 py-2.5 text-sm" onClick={loadSample}>
+          <button
+            type="button"
+            className="apex-btn apex-btn--ghost px-4 py-2.5 text-sm"
+            onClick={loadSample}
+          >
             Load example inputs
           </button>
-          <button type="button" className="apex-btn apex-btn--ghost px-4 py-2.5 text-sm" onClick={clearAll}>
+          <button
+            type="button"
+            className="apex-btn apex-btn--ghost px-4 py-2.5 text-sm"
+            onClick={clearAll}
+          >
             Clear
           </button>
         </div>
@@ -157,7 +165,10 @@ export default function FairnessVerifier() {
 
       <div aria-live="polite" className="mt-6 space-y-4">
         {failure ? (
-          <p role="alert" className="rounded-xl border border-apex-crimson/30 bg-apex-crimson/10 px-4 py-3 text-sm text-apex-ink">
+          <p
+            role="alert"
+            className="rounded-xl border border-apex-crimson/30 bg-apex-crimson/10 px-4 py-3 text-sm text-apex-ink"
+          >
             {failure}
           </p>
         ) : null}
@@ -167,10 +178,10 @@ export default function FairnessVerifier() {
             <div
               className={`flex flex-wrap items-center gap-2 rounded-xl px-4 py-3 text-sm ${
                 outcome.matches === null
-                  ? 'bg-white/5 text-apex-muted'
+                  ? "bg-white/5 text-apex-muted"
                   : outcome.matches
-                    ? 'bg-apex-emerald/12 text-apex-ink'
-                    : 'bg-apex-crimson/12 text-apex-ink'
+                    ? "bg-apex-emerald/12 text-apex-ink"
+                    : "bg-apex-crimson/12 text-apex-ink"
               }`}
             >
               {outcome.matches === null ? (
@@ -182,10 +193,10 @@ export default function FairnessVerifier() {
               )}
               <span className="font-semibold">
                 {outcome.matches === null
-                  ? 'No published hash supplied — digests computed, nothing compared.'
+                  ? "No published hash supplied — digests computed, nothing compared."
                   : outcome.matches
-                    ? 'Match — the revealed seed reproduces the published hash.'
-                    : 'Mismatch — this hash was NOT produced by these inputs.'}
+                    ? "Match — the revealed seed reproduces the published hash."
+                    : "Mismatch — this hash was NOT produced by these inputs."}
               </span>
             </div>
 
@@ -211,7 +222,8 @@ export default function FairnessVerifier() {
 
       <Disclaimer className="mt-6">
         Hashes are computed locally with the Web Crypto API — nothing is sent anywhere. Verification
-        proves the published commitment matches the revealed seed; it does not predict trading outcomes.
+        proves the published commitment matches the revealed seed; it does not predict trading
+        outcomes.
       </Disclaimer>
     </div>
   );

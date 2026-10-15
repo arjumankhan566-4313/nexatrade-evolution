@@ -6,9 +6,9 @@
  * without the live OTC feed. Mount/resize wiring mirrors CanvasChart; it has no
  * toolbar and no trade overlays by design.
  */
-import { useEffect, useRef } from 'react';
-import { ChartEngine } from '../../chart/ChartEngine';
-import type { Candle, ChartTheme } from '../../chart/types';
+import { useEffect, useRef } from "react";
+import { ChartEngine } from "../../chart/ChartEngine";
+import type { Candle, ChartTheme } from "../../chart/types";
 
 export interface EngineState {
   barWidth: number;
@@ -39,7 +39,9 @@ export default function SyntheticChart({ candles, theme, onState }: Props) {
   // Boot the engine once; the theme is applied by its own effect below.
   useEffect(() => {
     if (!baseRef.current || !overlayRef.current) return;
-    const engine = new ChartEngine(baseRef.current, overlayRef.current, { theme: themeRef.current });
+    const engine = new ChartEngine(baseRef.current, overlayRef.current, {
+      theme: themeRef.current,
+    });
     engineRef.current = engine;
 
     const ro = new ResizeObserver((entries) => {

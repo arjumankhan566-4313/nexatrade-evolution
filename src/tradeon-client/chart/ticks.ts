@@ -36,10 +36,9 @@ export function priceTicks(lo: number, hi: number, target = 6): { step: number; 
 
 /** Round time steps, from one second to thirty days (all epoch aligned). */
 const TIME_STEPS_MS = [
-  1_000, 2_000, 5_000, 10_000, 15_000, 30_000,
-  60_000, 120_000, 300_000, 600_000, 900_000, 1_800_000,
-  3_600_000, 7_200_000, 14_400_000, 21_600_000, 43_200_000, 86_400_000,
-  172_800_000, 604_800_000, 1_209_600_000, 2_592_000_000,
+  1_000, 2_000, 5_000, 10_000, 15_000, 30_000, 60_000, 120_000, 300_000, 600_000, 900_000,
+  1_800_000, 3_600_000, 7_200_000, 14_400_000, 21_600_000, 43_200_000, 86_400_000, 172_800_000,
+  604_800_000, 1_209_600_000, 2_592_000_000,
 ];
 
 /**
@@ -48,7 +47,12 @@ const TIME_STEPS_MS = [
  * small enough that a handful of boundaries fall inside the visible span
  * (`spanMs`) — otherwise a wide step would leave the axis with no labels.
  */
-export function timeStepMs(bucketMs: number, barWidth: number, minLabelPx: number, spanMs: number): number {
+export function timeStepMs(
+  bucketMs: number,
+  barWidth: number,
+  minLabelPx: number,
+  spanMs: number,
+): number {
   const last = TIME_STEPS_MS[TIME_STEPS_MS.length - 1];
   const bw = Math.max(1, barWidth);
   const barsPerLabel = Math.max(1, Math.ceil(minLabelPx / bw));

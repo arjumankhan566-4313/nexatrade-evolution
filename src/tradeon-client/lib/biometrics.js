@@ -23,10 +23,10 @@ export function drawToCanvas(source, maxSize = 480) {
   const sw = source.videoWidth || source.naturalWidth || source.width;
   const sh = source.videoHeight || source.naturalHeight || source.height;
   const scale = Math.min(1, maxSize / Math.max(sw, sh));
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = Math.max(2, Math.round(sw * scale));
   canvas.height = Math.max(2, Math.round(sh * scale));
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
   return canvas;
 }
@@ -34,9 +34,9 @@ export function drawToCanvas(source, maxSize = 480) {
 export function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Could not read the image file.'));
+    img.onerror = () => reject(new Error("Could not read the image file."));
     img.src = src;
   });
 }
@@ -44,12 +44,12 @@ export function loadImage(src) {
 export function fileToDataUrl(file, maxSize = 1280, quality = 0.86) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Could not read the file.'));
+    reader.onerror = () => reject(new Error("Could not read the file."));
     reader.onload = async () => {
       try {
         const img = await loadImage(reader.result);
         const canvas = drawToCanvas(img, maxSize);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        resolve(canvas.toDataURL("image/jpeg", quality));
       } catch (err) {
         reject(err);
       }
@@ -65,8 +65,10 @@ let nativeDetector;
 function getNativeDetector() {
   if (nativeDetector !== undefined) return nativeDetector;
   try {
-    // eslint-disable-next-line no-undef
-    nativeDetector = typeof FaceDetector !== 'undefined' ? new FaceDetector({ fastMode: true, maxDetectedFaces: 1 }) : null;
+    nativeDetector =
+      typeof FaceDetector !== "undefined"
+        ? new FaceDetector({ fastMode: true, maxDetectedFaces: 1 })
+        : null;
   } catch {
     nativeDetector = null;
   }
@@ -75,7 +77,7 @@ function getNativeDetector() {
 
 /** Skin-tone mask + projection profile → face bounding box. */
 function skinToneBox(canvas) {
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const { width: w, height: h } = canvas;
   const { data } = ctx.getImageData(0, 0, w, h);
   const colScore = new Float32Array(w);
@@ -91,10 +93,14 @@ function skinToneBox(canvas) {
       const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
       const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
       const isSkin =
-        r > 60 && g > 35 && b > 20 &&
+        r > 60 &&
+        g > 35 &&
+        b > 20 &&
         r > b * 0.9 &&
-        cb >= 74 && cb <= 132 &&
-        cr >= 132 && cr <= 178;
+        cb >= 74 &&
+        cb <= 132 &&
+        cr >= 132 &&
+        cr <= 178;
       if (isSkin) {
         colScore[x] += 1;
         rowScore[y] += 1;
@@ -135,14 +141,22 @@ export async function detectFace(source, maxSize = 320) {
       const faces = await detector.detect(canvas);
       if (faces?.length) {
         const b = faces[0].boundingBox;
-        return { x: b.x, y: b.y, width: b.width, height: b.height, confidence: 0.95, source: 'native', canvas };
+        return {
+          x: b.x,
+          y: b.y,
+          width: b.width,
+          height: b.height,
+          confidence: 0.95,
+          source: "native",
+          canvas,
+        };
       }
     } catch {
       /* fall back to the heuristic detector */
     }
   }
   const box = skinToneBox(canvas);
-  return box ? { ...box, source: 'heuristic', canvas } : null;
+  return box ? { ...box, source: "heuristic", canvas } : null;
 }
 
 /* ------------------------------------------------------------------ *
@@ -151,10 +165,10 @@ export async function detectFace(source, maxSize = 320) {
 const GRID = 16;
 
 function cropGray(canvas, box) {
-  const out = document.createElement('canvas');
+  const out = document.createElement("canvas");
   out.width = GRID * 2;
   out.height = GRID * 2;
-  const ctx = out.getContext('2d', { willReadFrequently: true });
+  const ctx = out.getContext("2d", { willReadFrequently: true });
   ctx.drawImage(canvas, box.x, box.y, box.width, box.height, 0, 0, out.width, out.height);
   const { data } = ctx.getImageData(0, 0, out.width, out.height);
   const gray = new Float32Array(out.width * out.height);
@@ -231,10 +245,13 @@ export function compareDescriptors(a, b) {
 /** Full face-match between two data URLs (ID portrait vs live capture). */
 export async function matchFaces(idDataUrl, selfieDataUrl) {
   const [idImg, selfieImg] = await Promise.all([loadImage(idDataUrl), loadImage(selfieDataUrl)]);
-  const [idFace, selfieFace] = await Promise.all([detectFace(idImg, 400), detectFace(selfieImg, 400)]);
+  const [idFace, selfieFace] = await Promise.all([
+    detectFace(idImg, 400),
+    detectFace(selfieImg, 400),
+  ]);
 
-  if (!idFace) return { score: 0, error: 'No face could be located on the uploaded document.' };
-  if (!selfieFace) return { score: 0, error: 'No face could be located in the live capture.' };
+  if (!idFace) return { score: 0, error: "No face could be located on the uploaded document." };
+  if (!selfieFace) return { score: 0, error: "No face could be located in the live capture." };
 
   const idDesc = computeDescriptor(idFace.canvas, idFace);
   const selfieDesc = computeDescriptor(selfieFace.canvas, selfieFace);
@@ -248,10 +265,22 @@ export async function matchFaces(idDataUrl, selfieDataUrl) {
  * Liveness — randomised challenge / response
  * ------------------------------------------------------------------ */
 export const CHALLENGES = [
-  { id: 'TURN_LEFT', prompt: 'Slowly turn your head to the LEFT', hint: 'Keep your face in the frame' },
-  { id: 'TURN_RIGHT', prompt: 'Slowly turn your head to the RIGHT', hint: 'Keep your face in the frame' },
-  { id: 'BLINK', prompt: 'Blink twice, naturally', hint: 'Look straight at the camera' },
-  { id: 'MOVE_CLOSER', prompt: 'Lean a little CLOSER to the camera', hint: 'Fill more of the frame' },
+  {
+    id: "TURN_LEFT",
+    prompt: "Slowly turn your head to the LEFT",
+    hint: "Keep your face in the frame",
+  },
+  {
+    id: "TURN_RIGHT",
+    prompt: "Slowly turn your head to the RIGHT",
+    hint: "Keep your face in the frame",
+  },
+  { id: "BLINK", prompt: "Blink twice, naturally", hint: "Look straight at the camera" },
+  {
+    id: "MOVE_CLOSER",
+    prompt: "Lean a little CLOSER to the camera",
+    hint: "Fill more of the frame",
+  },
 ];
 
 export function pickChallenges(count = 3) {
@@ -264,14 +293,20 @@ export function pickChallenges(count = 3) {
 }
 
 function eyeRegionIntensity(canvas, box) {
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const ex = Math.max(0, Math.round(box.x + box.width * 0.15));
   const ey = Math.max(0, Math.round(box.y + box.height * 0.24));
   const ew = Math.max(2, Math.round(box.width * 0.7));
   const eh = Math.max(2, Math.round(box.height * 0.22));
-  const { data } = ctx.getImageData(ex, ey, Math.min(ew, canvas.width - ex), Math.min(eh, canvas.height - ey));
+  const { data } = ctx.getImageData(
+    ex,
+    ey,
+    Math.min(ew, canvas.width - ex),
+    Math.min(eh, canvas.height - ey),
+  );
   let sum = 0;
-  for (let i = 0; i < data.length; i += 4) sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  for (let i = 0; i < data.length; i += 4)
+    sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
   return sum / (data.length / 4);
 }
 
@@ -286,7 +321,11 @@ function frameDifference(a, b) {
  * Runs one challenge for `durationMs`, sampling the video element.
  * Returns the measured signals plus a pass/fail verdict.
  */
-export async function runChallenge(video, challenge, { durationMs = 2600, fps = 8, onProgress } = {}) {
+export async function runChallenge(
+  video,
+  challenge,
+  { durationMs = 2600, fps = 8, onProgress } = {},
+) {
   const samples = [];
   let previousGray = null;
   let motion = 0;
@@ -294,7 +333,7 @@ export async function runChallenge(video, challenge, { durationMs = 2600, fps = 
 
   while (performance.now() - start < durationMs) {
     const canvas = drawToCanvas(video, 240);
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const frame = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     if (previousGray) motion += frameDifference(previousGray, frame);
     previousGray = frame;
@@ -310,13 +349,20 @@ export async function runChallenge(video, challenge, { durationMs = 2600, fps = 
       });
     }
     onProgress?.(Math.min(1, (performance.now() - start) / durationMs), face);
-    // eslint-disable-next-line no-await-in-loop
+
     await new Promise((r) => setTimeout(r, 1000 / fps));
   }
 
   const frames = samples.length;
   if (frames < 4) {
-    return { id: challenge.id, passed: false, frames, motion, reason: 'FACE_NOT_TRACKED', value: 0 };
+    return {
+      id: challenge.id,
+      passed: false,
+      frames,
+      motion,
+      reason: "FACE_NOT_TRACKED",
+      value: 0,
+    };
   }
 
   const cxs = samples.map((s) => s.cx);
@@ -332,19 +378,19 @@ export async function runChallenge(video, challenge, { durationMs = 2600, fps = 
   let value = 0;
   switch (challenge.id) {
     // Mirrored preview: turning left moves the face right in frame, so accept either sign
-    case 'TURN_LEFT':
+    case "TURN_LEFT":
       value = Math.abs(drift);
       passed = value > 0.045 && motionOk;
       break;
-    case 'TURN_RIGHT':
+    case "TURN_RIGHT":
       value = Math.abs(drift);
       passed = value > 0.045 && motionOk;
       break;
-    case 'BLINK':
+    case "BLINK":
       value = eyeDips;
       passed = eyeDips >= 1 && motionOk;
       break;
-    case 'MOVE_CLOSER':
+    case "MOVE_CLOSER":
       value = areaGrowth;
       passed = areaGrowth > 1.08 && motionOk;
       break;
@@ -352,7 +398,13 @@ export async function runChallenge(video, challenge, { durationMs = 2600, fps = 
       passed = motionOk;
   }
 
-  return { id: challenge.id, passed, frames, motion: Math.round(motion * 1000) / 1000, value: Math.round(value * 1000) / 1000 };
+  return {
+    id: challenge.id,
+    passed,
+    frames,
+    motion: Math.round(motion * 1000) / 1000,
+    value: Math.round(value * 1000) / 1000,
+  };
 }
 
 /** Aggregate several challenge results into a 0-100 liveness score. */

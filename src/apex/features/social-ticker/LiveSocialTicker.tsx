@@ -1,8 +1,8 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowUpRight, TrendingUp, Wallet } from 'lucide-react';
-import type { ComponentType } from 'react';
-import { useEffect, useState } from 'react';
-import { DEMO_MODE } from '../../config/content.config';
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, TrendingUp, Wallet } from "lucide-react";
+import type { ComponentType } from "react";
+import { useEffect, useState } from "react";
+import { DEMO_MODE } from "../../config/content.config";
 import {
   createTickerEvent,
   randomDelayMs,
@@ -10,17 +10,17 @@ import {
   type SocialActivityPayload,
   type TickerEvent,
   type TickerEventKind,
-} from './events';
+} from "./events";
 
 /** How long a toast stays on screen before it fades out. */
 const HOLD_MS = 5200;
 /** The very first toast appears sooner so the surface feels alive immediately. */
 const FIRST_DELAY_MS = 2400;
 /** Real-activity socket channel used when DEMO_MODE is false. */
-const ACTIVITY_EVENT = 'social:activity';
+const ACTIVITY_EVENT = "social:activity";
 
 type KindStyle = {
-  Icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' | 'false' }>;
+  Icon: ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
   /** Icon badge fill + tint. */
   badge: string;
   /** Accent used for the value and the pulse dot. */
@@ -30,18 +30,18 @@ type KindStyle = {
 const KIND_STYLE: Record<TickerEventKind, KindStyle> = {
   profit: {
     Icon: TrendingUp,
-    badge: 'bg-apex-lime/12 text-apex-lime ring-apex-lime/25',
-    accent: 'text-apex-lime',
+    badge: "bg-apex-lime/12 text-apex-lime ring-apex-lime/25",
+    accent: "text-apex-lime",
   },
   deposit: {
     Icon: Wallet,
-    badge: 'bg-apex-cyan/12 text-apex-cyan ring-apex-cyan/25',
-    accent: 'text-apex-cyan',
+    badge: "bg-apex-cyan/12 text-apex-cyan ring-apex-cyan/25",
+    accent: "text-apex-cyan",
   },
   withdrawal: {
     Icon: ArrowUpRight,
-    badge: 'bg-white/10 text-white ring-white/20',
-    accent: 'text-apex-ink',
+    badge: "bg-white/10 text-white ring-white/20",
+    accent: "text-apex-ink",
   },
 };
 
@@ -97,7 +97,7 @@ export default function LiveSocialTicker() {
     let detach: (() => void) | undefined;
 
     // Loaded lazily so the demo landing never opens a socket connection.
-    void import('../../../lib/socket').then(({ socket }) => {
+    void import("../../../lib/socket").then(({ socket }) => {
       if (cancelled) return;
       const onActivity = (payload: SocialActivityPayload) => {
         const next = toTickerEvent(payload);
@@ -136,7 +136,7 @@ export default function LiveSocialTicker() {
             transition={
               reduceMotion
                 ? { duration: 0.25 }
-                : { type: 'spring', stiffness: 320, damping: 30, mass: 0.7 }
+                : { type: "spring", stiffness: 320, damping: 30, mass: 0.7 }
             }
             className="apex-glass apex-glass--strong apex-hairline flex w-[min(92vw,23rem)] items-center gap-3 rounded-2xl py-3 pl-3 pr-4"
           >
@@ -147,8 +147,8 @@ export default function LiveSocialTicker() {
             </span>
             <div className="min-w-0">
               <p className="truncate font-apex text-[13px] leading-snug text-apex-ink">
-                <span className="font-semibold">{event.mask}</span>{' '}
-                <span className="text-apex-muted">{event.action}</span>{' '}
+                <span className="font-semibold">{event.mask}</span>{" "}
+                <span className="text-apex-muted">{event.action}</span>{" "}
                 <span className={`font-semibold ${style.accent}`}>{event.value}</span>
               </p>
               <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-apex-faint">
