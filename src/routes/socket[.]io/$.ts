@@ -31,7 +31,7 @@ async function forward({ request }: { request: Request }) {
   return new Response(res.body, { status: res.status, headers: resHeaders });
 }
 
-export const Route = createFileRoute("/socket/io/$")({
+export const Route = createFileRoute("/socket.io/$")({
   server: {
     handlers: {
       GET: forward,
