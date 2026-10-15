@@ -1,10 +1,17 @@
-import { io } from 'socket.io-client';
-
-// Same-origin by default: the Vite dev server proxies /socket.io to the API.
-// VITE_API_URL overrides this when the API is deployed on a separate origin.
-export const socket = io(import.meta.env['VITE_API_URL'] ?? '/', {
-  path: '/socket.io',
-  transports: ['websocket', 'polling'],
+/**
+ * Canonical socket.io client for the app.
+ *
+ * Same-origin by default: the forwarder in `src/routes/socket.io/$.ts` proxies
+ * /socket.io to the API. VITE_API_URL overrides this when the API is deployed
+ * on a separate origin.
+ *
+ * `src/tradeon-client/lib/socket.ts` re-exports this module — import either
+ * path, they are the same singleton.
+ */
+import { io } from "socket.io-client";
+export const socket = io(import.meta.env["VITE_API_URL"] ?? "/", {
+  path: "/socket.io",
+  transports: ["websocket", "polling"],
   autoConnect: true,
 });
 
@@ -16,9 +23,9 @@ export const socket = io(import.meta.env['VITE_API_URL'] ?? '/', {
  * lifecycle and must `disconnect()` it.
  */
 export function createSocket() {
-  return io(import.meta.env['VITE_API_URL'] ?? '/', {
-    path: '/socket.io',
-    transports: ['websocket', 'polling'],
+  return io(import.meta.env["VITE_API_URL"] ?? "/", {
+    path: "/socket.io",
+    transports: ["websocket", "polling"],
     autoConnect: true,
   });
 }

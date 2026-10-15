@@ -20,7 +20,9 @@ export const env = {
   finnhubApiKey: process.env.FINNHUB_API_KEY ?? '',
   polygonApiKey: process.env.POLYGON_API_KEY ?? '',
   // Owner account provisioning (used by config/bootstrap.ts at startup).
+  // NO built-in default password — the operator must supply one.
   superAdminPassword: process.env.SUPER_ADMIN_PASSWORD ?? '',
+  adminInitialPassword: process.env.ADMIN_INITIAL_PASSWORD ?? '',
   adminEmail: process.env.ADMIN_EMAIL ?? '',
   adminPassword: process.env.ADMIN_PASSWORD ?? '',
   adminName: process.env.ADMIN_NAME ?? '',

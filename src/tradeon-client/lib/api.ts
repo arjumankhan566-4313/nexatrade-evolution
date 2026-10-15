@@ -1,4 +1,16 @@
-/** Same-origin API helper. In dev the Vite proxy forwards /api to the server. */
+/**
+ * Same-origin API helper used by the auth stores.
+ *
+ * CONTRACT (differs from the `api()` in `lib/legacyInfra.tsx` — read before
+ * importing):
+ *  - NEVER throws — always resolves with `{ status, data }` (callers branch on
+ *    `status`).
+ *  - Automatically prefixes every path with `/api` (e.g. `api('/auth/me')`
+ *    requests `/api/auth/me`).
+ *
+ * The legacy throwing variant lives in `lib/legacyInfra.tsx` (re-exported as
+ * `lib/apiClient.ts`) and is what the ported dashboard/admin pages use.
+ */
 export interface ApiResponse<T = unknown> {
   status: number;
   data: T;
@@ -6,15 +18,15 @@ export interface ApiResponse<T = unknown> {
 
 export async function api<T = unknown>(
   path: string,
-  options: { method?: string; body?: unknown } = {}
+  options: { method?: string; body?: unknown } = {},
 ): Promise<ApiResponse<T>> {
   const res = await fetch(`/api${path}`, {
-    method: options.method ?? 'GET',
-    credentials: 'include',
-    headers: options.body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+    method: options.method ?? "GET",
+    credentials: "include",
+    headers: options.body !== undefined ? { "Content-Type": "application/json" } : undefined,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
-  let data: any = null;
+  let data: unknown = null;
   try {
     data = await res.json();
   } catch {

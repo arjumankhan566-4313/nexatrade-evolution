@@ -1,51 +1,112 @@
 // @ts-nocheck
 
-import Link from '@/tradeon-client/components/dashboard/WorkspaceLink';
-import { useCallback, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useDropzone } from 'react-dropzone';
-import { Zap, ReceiptText, CreditCard, Smartphone, Landmark, Bitcoin, FileUp, X, Check, Copy, Paperclip, ShieldCheck } from 'lucide-react';
-import { useSession } from '@/tradeon-client/components/dashboard/SessionProvider';
-import { api, money, fmtDate } from '@/tradeon-client/lib/apiClient';
-import { alert } from '@/tradeon-client/lib/useAlertStore';
-import { useLiveEvents } from '@/tradeon-client/lib/realtimeClient';
+import Link from "@/tradeon-client/components/dashboard/WorkspaceLink";
+import { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useDropzone } from "react-dropzone";
+import {
+  Zap,
+  ReceiptText,
+  CreditCard,
+  Smartphone,
+  Landmark,
+  Bitcoin,
+  FileUp,
+  X,
+  Check,
+  Copy,
+  Paperclip,
+  ShieldCheck,
+} from "lucide-react";
+import { useSession } from "@/tradeon-client/components/dashboard/SessionProvider";
+import { api, money, fmtDate } from "@/tradeon-client/lib/apiClient";
+import { alert } from "@/tradeon-client/lib/useAlertStore";
+import { useLiveEvents } from "@/tradeon-client/lib/realtimeClient";
 
-const STATUS_CLASS = { PENDING: 'badge badge-warn', APPROVED: 'badge badge-up', REJECTED: 'badge badge-down' };
+const STATUS_CLASS = {
+  PENDING: "badge badge-warn",
+  APPROVED: "badge badge-up",
+  REJECTED: "badge badge-down",
+};
 
-const KIND_LABEL = { CRYPTO: 'Crypto', LOCAL: 'Local rails', BANK: 'Bank', AUTO: 'Automatic' };
+const KIND_LABEL = { CRYPTO: "Crypto", LOCAL: "Local rails", BANK: "Bank", AUTO: "Automatic" };
 
 const PAY_CURRENCY_LABEL = {
-  USDT_TRC20: 'USDT · Tron (TRC-20)',
-  USDT_ERC20: 'USDT · Ethereum (ERC-20)',
-  BITCOIN: 'Bitcoin (BTC)',
-  ETHEREUM: 'Ethereum (ETH)',
+  USDT_TRC20: "USDT · Tron (TRC-20)",
+  USDT_ERC20: "USDT · Ethereum (ERC-20)",
+  BITCOIN: "Bitcoin (BTC)",
+  ETHEREUM: "Ethereum (ETH)",
 };
-const payLabel = (code) => PAY_CURRENCY_LABEL[code] || PAY_CURRENCY_LABEL[String(code || '').toUpperCase()] || code || 'USDT · Tron (TRC-20)';
+const payLabel = (code) =>
+  PAY_CURRENCY_LABEL[code] ||
+  PAY_CURRENCY_LABEL[String(code || "").toUpperCase()] ||
+  code ||
+  "USDT · Tron (TRC-20)";
 
 /* Spec §6.6 — branded gateway identity (external-brand recognition) */
 const RAIL_BRAND = {
-  BKASH: { bg: 'rgba(226,19,110,0.14)', border: 'rgba(226,19,110,0.5)', fg: '#ff5aa2', label: 'bKash' },
-  NAGAD: { bg: 'rgba(246,146,30,0.14)', border: 'rgba(246,146,30,0.5)', fg: '#ffb057', label: 'Nagad' },
-  ROCKET: { bg: 'rgba(138,43,226,0.14)', border: 'rgba(138,43,226,0.5)', fg: '#c59bff', label: 'Rocket' },
-  USDT_TRC20: { bg: 'rgba(38,161,123,0.14)', border: 'rgba(38,161,123,0.5)', fg: '#4be3ae', label: 'USDT' },
-  USDT: { bg: 'rgba(38,161,123,0.14)', border: 'rgba(38,161,123,0.5)', fg: '#4be3ae', label: 'USDT' },
-  BITCOIN: { bg: 'rgba(247,147,26,0.14)', border: 'rgba(247,147,26,0.5)', fg: '#ffb057', label: 'Bitcoin' },
-  ETHEREUM: { bg: 'rgba(98,126,234,0.14)', border: 'rgba(98,126,234,0.5)', fg: '#a9b6ff', label: 'Ethereum' },
-  BANK: { bg: 'rgba(30,58,95,0.3)', border: 'rgba(90,130,180,0.55)', fg: '#9ec1ea', label: 'Bank' },
-  BINANCE_PAY: { bg: 'rgba(243,186,47,0.14)', border: 'rgba(243,186,47,0.55)', fg: '#f3ba2f', label: 'Binance Pay' },
+  BKASH: {
+    bg: "rgba(226,19,110,0.14)",
+    border: "rgba(226,19,110,0.5)",
+    fg: "#ff5aa2",
+    label: "bKash",
+  },
+  NAGAD: {
+    bg: "rgba(246,146,30,0.14)",
+    border: "rgba(246,146,30,0.5)",
+    fg: "#ffb057",
+    label: "Nagad",
+  },
+  ROCKET: {
+    bg: "rgba(138,43,226,0.14)",
+    border: "rgba(138,43,226,0.5)",
+    fg: "#c59bff",
+    label: "Rocket",
+  },
+  USDT_TRC20: {
+    bg: "rgba(38,161,123,0.14)",
+    border: "rgba(38,161,123,0.5)",
+    fg: "#4be3ae",
+    label: "USDT",
+  },
+  USDT: {
+    bg: "rgba(38,161,123,0.14)",
+    border: "rgba(38,161,123,0.5)",
+    fg: "#4be3ae",
+    label: "USDT",
+  },
+  BITCOIN: {
+    bg: "rgba(247,147,26,0.14)",
+    border: "rgba(247,147,26,0.5)",
+    fg: "#ffb057",
+    label: "Bitcoin",
+  },
+  ETHEREUM: {
+    bg: "rgba(98,126,234,0.14)",
+    border: "rgba(98,126,234,0.5)",
+    fg: "#a9b6ff",
+    label: "Ethereum",
+  },
+  BANK: { bg: "rgba(30,58,95,0.3)", border: "rgba(90,130,180,0.55)", fg: "#9ec1ea", label: "Bank" },
+  BINANCE_PAY: {
+    bg: "rgba(243,186,47,0.14)",
+    border: "rgba(243,186,47,0.55)",
+    fg: "#f3ba2f",
+    label: "Binance Pay",
+  },
 };
 
 function KindIcon({ kind, brand }) {
   const style = brand?.fg ? { color: brand.fg } : undefined;
   const size = 18;
   switch (kind) {
-    case 'CRYPTO':
+    case "CRYPTO":
       return <Bitcoin size={size} style={style} />;
-    case 'LOCAL':
+    case "LOCAL":
       return <Smartphone size={size} style={style} />;
-    case 'BANK':
+    case "BANK":
       return <Landmark size={size} style={style} />;
-    case 'AUTO':
+    case "AUTO":
       return <Zap size={size} style={style} />;
     default:
       return <CreditCard size={size} style={style} />;
@@ -56,7 +117,7 @@ function QRPlaceholder({ data, label }) {
   // Lightweight deterministic QR-like block grid (visual placeholder derived
   // from the address). Real QR bytes come from the admin-configured qrData.
   let seed = 0;
-  const src = String(data || label || 'nexa');
+  const src = String(data || label || "nexa");
   for (let i = 0; i < src.length; i += 1) seed = (seed * 31 + src.charCodeAt(i)) >>> 0;
   const cells = [];
   let x = seed;
@@ -67,7 +128,7 @@ function QRPlaceholder({ data, label }) {
   return (
     <div className="qr" role="img" aria-label={`${label} QR code`}>
       {cells.map((on, i) => (
-        <i key={i} className={on ? 'on' : ''} />
+        <i key={i} className={on ? "on" : ""} />
       ))}
     </div>
   );
@@ -76,34 +137,40 @@ function QRPlaceholder({ data, label }) {
 /* Spec §6.6 — drag-and-drop deposit proof (react-dropzone) */
 function ProofDropzone({ preview, onAccepted, onRemove }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    accept: { "image/*": [".png", ".jpg", ".jpeg", ".webp"] },
     maxSize: 4 * 1024 * 1024,
     multiple: false,
     onDrop: (files) => files[0] && onAccepted(files[0]),
     onDropRejected: (rej) => {
       const err = rej[0]?.errors?.[0];
       // parent surfaces the message via onAccepted(null) with a flag
-      onAccepted(null, err?.code === 'file-too-large' ? 'Screenshot must be under 4MB.' : 'Please upload a valid image.');
+      onAccepted(
+        null,
+        err?.code === "file-too-large"
+          ? "Screenshot must be under 4MB."
+          : "Please upload a valid image.",
+      );
     },
   });
 
   return (
     <div className="proof">
-      <div
-        {...getRootProps()}
-        className={`dropzone ${isDragActive ? 'drag' : ''}`}
-      >
+      <div {...getRootProps()} className={`dropzone ${isDragActive ? "drag" : ""}`}>
         <input {...getInputProps()} />
-        <FileUp size={22} style={{ color: 'var(--gold-1)' }} />
-        <p>{isDragActive ? 'Drop the screenshot here' : 'Drag & drop your payment screenshot'}</p>
+        <FileUp size={22} style={{ color: "var(--gold-1)" }} />
+        <p>{isDragActive ? "Drop the screenshot here" : "Drag & drop your payment screenshot"}</p>
         <span>or click to browse · PNG / JPG up to 4MB</span>
       </div>
       {preview && (
         <div className="proof-preview">
           <img src={preview} alt="Payment proof" />
           <div className="proof-meta">
-            <span className="ok"><Check size={13} /> Proof attached</span>
-            <button type="button" className="btn btn-sm btn-down" onClick={onRemove}>Remove</button>
+            <span className="ok">
+              <Check size={13} /> Proof attached
+            </span>
+            <button type="button" className="btn btn-sm btn-down" onClick={onRemove}>
+              Remove
+            </button>
           </div>
         </div>
       )}
@@ -113,17 +180,36 @@ function ProofDropzone({ preview, onAccepted, onRemove }) {
 
 export default function WalletPage() {
   const { user, refresh } = useSession();
-  const previewMode = typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production' || window.location.hostname.includes('vercel.run') || window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.e2b.app') || window.location.hostname.endsWith('.arena.site') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  // Preview/demo rails show only outside a production build (dev server or a
+  // localhost run) — no hardcoded preview-hostnames, no process.env in the
+  // browser bundle.
+  const previewMode =
+    !import.meta.env.PROD ||
+    (typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"));
   const previewRails = [
-    { code: 'BINANCE_PAY', name: 'Binance Pay', kind: 'AUTO', isCrypto: true, address: 'Binance Merchant checkout', instructions: 'Preview checkout only. No real funds are transferred.' },
+    {
+      code: "BINANCE_PAY",
+      name: "Binance Pay",
+      kind: "AUTO",
+      isCrypto: true,
+      address: "Binance Merchant checkout",
+      instructions: "Preview checkout only. No real funds are transferred.",
+    },
   ];
-  const [tab, setTab] = useState('DEPOSIT');
-  const [mode, setMode] = useState('MANUAL');
-  const [data, setData] = useState({ transactions: [], balances: { real: 0, demo: 0 }, limits: {}, methods: [], rails: [] });
+  const [tab, setTab] = useState("DEPOSIT");
+  const [mode, setMode] = useState("MANUAL");
+  const [data, setData] = useState({
+    transactions: [],
+    balances: { real: 0, demo: 0 },
+    limits: {},
+    methods: [],
+    rails: [],
+  });
   const [selectedRail, setSelectedRail] = useState(null);
-  const [form, setForm] = useState({ amount: '', reference: '', senderAccount: '' });
-  const [proof, setProof] = useState('');
-  const [preview, setPreview] = useState('');
+  const [form, setForm] = useState({ amount: "", reference: "", senderAccount: "" });
+  const [proof, setProof] = useState("");
+  const [preview, setPreview] = useState("");
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -131,28 +217,41 @@ export default function WalletPage() {
   // master switch, liveKey: server has a real NOWPayments key, loaded } — read
   // from /api/payments/create-invoice (GET), which merges deployment env with
   // the administrator runtime switches from the admin panel.
-  const [gateway, setGateway] = useState({ enabled: false, demo: false, autoDeposits: true, liveKey: false, reason: null, loaded: false });
+  const [gateway, setGateway] = useState({
+    enabled: false,
+    demo: false,
+    autoDeposits: true,
+    liveKey: false,
+    reason: null,
+    loaded: false,
+  });
   // Demo-gateway checkout (active only when no live NOWPayments key exists).
   const [checkout, setCheckout] = useState(null); // { txId, token, amount, method }
   const [paying, setPaying] = useState(false);
   const [charged, setCharged] = useState(null); // { ok:true, amount } | null
   const [chargeError, setChargeError] = useState(null);
   const [walletLoading, setWalletLoading] = useState(true);
-  const [walletError, setWalletError] = useState('');
+  const [walletError, setWalletError] = useState("");
 
   const load = useCallback(async () => {
     if (previewMode) {
-      setData({ transactions: [], balances: { real: 0, demo: 10000 }, limits: { minDeposit: 10, minWithdraw: 10 }, methods: [], rails: previewRails });
-      setWalletError('');
+      setData({
+        transactions: [],
+        balances: { real: 0, demo: 10000 },
+        limits: { minDeposit: 10, minWithdraw: 10 },
+        methods: [],
+        rails: previewRails,
+      });
+      setWalletError("");
       setWalletLoading(false);
       return;
     }
     try {
-      const walletData = await api('/api/wallet');
+      const walletData = await api("/api/wallet");
       setData((prev) => ({ ...prev, ...walletData, rails: walletData.rails || [] }));
-      setWalletError('');
+      setWalletError("");
     } catch (err) {
-      setWalletError(err.message || 'The wallet could not be loaded.');
+      setWalletError(err.message || "The wallet could not be loaded.");
     } finally {
       setWalletLoading(false);
     }
@@ -167,23 +266,29 @@ export default function WalletPage() {
   // Admin approvals, gateway credits and payment-method edits appear without
   // waiting for the polling fallback.
   useLiveEvents({
-    onEvent: useCallback((event) => {
-      if (['balance', 'finance', 'payments', 'notification'].includes(event.topic)) load();
-    }, [load]),
+    onEvent: useCallback(
+      (event) => {
+        if (["balance", "finance", "payments", "notification"].includes(event.topic)) load();
+      },
+      [load],
+    ),
   });
 
   // Gateway availability (live NOWPayments vs demo checkout) for the AUTO tab copy.
   useEffect(() => {
-    api('/api/payments/create-invoice')
-      .then((d) => { if (d?.gateway) setGateway((g) => ({ ...g, ...d.gateway, loaded: true })); })
+    api("/api/payments/create-invoice")
+      .then((d) => {
+        if (d?.gateway) setGateway((g) => ({ ...g, ...d.gateway, loaded: true }));
+      })
       .catch(() => setGateway((g) => ({ ...g, loaded: true })));
   }, []);
 
   const rails = data.rails || [];
   // The gateway (AUTO) path accepts exactly these coins (NOWPayments map).
-  const autoCoins = rails.filter((r) => r.code === 'BINANCE_PAY');
-  const selectableRails = tab === 'DEPOSIT' && mode === 'AUTO' ? autoCoins : rails;
-  const activeRail = selectableRails.find((r) => r.code === selectedRail) || selectableRails[0] || null;
+  const autoCoins = rails.filter((r) => r.code === "BINANCE_PAY");
+  const selectableRails = tab === "DEPOSIT" && mode === "AUTO" ? autoCoins : rails;
+  const activeRail =
+    selectableRails.find((r) => r.code === selectedRail) || selectableRails[0] || null;
 
   useEffect(() => {
     if (selectableRails.length && !selectableRails.some((r) => r.code === selectedRail)) {
@@ -195,24 +300,24 @@ export default function WalletPage() {
 
   const onAccepted = (file, errMsg) => {
     if (!file) {
-      if (errMsg) setMsg({ kind: 'error', text: errMsg });
+      if (errMsg) setMsg({ kind: "error", text: errMsg });
       return;
     }
     if (file.size > 4 * 1024 * 1024) {
-      setMsg({ kind: 'error', text: 'Screenshot must be under 4MB.' });
+      setMsg({ kind: "error", text: "Screenshot must be under 4MB." });
       return;
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setProof(String(reader.result || ''));
-      setPreview(String(reader.result || ''));
+      setProof(String(reader.result || ""));
+      setPreview(String(reader.result || ""));
     };
     reader.readAsDataURL(file);
   };
 
   const clearProof = () => {
-    setProof('');
-    setPreview('');
+    setProof("");
+    setPreview("");
   };
 
   const copyAddress = async () => {
@@ -230,12 +335,15 @@ export default function WalletPage() {
     e.preventDefault();
     /* Alert spec §1 — a withdrawal the balance cannot cover blocks the action:
        centered modal, not an inline note that is easy to miss. */
-    if (tab === 'WITHDRAWAL' && Number(form.amount) > Number(user?.balanceReal ?? data.balances?.real ?? 0)) {
+    if (
+      tab === "WITHDRAWAL" &&
+      Number(form.amount) > Number(user?.balanceReal ?? data.balances?.real ?? 0)
+    ) {
       alert.modal({
-        severity: 'critical',
-        title: 'Insufficient balance',
+        severity: "critical",
+        title: "Insufficient balance",
         message: `Your real balance is ${money(user?.balanceReal ?? data.balances?.real)} — it doesn't cover a ${money(Number(form.amount))} withdrawal.`,
-        confirmLabel: 'OK',
+        confirmLabel: "OK",
         dismissible: true,
       });
       return;
@@ -243,25 +351,35 @@ export default function WalletPage() {
     setBusy(true);
     setMsg(null);
     try {
-  if (tab === 'DEPOSIT' && mode === 'AUTO') {
-    if (activeRail?.code === 'BINANCE_PAY') {
-      const d = await api('/api/payments/binance/order', { method: 'POST', body: { amount: Number(form.amount) } });
-      if (d.checkoutUrl) window.location.href = d.checkoutUrl;
-      else setMsg({ kind: 'ok', text: 'Binance payment order created. Awaiting verified callback.' });
-      setForm({ ...form, amount: '' });
-      return;
-    }
-    const payCurrency = activeRail?.code;
-        if (!payCurrency || !['USDT_TRC20', 'USDT_ERC20', 'BITCOIN', 'ETHEREUM'].includes(payCurrency)) {
-          throw new Error('Choose an available crypto payment method.');
+      if (tab === "DEPOSIT" && mode === "AUTO") {
+        if (activeRail?.code === "BINANCE_PAY") {
+          const d = await api("/api/payments/binance/order", {
+            method: "POST",
+            body: { amount: Number(form.amount) },
+          });
+          if (d.checkoutUrl) window.location.href = d.checkoutUrl;
+          else
+            setMsg({
+              kind: "ok",
+              text: "Binance payment order created. Awaiting verified callback.",
+            });
+          setForm({ ...form, amount: "" });
+          return;
         }
-        const d = await api('/api/payments/create-invoice', {
-          method: 'POST',
+        const payCurrency = activeRail?.code;
+        if (
+          !payCurrency ||
+          !["USDT_TRC20", "USDT_ERC20", "BITCOIN", "ETHEREUM"].includes(payCurrency)
+        ) {
+          throw new Error("Choose an available crypto payment method.");
+        }
+        const d = await api("/api/payments/create-invoice", {
+          method: "POST",
           body: { amount: Number(form.amount), payCurrency },
         });
         // Live gateway → hosted NOWPayments checkout (webhook auto-credits).
         if (d?.invoiceUrl) {
-          setMsg({ kind: 'ok', text: 'Opening the secure crypto checkout…' });
+          setMsg({ kind: "ok", text: "Opening the secure crypto checkout…" });
           window.location.href = d.invoiceUrl;
           return;
         }
@@ -269,40 +387,54 @@ export default function WalletPage() {
         // The deposit is created PENDING and auto-approved only after the
         // simulated payment completes (see /api/payments/demo-charge).
         if (d?.demo && d?.checkoutToken) {
-          setForm({ ...form, amount: '' });
-          setCheckout({ txId: d.txId, token: d.checkoutToken, amount: d.amount ?? Number(form.amount), method: payCurrency });
+          setForm({ ...form, amount: "" });
+          setCheckout({
+            txId: d.txId,
+            token: d.checkoutToken,
+            amount: d.amount ?? Number(form.amount),
+            method: payCurrency,
+          });
           setCharged(null);
           setChargeError(null);
           return;
         }
-        throw new Error('Could not start the automatic deposit. Please try Manual.');
+        throw new Error("Could not start the automatic deposit. Please try Manual.");
       }
 
-      await api('/api/wallet', {
-        method: 'POST',
+      await api("/api/wallet", {
+        method: "POST",
         body: {
           type: tab,
           amount: Number(form.amount),
-          method: tab === 'DEPOSIT' ? (activeRail?.code || 'USDT_TRC20') : (activeRail?.code || form.method || 'USDT_TRC20'),
+          method:
+            tab === "DEPOSIT"
+              ? activeRail?.code || "USDT_TRC20"
+              : activeRail?.code || form.method || "USDT_TRC20",
           reference: form.reference,
           senderAccount: form.senderAccount,
-          proofImage: tab === 'DEPOSIT' && mode === 'MANUAL' ? proof : '',
-          mode: 'MANUAL',
+          proofImage: tab === "DEPOSIT" && mode === "MANUAL" ? proof : "",
+          mode: "MANUAL",
         },
       });
-      const okText = `${tab === 'DEPOSIT' ? 'Deposit' : 'Withdrawal'} request submitted — awaiting finance approval.`;
-      setMsg({ kind: 'ok', text: okText });
+      const okText = `${tab === "DEPOSIT" ? "Deposit" : "Withdrawal"} request submitted — awaiting finance approval.`;
+      setMsg({ kind: "ok", text: okText });
       alert.success(okText, { title: `${money(Number(form.amount))} ${tab.toLowerCase()}` });
-      setForm({ amount: '', reference: '', senderAccount: '' });
+      setForm({ amount: "", reference: "", senderAccount: "" });
       clearProof();
       load();
       refresh();
     } catch (err) {
-      setMsg({ kind: 'error', text: err.message });
-      if (/insufficient/i.test(err.message || '')) {
-        alert.modal({ severity: 'critical', title: 'Insufficient balance', message: err.message, confirmLabel: 'OK', dismissible: true });
+      setMsg({ kind: "error", text: err.message });
+      if (/insufficient/i.test(err.message || "")) {
+        alert.modal({
+          severity: "critical",
+          title: "Insufficient balance",
+          message: err.message,
+          confirmLabel: "OK",
+          dismissible: true,
+        });
       } else {
-        alert.warning(err.message, { title: 'Request not submitted' });
+        alert.warning(err.message, { title: "Request not submitted" });
       }
     } finally {
       setBusy(false);
@@ -318,15 +450,15 @@ export default function WalletPage() {
     setPaying(true);
     setChargeError(null);
     try {
-      const d = await api('/api/payments/demo-charge', {
-        method: 'POST',
-        body: { txId: checkout.txId, token: checkout.token, action: 'charge' },
+      const d = await api("/api/payments/demo-charge", {
+        method: "POST",
+        body: { txId: checkout.txId, token: checkout.token, action: "charge" },
       });
       setCharged({ ok: true, amount: d.amount });
       load();
       refresh();
     } catch (err) {
-      setChargeError(err.message || 'The demo charge could not be completed.');
+      setChargeError(err.message || "The demo charge could not be completed.");
     } finally {
       setPaying(false);
     }
@@ -336,9 +468,9 @@ export default function WalletPage() {
     if (cancelled && checkout && !charged) {
       // Abandoning the checkout cancels the PENDING placeholder so it never
       // lingers in the finance queue as an unpaid "deposit".
-      api('/api/payments/demo-charge', {
-        method: 'POST',
-        body: { txId: checkout.txId, token: checkout.token, action: 'cancel' },
+      api("/api/payments/demo-charge", {
+        method: "POST",
+        body: { txId: checkout.txId, token: checkout.token, action: "cancel" },
       }).catch(() => {});
     }
     setCheckout(null);
@@ -346,10 +478,11 @@ export default function WalletPage() {
     setChargeError(null);
   };
 
-  const min = tab === 'DEPOSIT' ? data.limits.minDeposit : data.limits.minWithdrawal;
+  const min = tab === "DEPOSIT" ? data.limits.minDeposit : data.limits.minWithdrawal;
   // Automatic deposits turned off (admin master switch, or nothing configured):
   // disable the submit so the user is guided to Manual instead of hitting a 503.
-  const autoUnavailable = tab === 'DEPOSIT' && mode === 'AUTO' && gateway.loaded && !gateway.enabled && !gateway.demo;
+  const autoUnavailable =
+    tab === "DEPOSIT" && mode === "AUTO" && gateway.loaded && !gateway.enabled && !gateway.demo;
 
   return (
     <div className="wallet">
@@ -366,47 +499,91 @@ export default function WalletPage() {
         </div>
         <div className="glass card">
           <span>KYC status</span>
-          <strong style={{ fontSize: 19 }}>{user?.kycStatus?.replace('_', ' ') || 'NONE'}</strong>
+          <strong style={{ fontSize: 19 }}>{user?.kycStatus?.replace("_", " ") || "NONE"}</strong>
           <em className="dim">
-            {user?.kycStatus === 'VERIFIED' ? 'Withdrawals unlocked' : <Link href="/dashboard/kyc" className="gold-text">Verify to withdraw →</Link>}
+            {user?.kycStatus === "VERIFIED" ? (
+              "Withdrawals unlocked"
+            ) : (
+              <Link href="/dashboard/kyc" className="gold-text">
+                Verify to withdraw →
+              </Link>
+            )}
           </em>
         </div>
       </div>
 
-  {walletError && !previewMode && (
-  <div className="alert alert-error wallet-load-error" role="alert">
-          <span><strong>Wallet unavailable.</strong> {walletError}</span>
-          <button type="button" className="btn btn-sm btn-ghost" onClick={() => { setWalletLoading(true); load(); }}>Retry</button>
+      {walletError && !previewMode && (
+        <div className="alert alert-error wallet-load-error" role="alert">
+          <span>
+            <strong>Wallet unavailable.</strong> {walletError}
+          </span>
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost"
+            onClick={() => {
+              setWalletLoading(true);
+              load();
+            }}
+          >
+            Retry
+          </button>
         </div>
       )}
 
       <div className="split" aria-busy={walletLoading}>
         <section className="glass panel">
           <div className="tabs">
-            {['DEPOSIT', 'WITHDRAWAL'].map((t) => (
-              <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => { setTab(t); setMsg(null); }}>
-                {t === 'DEPOSIT' ? 'Deposit' : 'Withdraw'}
+            {["DEPOSIT", "WITHDRAWAL"].map((t) => (
+              <button
+                key={t}
+                className={`tab ${tab === t ? "active" : ""}`}
+                onClick={() => {
+                  setTab(t);
+                  setMsg(null);
+                }}
+              >
+                {t === "DEPOSIT" ? "Deposit" : "Withdraw"}
               </button>
             ))}
           </div>
 
-          {tab === 'DEPOSIT' && (
+          {tab === "DEPOSIT" && (
             <div className="mode-switch">
-              <button type="button" className={`mode ${mode === 'AUTO' ? 'active' : ''}`} onClick={() => setMode('AUTO')}>
-                <span className="mode-ic"><Zap size={18} style={{ color: 'var(--gold-1)' }} /></span>
-                <span><strong>Automatic</strong><em>Instant crypto gateway</em></span>
+              <button
+                type="button"
+                className={`mode ${mode === "AUTO" ? "active" : ""}`}
+                onClick={() => setMode("AUTO")}
+              >
+                <span className="mode-ic">
+                  <Zap size={18} style={{ color: "var(--gold-1)" }} />
+                </span>
+                <span>
+                  <strong>Automatic</strong>
+                  <em>Instant crypto gateway</em>
+                </span>
               </button>
-              <button type="button" className={`mode ${mode === 'MANUAL' ? 'active' : ''}`} onClick={() => setMode('MANUAL')}>
-                <span className="mode-ic"><ReceiptText size={18} style={{ color: 'var(--gold-1)' }} /></span>
-                <span><strong>Manual</strong><em>bKash · Nagad · Bank · Crypto</em></span>
+              <button
+                type="button"
+                className={`mode ${mode === "MANUAL" ? "active" : ""}`}
+                onClick={() => setMode("MANUAL")}
+              >
+                <span className="mode-ic">
+                  <ReceiptText size={18} style={{ color: "var(--gold-1)" }} />
+                </span>
+                <span>
+                  <strong>Manual</strong>
+                  <em>bKash · Nagad · Bank · Crypto</em>
+                </span>
               </button>
             </div>
           )}
 
-          {msg && <div className={`alert alert-${msg.kind === 'ok' ? 'ok' : 'error'}`}>{msg.text}</div>}
+          {msg && (
+            <div className={`alert alert-${msg.kind === "ok" ? "ok" : "error"}`}>{msg.text}</div>
+          )}
 
           <form onSubmit={submit}>
-            {tab === 'DEPOSIT' && mode === 'MANUAL' && rails.length > 0 && (
+            {tab === "DEPOSIT" && mode === "MANUAL" && rails.length > 0 && (
               <div className="field">
                 <label>Payment method</label>
                 <div className="rails">
@@ -416,11 +593,22 @@ export default function WalletPage() {
                       <button
                         type="button"
                         key={r.code}
-                        className={`rail ${activeRail?.code === r.code ? 'active' : ''}`}
-                        style={brand ? { borderColor: activeRail?.code === r.code ? brand.border : 'var(--stroke)', background: activeRail?.code === r.code ? brand.bg : 'rgba(255,255,255,0.03)' } : undefined}
+                        className={`rail ${activeRail?.code === r.code ? "active" : ""}`}
+                        style={
+                          brand
+                            ? {
+                                borderColor:
+                                  activeRail?.code === r.code ? brand.border : "var(--stroke)",
+                                background:
+                                  activeRail?.code === r.code ? brand.bg : "rgba(255,255,255,0.03)",
+                              }
+                            : undefined
+                        }
                         onClick={() => setSelectedRail(r.code)}
                       >
-                        <span className="rail-ic"><KindIcon kind={r.kind} brand={brand} /></span>
+                        <span className="rail-ic">
+                          <KindIcon kind={r.kind} brand={brand} />
+                        </span>
                         <span className="rail-name">{brand?.label || r.name}</span>
                         <span className="rail-kind">{KIND_LABEL[r.kind]}</span>
                       </button>
@@ -430,45 +618,79 @@ export default function WalletPage() {
               </div>
             )}
 
-            {tab === 'DEPOSIT' && mode === 'MANUAL' && activeRail && (
+            {tab === "DEPOSIT" && mode === "MANUAL" && activeRail && (
               <div className="pay-box">
-                {activeRail.qrData || activeRail.isCrypto || activeRail.kind === 'CRYPTO' ? (
+                {activeRail.qrData || activeRail.isCrypto || activeRail.kind === "CRYPTO" ? (
                   <div className="pay-qr">
-                    <QRPlaceholder data={activeRail.qrData || activeRail.address} label={activeRail.name} />
+                    <QRPlaceholder
+                      data={activeRail.qrData || activeRail.address}
+                      label={activeRail.name}
+                    />
                   </div>
                 ) : null}
                 <div className="pay-detail">
-                  <span className="dim">{activeRail.isCrypto ? 'Send to wallet address' : 'Send to account / number'}</span>
+                  <span className="dim">
+                    {activeRail.isCrypto ? "Send to wallet address" : "Send to account / number"}
+                  </span>
                   <code className="pay-address">{activeRail.address}</code>
                   {activeRail.extra && <em className="dim pay-extra">{activeRail.extra}</em>}
                   <button type="button" className="btn btn-sm btn-ghost" onClick={copyAddress}>
-                    {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy address</>}
+                    {copied ? (
+                      <>
+                        <Check size={13} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} /> Copy address
+                      </>
+                    )}
                   </button>
-                  {activeRail.instructions && <p className="pay-instructions">{activeRail.instructions}</p>}
+                  {activeRail.instructions && (
+                    <p className="pay-instructions">{activeRail.instructions}</p>
+                  )}
                 </div>
               </div>
             )}
 
             <div className="field">
               <label>Amount (USD) · minimum {money(min || 0)}</label>
-              <input className="input mono" type="number" min={min || 1} step="0.01" required
-                value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} placeholder="0.00" />
+              <input
+                className="input mono"
+                type="number"
+                min={min || 1}
+                step="0.01"
+                required
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                placeholder="0.00"
+              />
             </div>
 
-            {tab === 'DEPOSIT' && mode === 'MANUAL' && (
+            {tab === "DEPOSIT" && mode === "MANUAL" && (
               <>
                 <div className="field">
-                  <label>{activeRail?.kind === 'CRYPTO' ? 'Transaction hash (TxID)' : 'Transaction ID (TrxID)'}</label>
-                  <input className="input mono" required value={form.reference}
+                  <label>
+                    {activeRail?.kind === "CRYPTO"
+                      ? "Transaction hash (TxID)"
+                      : "Transaction ID (TrxID)"}
+                  </label>
+                  <input
+                    className="input mono"
+                    required
+                    value={form.reference}
                     onChange={(e) => setForm({ ...form, reference: e.target.value })}
-                    placeholder={activeRail?.kind === 'CRYPTO' ? '0x… / TRX hash' : 'e.g. 9N7A…'} />
+                    placeholder={activeRail?.kind === "CRYPTO" ? "0x… / TRX hash" : "e.g. 9N7A…"}
+                  />
                 </div>
-                {activeRail?.kind !== 'CRYPTO' && (
+                {activeRail?.kind !== "CRYPTO" && (
                   <div className="field">
                     <label>Your sender number / account</label>
-                    <input className="input mono" value={form.senderAccount}
+                    <input
+                      className="input mono"
+                      value={form.senderAccount}
                       onChange={(e) => setForm({ ...form, senderAccount: e.target.value })}
-                      placeholder="01XXXXXXXXX" />
+                      placeholder="01XXXXXXXXX"
+                    />
                   </div>
                 )}
                 <div className="field">
@@ -478,7 +700,7 @@ export default function WalletPage() {
               </>
             )}
 
-            {tab === 'DEPOSIT' && mode === 'AUTO' && autoCoins.length > 0 && (
+            {tab === "DEPOSIT" && mode === "AUTO" && autoCoins.length > 0 && (
               <div className="field">
                 <label>Payment method (coin)</label>
                 <div className="rails">
@@ -488,11 +710,22 @@ export default function WalletPage() {
                       <button
                         type="button"
                         key={r.code}
-                        className={`rail ${activeRail?.code === r.code ? 'active' : ''}`}
-                        style={brand ? { borderColor: activeRail?.code === r.code ? brand.border : 'var(--stroke)', background: activeRail?.code === r.code ? brand.bg : 'rgba(255,255,255,0.03)' } : undefined}
+                        className={`rail ${activeRail?.code === r.code ? "active" : ""}`}
+                        style={
+                          brand
+                            ? {
+                                borderColor:
+                                  activeRail?.code === r.code ? brand.border : "var(--stroke)",
+                                background:
+                                  activeRail?.code === r.code ? brand.bg : "rgba(255,255,255,0.03)",
+                              }
+                            : undefined
+                        }
                         onClick={() => setSelectedRail(r.code)}
                       >
-                        <span className="rail-ic"><KindIcon kind={r.kind} brand={brand} /></span>
+                        <span className="rail-ic">
+                          <KindIcon kind={r.kind} brand={brand} />
+                        </span>
                         <span className="rail-name">{brand?.label || r.name}</span>
                         <span className="rail-kind">{KIND_LABEL[r.kind]}</span>
                       </button>
@@ -502,37 +735,45 @@ export default function WalletPage() {
               </div>
             )}
 
-            {tab === 'DEPOSIT' && mode === 'AUTO' && (
+            {tab === "DEPOSIT" && mode === "AUTO" && (
               <div className="alert alert-info">
                 {gateway.demo ? (
                   <>
-                    <strong>Demo gateway is active</strong> — no live payment key is configured in this preview, so you
-                    will complete the charge at the in-app checkout. The deposit is <strong>auto-approved only after the
-                    payment is taken</strong>; submitting the form alone never credits your balance. In production this
-                    same flow redirects to the NOWPayments hosted checkout and is auto-approved by the signed webhook.
+                    <strong>Demo gateway is active</strong> — no live payment key is configured in
+                    this preview, so you will complete the charge at the in-app checkout. The
+                    deposit is <strong>auto-approved only after the payment is taken</strong>;
+                    submitting the form alone never credits your balance. In production this same
+                    flow redirects to the NOWPayments hosted checkout and is auto-approved by the
+                    signed webhook.
                   </>
                 ) : gateway.enabled ? (
                   <>
-                    Automatic deposits are credited after network confirmation. Enter the amount, continue to
-                    the gateway, and send the exact USDT/BTC value. Your balance updates itself — no screenshot needed.
+                    Automatic deposits are credited after network confirmation. Enter the amount,
+                    continue to the gateway, and send the exact USDT/BTC value. Your balance updates
+                    itself — no screenshot needed.
                   </>
                 ) : gateway.autoDeposits === false ? (
                   <>
-                    Automatic deposits are currently <strong>disabled by the administrator</strong> — the ⚡ Automatic
-                    tab is turned off across the whole site. Please use the Manual deposit tab.
+                    Automatic deposits are currently <strong>disabled by the administrator</strong>{" "}
+                    — the ⚡ Automatic tab is turned off across the whole site. Please use the
+                    Manual deposit tab.
                   </>
-                ) : gateway.reason === 'DEMO_DISABLED' ? (
+                ) : gateway.reason === "DEMO_DISABLED" ? (
                   <>
-                    The automatic checkout is currently <strong>switched off</strong> (no live gateway key, and the demo
-                    is disabled) — only the Manual deposit tab can be used right now.
+                    The automatic checkout is currently <strong>switched off</strong> (no live
+                    gateway key, and the demo is disabled) — only the Manual deposit tab can be used
+                    right now.
                   </>
                 ) : (
-                  <>Automatic deposits are not configured on this deployment — please use the Manual deposit tab.</>
+                  <>
+                    Automatic deposits are not configured on this deployment — please use the Manual
+                    deposit tab.
+                  </>
                 )}
               </div>
             )}
 
-            {tab === 'WITHDRAWAL' && rails.length > 0 && (
+            {tab === "WITHDRAWAL" && rails.length > 0 && (
               <div className="field">
                 <label>Withdrawal method</label>
                 <div className="rails">
@@ -542,11 +783,22 @@ export default function WalletPage() {
                       <button
                         type="button"
                         key={r.code}
-                        className={`rail ${activeRail?.code === r.code ? 'active' : ''}`}
-                        style={brand ? { borderColor: activeRail?.code === r.code ? brand.border : 'var(--stroke)', background: activeRail?.code === r.code ? brand.bg : 'rgba(255,255,255,0.03)' } : undefined}
+                        className={`rail ${activeRail?.code === r.code ? "active" : ""}`}
+                        style={
+                          brand
+                            ? {
+                                borderColor:
+                                  activeRail?.code === r.code ? brand.border : "var(--stroke)",
+                                background:
+                                  activeRail?.code === r.code ? brand.bg : "rgba(255,255,255,0.03)",
+                              }
+                            : undefined
+                        }
                         onClick={() => setSelectedRail(r.code)}
                       >
-                        <span className="rail-ic"><KindIcon kind={r.kind} brand={brand} /></span>
+                        <span className="rail-ic">
+                          <KindIcon kind={r.kind} brand={brand} />
+                        </span>
                         <span className="rail-name">{brand?.label || r.name}</span>
                         <span className="rail-kind">{r.extra || KIND_LABEL[r.kind]}</span>
                       </button>
@@ -556,36 +808,67 @@ export default function WalletPage() {
               </div>
             )}
 
-            {tab === 'WITHDRAWAL' && (
+            {tab === "WITHDRAWAL" && (
               <div className="field">
                 <label>Payout address or account number</label>
-                <input className="input mono" required value={form.reference}
+                <input
+                  className="input mono"
+                  required
+                  value={form.reference}
                   onChange={(e) => setForm({ ...form, reference: e.target.value })}
-                  placeholder="e.g. TXn8…  /  01XXXXXXXXX" />
+                  placeholder="e.g. TXn8…  /  01XXXXXXXXX"
+                />
               </div>
             )}
 
-            {tab === 'WITHDRAWAL' && user?.kycStatus !== 'VERIFIED' && data.limits.withdrawalNeedsKyc && (
-              <div className="alert alert-warn">Withdrawals require a verified identity. <Link href="/dashboard/kyc" className="gold-text">Complete KYC →</Link></div>
-            )}
+            {tab === "WITHDRAWAL" &&
+              user?.kycStatus !== "VERIFIED" &&
+              data.limits.withdrawalNeedsKyc && (
+                <div className="alert alert-warn">
+                  Withdrawals require a verified identity.{" "}
+                  <Link href="/dashboard/kyc" className="gold-text">
+                    Complete KYC →
+                  </Link>
+                </div>
+              )}
 
-            {tab === 'DEPOSIT' && mode === 'MANUAL' && (
+            {tab === "DEPOSIT" && mode === "MANUAL" && (
               <div className="alert alert-warn" style={{ fontSize: 12.5 }}>
-                <strong>Manual deposit — admin review required.</strong> Your balance is credited only after the finance
-                desk verifies this payment (TrxID + screenshot) against the actual transaction. It is <strong>never
-                automatic</strong> — do not submit a deposit you have not really paid.
+                <strong>Manual deposit — admin review required.</strong> Your balance is credited
+                only after the finance desk verifies this payment (TrxID + screenshot) against the
+                actual transaction. It is <strong>never automatic</strong> — do not submit a deposit
+                you have not really paid.
               </div>
             )}
 
-            <button className="btn btn-gold btn-block" disabled={busy || walletLoading || Boolean(walletError) || autoUnavailable || !activeRail}>
-              {busy || walletLoading ? <span className="spinner" /> : tab === 'DEPOSIT' ? (mode === 'AUTO' ? (autoUnavailable ? 'Automatic deposits off' : 'Continue to gateway →') : 'Submit for manual review') : 'Request withdrawal'}
+            <button
+              className="btn btn-gold btn-block"
+              disabled={
+                busy || walletLoading || Boolean(walletError) || autoUnavailable || !activeRail
+              }
+            >
+              {busy || walletLoading ? (
+                <span className="spinner" />
+              ) : tab === "DEPOSIT" ? (
+                mode === "AUTO" ? (
+                  autoUnavailable ? (
+                    "Automatic deposits off"
+                  ) : (
+                    "Continue to gateway →"
+                  )
+                ) : (
+                  "Submit for manual review"
+                )
+              ) : (
+                "Request withdrawal"
+              )}
             </button>
             <p className="dim" style={{ fontSize: 12, marginTop: 12, lineHeight: 1.6 }}>
-              {tab === 'DEPOSIT' && mode === 'MANUAL'
-                ? 'Review steps: admin verifies your TrxID/screenshot against the payment network, then credits atomically. One payment reference can only be deposited once.'
-                : tab === 'DEPOSIT' && mode === 'AUTO' && !autoUnavailable
-                  ? 'You are taken to the secure checkout; the balance is credited automatically as soon as the payment is confirmed — no screenshot, no manual review.'
-                  : 'Requests enter the finance queue and are released by an administrator. You will be notified on approval.'}
+              {tab === "DEPOSIT" && mode === "MANUAL"
+                ? "Review steps: admin verifies your TrxID/screenshot against the payment network, then credits atomically. One payment reference can only be deposited once."
+                : tab === "DEPOSIT" && mode === "AUTO" && !autoUnavailable
+                  ? "You are taken to the secure checkout; the balance is credited automatically as soon as the payment is confirmed — no screenshot, no manual review."
+                  : "Requests enter the finance queue and are released by an administrator. You will be notified on approval."}
             </p>
           </form>
         </section>
@@ -595,7 +878,15 @@ export default function WalletPage() {
           <div className="table-wrap" style={{ marginTop: 12 }}>
             <table className="data">
               <thead>
-                <tr><th>Date</th><th>Type</th><th>Method</th><th>Amount</th><th>Mode</th><th>Status</th><th>Note</th></tr>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Method</th>
+                  <th>Amount</th>
+                  <th>Mode</th>
+                  <th>Status</th>
+                  <th>Note</th>
+                </tr>
               </thead>
               <tbody>
                 {data.transactions.map((t) => (
@@ -604,9 +895,24 @@ export default function WalletPage() {
                     <td>{t.type}</td>
                     <td>{t.method}</td>
                     <td className="mono">{money(t.amount)}</td>
-                    <td><span className={`badge ${t.mode === 'AUTO' ? 'badge-info' : ''}`}>{t.mode || 'MANUAL'}</span></td>
-                    <td><span className={STATUS_CLASS[t.status] || 'badge'}>{t.status}</span></td>
-                    <td className="dim">{t.adminNote || (t.hasProof ? <><Paperclip size={11} style={{ verticalAlign: '-2px' }} /> proof</> : '—')}</td>
+                    <td>
+                      <span className={`badge ${t.mode === "AUTO" ? "badge-info" : ""}`}>
+                        {t.mode || "MANUAL"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={STATUS_CLASS[t.status] || "badge"}>{t.status}</span>
+                    </td>
+                    <td className="dim">
+                      {t.adminNote ||
+                        (t.hasProof ? (
+                          <>
+                            <Paperclip size={11} style={{ verticalAlign: "-2px" }} /> proof
+                          </>
+                        ) : (
+                          "—"
+                        ))}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -634,9 +940,14 @@ export default function WalletPage() {
               initial={{ opacity: 0, y: 22, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
             >
-              <div className="co-card" role="dialog" aria-modal="true" aria-label="Deposit checkout">
+              <div
+                className="co-card"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Deposit checkout"
+              >
                 <div className="co-head">
                   <div>
                     <span className="co-eyebrow">PAYMENT GATEWAY</span>
@@ -644,7 +955,12 @@ export default function WalletPage() {
                   </div>
                   <div className="co-close-wrap">
                     <span className="co-badge">DEMO</span>
-                    <button type="button" className="co-close" onClick={() => closeCheckout(true)} aria-label="Close checkout">
+                    <button
+                      type="button"
+                      className="co-close"
+                      onClick={() => closeCheckout(true)}
+                      aria-label="Close checkout"
+                    >
                       <X size={16} />
                     </button>
                   </div>
@@ -652,19 +968,29 @@ export default function WalletPage() {
 
                 {charged?.ok ? (
                   <div className="co-done">
-                    <span className="co-done-ic"><Check size={26} /></span>
+                    <span className="co-done-ic">
+                      <Check size={26} />
+                    </span>
                     <h3>Deposit approved automatically</h3>
                     <p>
-                      <strong>{money(charged.amount)}</strong> has been credited to your real balance. The payment was
-                      taken first — the request was approved only after the charge completed.
+                      <strong>{money(charged.amount)}</strong> has been credited to your real
+                      balance. The payment was taken first — the request was approved only after the
+                      charge completed.
                     </p>
-                    <button type="button" className="btn btn-gold" onClick={() => closeCheckout(false)}>Done</button>
+                    <button
+                      type="button"
+                      className="btn btn-gold"
+                      onClick={() => closeCheckout(false)}
+                    >
+                      Done
+                    </button>
                   </div>
                 ) : (
                   <>
                     <p className="co-lead">
-                      Complete the payment below. Your balance is credited <strong>automatically — and only</strong> after
-                      the payment is confirmed by the gateway.
+                      Complete the payment below. Your balance is credited{" "}
+                      <strong>automatically — and only</strong> after the payment is confirmed by
+                      the gateway.
                     </p>
                     <div className="co-rows">
                       <div className="co-row">
@@ -677,24 +1003,43 @@ export default function WalletPage() {
                       </div>
                       <div className="co-row">
                         <span>Network</span>
-                        <strong>{checkout.method === 'BITCOIN' ? 'Bitcoin' : checkout.method === 'ETHEREUM' || checkout.method === 'USDT_ERC20' ? 'Ethereum' : 'Tron (TRC-20)'}</strong>
+                        <strong>
+                          {checkout.method === "BITCOIN"
+                            ? "Bitcoin"
+                            : checkout.method === "ETHEREUM" || checkout.method === "USDT_ERC20"
+                              ? "Ethereum"
+                              : "Tron (TRC-20)"}
+                        </strong>
                       </div>
                     </div>
 
                     {chargeError && <div className="alert alert-error">{chargeError}</div>}
 
-                    <button type="button" className="btn btn-gold btn-block co-pay" disabled={paying} onClick={payDemoCharge}>
+                    <button
+                      type="button"
+                      className="btn btn-gold btn-block co-pay"
+                      disabled={paying}
+                      onClick={payDemoCharge}
+                    >
                       {paying ? (
-                        <><span className="spinner" /> Processing payment…</>
+                        <>
+                          <span className="spinner" /> Processing payment…
+                        </>
                       ) : (
                         <>Pay {money(checkout.amount)} now</>
                       )}
                     </button>
                     <p className="co-note">
-                      <ShieldCheck size={13} /> Demo gateway — the charge is simulated in this preview. In production this
-                      is the NOWPayments hosted checkout and the deposit is auto-approved by its signed webhook.
+                      <ShieldCheck size={13} /> Demo gateway — the charge is simulated in this
+                      preview. In production this is the NOWPayments hosted checkout and the deposit
+                      is auto-approved by its signed webhook.
                     </p>
-                    <button type="button" className="co-cancel" disabled={paying} onClick={() => closeCheckout(true)}>
+                    <button
+                      type="button"
+                      className="co-cancel"
+                      disabled={paying}
+                      onClick={() => closeCheckout(true)}
+                    >
                       Cancel — I will not pay
                     </button>
                   </>

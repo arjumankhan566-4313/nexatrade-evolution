@@ -11,7 +11,7 @@
     },
     {
       "name": "SUPER_ADMIN_PASSWORD",
-      "description": "Owner password for the admin portal at /nexa-admin-portal/login (email arjumankhan181@gmail.com). At least 12 chars. Optional in dev (falls back to AdminPassword123!); required for real deployments.",
+      "description": "Owner password for the admin portal (see README \"First login\"). At least 12 chars. There is no default: without it the owner account stays locked (fail closed).",
       "requiredAtBoot": false
     },
     {

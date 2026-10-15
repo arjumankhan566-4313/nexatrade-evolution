@@ -1,7 +1,7 @@
-// @ts-nocheck
 /**
  * Re-export the legacy realtimeClient surface from the V2 legacyInfra shim.
- * The real SSE/socket transport is ported in a later phase; useLiveEvents is
- * currently a no-op so ported pages compile and run without crashing.
+ * `useLiveEvents` is fully wired to the V2 Socket.io server (cookie auth,
+ * `join:rt` / `leave:rt` rooms, `rt:<channel>` events) and returns the legacy
+ * `{ status: 'connecting' | 'live' | 'reconnecting' }` contract.
  */
-export { useLiveEvents, deviceFingerprint } from './legacyInfra';
+export { useLiveEvents, deviceFingerprint } from "./legacyInfra";

@@ -190,6 +190,7 @@
 .lp-toast { background: #232837; border: 1px solid #2A2E39; border-left: 3px solid #2A7BF6; border-radius: 10px; padding: 11px 14px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.45); animation: lpSlideIn .25s ease; color: #fff; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
 .lp-toast.success { border-left-color: #00C076; }
 .lp-toast.error { border-left-color: #FF3B30; }
+.lp-toast.warning { border-left-color: #F2B84B; }
 .lp-toast .t-title { font-weight: 600; margin-bottom: 2px; }
 .lp-toast .t-body { color: #848E9C; font-size: 12px; }
 @keyframes lpSlideIn { from { transform: translateX(30px); opacity: 0; } }

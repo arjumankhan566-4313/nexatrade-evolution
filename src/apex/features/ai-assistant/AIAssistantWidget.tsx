@@ -1,10 +1,10 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Loader2, Send, Sparkles, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { Disclaimer } from '../../components/primitives';
-import { BRAND, RISK_DISCLOSURES } from '../../config/content.config';
-import { aiProvider } from '../../providers';
-import type { SentimentReading } from '../../providers/types';
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Loader2, Send, Sparkles, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Disclaimer } from "../../components/primitives";
+import { BRAND, RISK_DISCLOSURES } from "../../config/content.config";
+import { aiProvider } from "../../providers";
+import type { SentimentReading } from "../../providers/types";
 
 /**
  * Feature 2 — the floating AI assistant.
@@ -17,22 +17,27 @@ import type { SentimentReading } from '../../providers/types';
  * finished reply — never as a detached row above the composer.
  */
 
-const DEFAULT_SYMBOL = 'BTCUSD';
+const DEFAULT_SYMBOL = "BTCUSD";
 /** If the provider stops sending chunks, release the composer instead of locking it. */
 const STREAM_STALL_MS = 3000;
-const PANEL_ID = 'apex-ai-panel';
-const INPUT_ID = 'apex-ai-input';
+const PANEL_ID = "apex-ai-panel";
+const INPUT_ID = "apex-ai-input";
 const GAUGE_RADIUS = 50;
 const GAUGE_LENGTH = Math.PI * GAUGE_RADIUS;
 
-type ChatMessage = { id: string; role: 'user' | 'assistant'; text: string };
+type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
 
 function SentimentGauge({ reading }: { reading: SentimentReading }) {
   const offset = GAUGE_LENGTH * (1 - reading.bullishPct / 100);
 
   return (
     <div className="flex items-center gap-4">
-      <svg viewBox="0 0 120 66" role="img" aria-label={`${reading.bullishPct} percent bullish`} className="h-16 w-28 shrink-0">
+      <svg
+        viewBox="0 0 120 66"
+        role="img"
+        aria-label={`${reading.bullishPct} percent bullish`}
+        className="h-16 w-28 shrink-0"
+      >
         <path
           d={`M 10 60 A ${GAUGE_RADIUS} ${GAUGE_RADIUS} 0 0 1 110 60`}
           fill="none"
@@ -109,7 +114,7 @@ function PromptChip({
 export default function AIAssistantWidget() {
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<readonly ChatMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [sentiment, setSentiment] = useState<SentimentReading | null>(null);
@@ -126,13 +131,13 @@ export default function AIAssistantWidget() {
     inputRef.current?.focus();
 
     function handleKey(event: KeyboardEvent) {
-      if (event.key !== 'Escape') return;
+      if (event.key !== "Escape") return;
       setOpen(false);
       triggerRef.current?.focus();
     }
 
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [open]);
 
   // Sentiment is fetched by the provider whenever the panel opens.
@@ -147,7 +152,7 @@ export default function AIAssistantWidget() {
         if (!cancelled) setSentiment(reading);
       })
       .catch(() => {
-        if (!cancelled) setSentimentError('The sentiment reading is unavailable right now.');
+        if (!cancelled) setSentimentError("The sentiment reading is unavailable right now.");
       });
 
     return () => {
@@ -170,10 +175,10 @@ export default function AIAssistantWidget() {
 
     setMessages((current) => [
       ...current,
-      { id: `user-${runId}`, role: 'user', text: trimmed },
-      { id: replyId, role: 'assistant', text: '' },
+      { id: `user-${runId}`, role: "user", text: trimmed },
+      { id: replyId, role: "assistant", text: "" },
     ]);
-    setDraft('');
+    setDraft("");
     setStreaming(true);
 
     // Rearmed on every chunk: a stream that dies mid-reply must not leave the
@@ -188,13 +193,15 @@ export default function AIAssistantWidget() {
 
     try {
       armStall();
-      for await (const chunk of aiProvider.ask(trimmed, { symbol: sentiment?.symbol ?? DEFAULT_SYMBOL })) {
+      for await (const chunk of aiProvider.ask(trimmed, {
+        symbol: sentiment?.symbol ?? DEFAULT_SYMBOL,
+      })) {
         if (runRef.current !== runId) return;
         armStall();
         setMessages((current) =>
           current.map((message) =>
-            message.id === replyId ? { ...message, text: message.text + chunk } : message
-          )
+            message.id === replyId ? { ...message, text: message.text + chunk } : message,
+          ),
         );
       }
     } catch {
@@ -202,9 +209,9 @@ export default function AIAssistantWidget() {
         setMessages((current) =>
           current.map((message) =>
             message.id === replyId
-              ? { ...message, text: 'The provider failed while streaming this reply.' }
-              : message
-          )
+              ? { ...message, text: "The provider failed while streaming this reply." }
+              : message,
+          ),
         );
       }
     } finally {
@@ -216,9 +223,9 @@ export default function AIAssistantWidget() {
   // Follow-ups are offered only once a reply has finished, beneath the last
   // assistant message and inside the conversation.
   const lastMessage = messages[messages.length - 1];
-  const lastUserPrompt = [...messages].reverse().find((message) => message.role === 'user')?.text;
+  const lastUserPrompt = [...messages].reverse().find((message) => message.role === "user")?.text;
   const followUps =
-    !streaming && lastMessage?.role === 'assistant' && lastMessage.text.length > 0 && lastUserPrompt
+    !streaming && lastMessage?.role === "assistant" && lastMessage.text.length > 0 && lastUserPrompt
       ? aiProvider
           .followUps(lastUserPrompt, { symbol: sentiment?.symbol ?? DEFAULT_SYMBOL })
           .filter((prompt) => prompt !== lastUserPrompt)
@@ -239,7 +246,7 @@ export default function AIAssistantWidget() {
         ) : (
           <Sparkles aria-hidden="true" className="h-4 w-4 text-apex-cyan" />
         )}
-        <span>{open ? 'Close' : BRAND.assistantName}</span>
+        <span>{open ? "Close" : BRAND.assistantName}</span>
       </button>
 
       <AnimatePresence>
@@ -251,7 +258,7 @@ export default function AIAssistantWidget() {
             initial={reduceMotion ? false : { opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 26 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26 }}
             className="apex-glass apex-glass--strong apex-hairline fixed bottom-24 right-4 z-40 flex max-h-[78vh] w-[min(92vw,26rem)] flex-col overflow-hidden sm:right-7"
           >
             <header className="flex items-center justify-between gap-3 border-b border-white/8 px-4 py-3">
@@ -259,6 +266,16 @@ export default function AIAssistantWidget() {
                 <Sparkles aria-hidden="true" className="h-4 w-4 text-apex-cyan" />
                 <span className="font-apex text-sm font-semibold text-apex-ink">
                   {BRAND.assistantName}
+                </span>
+                {/* The provider is the built-in scripted assistant (see
+                    providers/index.ts) — label it so no one mistakes demo
+                    replies for a live model. Remove once a real AI provider
+                    backs aiProvider. */}
+                <span
+                  data-demo-badge="demo"
+                  className="rounded-full bg-white/8 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-apex-muted ring-1 ring-inset ring-white/12"
+                >
+                  Demo
                 </span>
               </div>
               <span className="text-[10px] uppercase tracking-[0.16em] text-apex-faint">
@@ -309,9 +326,9 @@ export default function AIAssistantWidget() {
                     <p
                       key={message.id}
                       className={`max-w-[92%] rounded-2xl px-3 py-2 text-[13px] leading-relaxed ${
-                        message.role === 'user'
-                          ? 'ml-auto bg-apex-cyan/14 text-apex-ink'
-                          : 'bg-white/6 text-apex-ink'
+                        message.role === "user"
+                          ? "ml-auto bg-apex-cyan/14 text-apex-ink"
+                          : "bg-white/6 text-apex-ink"
                       }`}
                     >
                       {message.text.length === 0 && streaming ? <TypingDots /> : message.text}

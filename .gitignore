@@ -1,3 +1,11 @@
+# Secrets — never commit real env files (see .env.example for the template)
+.env
+.env.*
+!.env.example
+
+# Live database dumps contain real user data — must never enter git history
+database-export/
+
 # Logs
 logs
 *.log

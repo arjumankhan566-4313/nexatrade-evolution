@@ -626,7 +626,12 @@ async function seed(): Promise<void> {
   // and no role — including another SUPER_ADMIN — may delete, demote or block
   // it. That guard is enforced in the API layer; here we guarantee existence.
   const SUPER_EMAIL = 'arjumankhan181@gmail.com';
-  const superPassword = env.superAdminPassword || (env.nodeEnv !== 'production' ? 'AdminPassword123!' : '');
+  // No public/dev default password anymore (the old `AdminPassword123!`
+  // fallback is removed). The operator must provide a strong secret via
+  // SUPER_ADMIN_PASSWORD (rotates on change) or ADMIN_INITIAL_PASSWORD
+  // (initial provisioning); with neither set, the fail-closed branch below
+  // keeps the owner account locked.
+  const superPassword = env.superAdminPassword || env.adminInitialPassword || '';
   const superRow = await sql('SELECT id, password_hash, is_blocked FROM users WHERE email = $1', [SUPER_EMAIL]);
   if (superRow.rows.length === 0 && superPassword.length >= 12) {
     const hash = await bcrypt.hash(superPassword, 12);
@@ -660,9 +665,9 @@ async function seed(): Promise<void> {
                         token_version=token_version + CASE WHEN is_blocked THEN 0 ELSE 1 END WHERE email=$1`,
       [SUPER_EMAIL]
     );
-    console.warn('[nexatrade] SUPER_ADMIN_PASSWORD missing/short — protected owner account is locked.');
+    console.warn('[nexatrade] SUPER_ADMIN_PASSWORD / ADMIN_INITIAL_PASSWORD missing or shorter than 12 chars — protected owner account is locked.');
   } else {
-    console.warn('[nexatrade] SUPER_ADMIN_PASSWORD missing/short — protected owner account was not provisioned.');
+    console.warn('[nexatrade] SUPER_ADMIN_PASSWORD / ADMIN_INITIAL_PASSWORD missing or shorter than 12 chars — protected owner account was not provisioned.');
   }
 
   // Optional regular ADMIN provisioned only from explicit credentials.

@@ -18,8 +18,9 @@ has the embedded **PGlite** fallback when that variable is absent. Keep
 - Crypto market data streams from Binance's public WebSocket (no API key).
 - Auth works in dev via a fallback JWT secret, but a real `JWT_SECRET` is generated
   as a development placeholder and delivered via `/run/base44/app.env`.
-- The admin portal (`/nexa-admin-portal/login`, email `arjumankhan181@gmail.com`)
-  falls back to password `AdminPassword123!` in dev when `SUPER_ADMIN_PASSWORD` is unset.
+- The admin portal login has NO default password: an operator must set
+  `SUPER_ADMIN_PASSWORD` (or `ADMIN_INITIAL_PASSWORD` for the first provisioning)
+  before the owner account unlocks; otherwise it stays locked (fail closed).
 
 ## Secrets (external, user-supplied)
 `JWT_SECRET` is the only boot-required secret (generated as a dev placeholder).
