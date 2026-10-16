@@ -58,6 +58,13 @@ export interface FeedState {
 const MAX_CANDLES = 2000;
 /** Candles requested per backward page (infinite left-scroll). */
 const OLDER_PAGE = 300;
+/**
+ * Tick coalescing: the engine ticks ~1/s per symbol, but bursts (replay,
+ * reconnect) can deliver several ticks inside one frame. Ticks are merged
+ * into the ref synchronously, but the React state commit is scheduled once
+ * per animation frame — a 10-tick burst then costs one render, not ten.
+ */
+const TICK_FLUSH_MS = 0;
 
 export function useOtcFeed(
   symbol: string,
@@ -81,6 +88,9 @@ export function useOtcFeed(
   const loadingOlder = useRef(false);
   /** Latest server-clock offset; pushed into state only when it drifts. */
   const offsetRef = useRef(0);
+  /** Coalesced-tick flush: pending merged array + scheduled rAF handle. */
+  const flushRef = useRef<{ candles: Candle[]; livePrice: number | null; sequence: number } | null>(null);
+  const flushScheduled = useRef(false);
 
   /** Learn the server clock offset from a payload's serverTime. */
   const learnServerTime = useCallback((serverTime?: number) => {
@@ -90,6 +100,39 @@ export function useOtcFeed(
     setState((s) =>
       Math.abs(s.serverTimeOffset - next) > 250 ? { ...s, serverTimeOffset: next } : s
     );
+  }, []);
+
+  /** Schedule the coalesced state commit — at most one React render per frame. */
+  const scheduleFlush = useCallback(() => {
+    if (flushScheduled.current || typeof requestAnimationFrame === 'undefined') return;
+    flushScheduled.current = true;
+    void TICK_FLUSH_MS; // reserved: switch to setTimeout(…, N) if batching ever needs a floor
+    requestAnimationFrame(() => {
+      flushScheduled.current = false;
+      const pending = flushRef.current;
+      flushRef.current = null;
+      if (!pending) return;
+      const { candles: next, livePrice, sequence } = pending;
+      setState((s) => {
+        // Skip the commit when the forming candle did not actually move and
+        // neither did the price — a duplicate/heartbeat tick then costs zero
+        // renders instead of waking the whole chart subtree.
+        const prevTail = s.candles.length ? s.candles[s.candles.length - 1] : null;
+        const nextTail = next.length ? next[next.length - 1] : null;
+        const sameTail = prevTail === nextTail || (
+          prevTail != null && nextTail != null &&
+          prevTail.time === nextTail.time &&
+          prevTail.open === nextTail.open &&
+          prevTail.high === nextTail.high &&
+          prevTail.low === nextTail.low &&
+          prevTail.close === nextTail.close
+        );
+        if (sameTail && s.livePrice === livePrice && s.sequence === sequence && s.candles.length === next.length) {
+          return s;
+        }
+        return { ...s, status: 'live', candles: next, livePrice, sequence };
+      });
+    });
   }, []);
 
   const mergeTick = useCallback((tick: OtcTick) => {
@@ -129,8 +172,13 @@ export function useOtcFeed(
     if (next.length > MAX_CANDLES) next.splice(0, next.length - MAX_CANDLES);
     candlesRef.current = next;
     lastSeq.current = tick.sequence;
-    setState((s) => ({ ...s, candles: next, livePrice: tick.price, sequence: tick.sequence, status: 'live' }));
-  }, [learnServerTime]);
+    // Coalesce: merge synchronously (the engine state is always exact), but
+    // commit to React state at most once per animation frame. A replay burst
+    // of N ticks then costs ~1 render instead of N, and a same-value tick
+    // (heartbeat) costs zero renders via scheduleFlush's equality guard.
+    flushRef.current = { candles: next, livePrice: tick.price, sequence: tick.sequence };
+    scheduleFlush();
+  }, [learnServerTime, scheduleFlush]);
 
   // Open/close this feed's own connection (declared before the stream effect so
   // it has run by the time the subscription is emitted).

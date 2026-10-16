@@ -74,6 +74,15 @@ export function createSocketServer(httpServer: HttpServer) {
       }
     });
 
+    // Leave a realtime channel (the client's useLiveEvents emits this on
+    // unmount — without it every mount/unmount cycle left a ghost member in
+    // the server-side room, an event + memory leak).
+    socket.on('leave:rt', (channel: unknown) => {
+      if (typeof channel === 'string' && channel.length > 0 && channel.length < 60) {
+        socket.leave(`rt:${channel}`);
+      }
+    });
+
     socket.emit('server:hello', { service: 'nexatrade-v2-server', at: new Date().toISOString() });
     socket.on('disconnect', () => {});
   });

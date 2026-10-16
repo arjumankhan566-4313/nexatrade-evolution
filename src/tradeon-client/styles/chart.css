@@ -200,15 +200,21 @@
 }
 /* Candle countdown: rides the live-price line (the engine reports the line's Y
    every frame, so it stays aligned through ticks, panning and zoom) and sits on
-   the RIGHT, flush against the price axis — where every trading terminal keeps
+   the RIGHT, 6px clear of the price axis — where every trading terminal keeps
    it. The engine keeps the price axis and its badge in the 78px RIGHT gutter
-   (RIGHT_GUTTER in chart/ChartEngine.ts), so right: 78px lands the pill's right
-   edge exactly on the plot's right edge, just before the axis. The dashed price
-   line stops COUNTDOWN_GAP_PX short of the pill's left edge (the engine is told
-   the pill's width through setCountdownInset), so the two never overlap. */
+   (RIGHT_GUTTER in chart/ChartEngine.ts), so right: 84px lands the pill's right
+   edge exactly 6px before the axis. The dashed price line stops
+   COUNTDOWN_GAP_PX short of the pill's left edge (the engine is told the
+   pill's width through setCountdownInset), and the canvas grid labels are
+   re-flowed out of a ±(6+14)px band around the live badge (PRICE_BADGE_-
+   CLEARANCE_PX), so the three can never overlap vertically or horizontally. */
 .chart-live-timer {
   position: absolute;
-  right: 78px;
+  /* The engine's right gutter is 78px; stop the pill 6px short of the plot
+     edge (right: 84px) so it can never touch the axis badge even when the
+     price line hugs the gutter. Combined with the engine's 14px vertical
+     badge-clearance band, the pill owns an exclusive cell on the axis. */
+  right: 84px;
   transform: translateY(-50%);
   z-index: 21;
   pointer-events: none;

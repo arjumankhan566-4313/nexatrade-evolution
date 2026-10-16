@@ -15,6 +15,8 @@
  */
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { socket } from '../lib/socket';
+import { useChartConfigStore } from '../stores/chartConfigStore';
 
 export interface OtcAsset {
   symbol: string;
@@ -47,6 +49,12 @@ export const MARKET_TAB_LABELS: Record<MarketTab, string> = {
 let cached: OtcAsset[] | null = null;
 let inflight: Promise<OtcAsset[]> | null = null;
 
+/** Bump the catalogue cache when the admin changes an instrument (live sync). */
+export function invalidateOtcCatalogue(): void {
+  cached = null;
+  inflight = null;
+}
+
 function loadCatalogue(): Promise<OtcAsset[]> {
   if (cached) return Promise.resolve(cached);
   if (!inflight) {
@@ -77,6 +85,45 @@ export function useOtcAssets(): { assets: OtcAsset[]; loading: boolean } {
     });
     return () => {
       alive = false;
+    };
+  }, []);
+
+  // Admin→user instant live sync (no page reload): the admin console
+  // publishes `rt:assets` on every instrument create/update/status change.
+  // Re-fetch the catalogue when it lands so the market list, the ticket
+  // header and the panel reflect it within ~1s. `rt:settings` similarly
+  // reloads the chart config (countdown pill colour).
+  useEffect(() => {
+    let alive = true;
+    const onAssets = () => {
+      if (!alive) return;
+      invalidateOtcCatalogue();
+      setLoading(true);
+      loadCatalogue().then((list) => {
+        if (!alive) return;
+        setAssets(list);
+        setLoading(false);
+      });
+    };
+    const onSettings = () => {
+      void useChartConfigStore.getState().loadFromServer();
+    };
+    socket.emit('join:rt', 'assets');
+    socket.emit('join:rt', 'settings');
+    socket.on('rt:assets', onAssets);
+    socket.on('rt:settings', onSettings);
+    const onConnect = () => {
+      socket.emit('join:rt', 'assets');
+      socket.emit('join:rt', 'settings');
+    };
+    socket.on('connect', onConnect);
+    return () => {
+      alive = false;
+      socket.off('rt:assets', onAssets);
+      socket.off('rt:settings', onSettings);
+      socket.off('connect', onConnect);
+      socket.emit('leave:rt', 'assets');
+      socket.emit('leave:rt', 'settings');
     };
   }, []);
 

@@ -169,3 +169,35 @@ export function mergeCandles(history: Candle[], incoming: (Candle | null)[]): Ca
   }
   return [...map.values()].sort((a, b) => a.time - b.time);
 }
+
+/**
+ * Repair a historical candle series when a persisted row or replayed bucket has
+ * an impossible continuity jump (for example the previous candle was near 740
+ * and the next bucket opens at 598 instead of continuing from the prior close).
+ * We repair the bucket by anchoring the faulty open to the previous close and
+ * re-clamping the OHLC extremes around that continuity point so the chart never
+ * paints a broken gap into the visible stream.
+ */
+export function sanitizeCandleSeries(candles: Candle[]): Candle[] {
+  if (!Array.isArray(candles) || candles.length < 2) return candles || [];
+
+  const cleaned: Candle[] = [];
+  for (const candle of candles) {
+    if (!candle || !Number.isFinite(candle.time)) continue;
+    const candidate: Candle = { ...candle };
+    const prev = cleaned[cleaned.length - 1];
+    if (prev && Number.isFinite(prev.close) && Number.isFinite(candidate.open)) {
+      const prevClose = Number(prev.close);
+      const open = Number(candidate.open);
+      const jumpRatio = Math.abs(open - prevClose) / Math.max(Math.abs(prevClose), 1);
+      if (jumpRatio > 0.18) {
+        candidate.open = prevClose;
+        candidate.high = Math.max(prevClose, Number(candidate.high || prevClose), Number(candidate.close || prevClose));
+        candidate.low = Math.min(prevClose, Number(candidate.low || prevClose), Number(candidate.close || prevClose));
+      }
+    }
+    cleaned.push(candidate);
+  }
+
+  return cleaned;
+}

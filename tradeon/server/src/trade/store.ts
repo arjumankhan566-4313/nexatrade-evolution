@@ -97,7 +97,7 @@ export async function settle(
   data: { exit_price: number; status: string; result_profit: number },
 ): Promise<TradeRow | null> {
   await sql(
-    `UPDATE trades SET exit_price = $1, status = $2, profit = $3
+    `UPDATE trades SET exit_price = $1, status = $2, profit = $3, settled_at = NOW()
      WHERE id = $4 AND status = 'PENDING'`,
     [data.exit_price, data.status, Math.round(data.result_profit * 100) / 100, id],
   );

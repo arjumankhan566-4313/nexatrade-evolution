@@ -25,8 +25,11 @@
 import { getEngine } from './runner';
 import { OTC_INSTRUMENTS, type InstrumentSeed } from './instruments';
 
-/** One payout step — how long a derived rate stays put before it may move. */
-export const PAYOUT_STEP_MS = 15_000;
+/** One payout step — how long a derived rate stays put before it may move.
+ *  Kept within 3–5s so live payout chips feel fluid and look like a professional
+ *  desk feed instead of a static, stale badge.
+ */
+export const PAYOUT_STEP_MS = 5_000;
 /** How far the offered rate may travel from the instrument's base rate. */
 export const PAYOUT_BAND = 3;
 /** Hard bounds — the same clamp the admin payout editor applies. */

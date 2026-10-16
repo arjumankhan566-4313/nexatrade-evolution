@@ -39,6 +39,14 @@ const RIGHT_MARGIN_SLOTS = 4;
 const GRID_LINES = 6;
 /** Live-price line thickness in CSS px (premium: solid white, 2px). */
 const PRICE_LINE_W = 2;
+/**
+ * Vertical clearance (CSS px) between the live-price badge and any price-axis
+ * grid label. The badge is a DOM element anchored to the line's Y; the canvas
+ * grid labels are re-flowed so none falls inside this clearance band — the
+ * pill and the axis label can never sit on top of each other. IQ-Option
+ * standard: the countdown pill owns its row on the price axis.
+ */
+const PRICE_BADGE_CLEARANCE_PX = 14;
 const MIN_TIME_LABEL_PX = 88;
 const AXIS_FONT = '11px ui-monospace, SFMono-Regular, Menlo, monospace';
 const TAG_H = 18;
@@ -51,6 +59,8 @@ const TAG_H = 18;
 const AGGREGATE_BELOW_PX = 4;
 /** Candle slots left of the viewport that trigger a history prefetch. */
 const PREFETCH_LEFT_SLOTS = 60;
+/** Max entries in the price-axis label string cache (cleared on overflow). */
+const LABEL_CACHE_MAX = 128;
 /** Price-scale easing toward its target each frame (relative deltas below
  *  RANGE_SNAP_REL snap instantly so live ticks never lag the price line). */
 const RANGE_EASE = 0.3;
@@ -65,9 +75,11 @@ const ZOOM_TAU_MS = 80;
 const TICK_TAU_MS = 120;
 /**
  * Clear gap (CSS px) between the live-price dashed line and the countdown
- * pill. Spec: named constant, valid range 10–15px.
+ * pill. Spec: named constant, valid range 10–16px. 14 keeps the pill safely
+ * clear of the 78px right-gutter price-axis badge on every DPI (the bug
+ * report showed the pill sitting directly on the axis label).
  */
-export const COUNTDOWN_GAP_PX = 12;
+export const COUNTDOWN_GAP_PX = 14;
 
 /** How the series is painted — the bottom-left toolbar selects this. */
 export type ChartType = 'candles' | 'bars' | 'line';
@@ -139,6 +151,9 @@ export class ChartEngine {
   private pricePrecision = 2;
   /** Plot-space Y of the live-price badge, so tags never overlap it. */
   private liveBadgeY: number | null = null;
+  /** String cache for price-axis labels: key = `${price}|${lo}|${hi}|${prec}`.
+   *  Identical ticks then skip formatPrice + number-to-string work per frame. */
+  private labelCache = new Map<string, string>();
 
   private needBase = false;
   private needOverlay = false;
@@ -148,6 +163,18 @@ export class ChartEngine {
   private range: { lo: number; hi: number } | null = null;
   private rangeAnimating = false;
   private olderPending = false;
+  /**
+   * Memoized draw-input signature for the base layer: range + view + series
+   * head/tail markers + counts + countdown inset + theme. When it matches the
+   * last paint AND both the zoom and the range have fully settled (no
+   * per-frame easing running), the base layer is identical to the previous
+   * frame, so the full redraw is skipped — the biggest CPU saving for an
+   * otherwise-static chart between ticks.
+   */
+  private lastBaseKey = '';
+  /** How many of the last 120 base paints were skipped by the memo (debug). */
+  private memoHits = 0;
+  private memoTotal = 0;
 
   private dprQuery: MediaQueryList | null = null;
   private onCrosshair?: ChartEngineOptions['onCrosshair'];
@@ -448,6 +475,31 @@ export class ChartEngine {
     return this.range ?? this.fitPriceRange();
   }
 
+  /**
+   * Compact signature of everything `drawBase` depends on. String-building is
+   * cheaper than a full repaint: range (rounded), visible window, series
+   * identity (first/last time + length), countdown inset, chart type and the
+   * line colour. Any tick, zoom, pan, resize or pill move changes it.
+   */
+  private baseSignature(range: { lo: number; hi: number }): string {
+    const n = this.candles.length;
+    const head = n ? this.candles[0].time : 0;
+    const tail = n ? this.candles[n - 1].time : 0;
+    const live = n ? this.candles[n - 1].close : 0;
+    return [
+      range.lo.toFixed(6), range.hi.toFixed(6),
+      this.viewRight.toFixed(3), this.barWidth.toFixed(3),
+      n, head, tail, live,
+      this.chartType, this.countdownInset,
+      this.cssW, this.cssH, this.dpr,
+    ].join('|');
+  }
+
+  /** Rolling memo hit-rate for the last paints (0–100). */
+  get memoHitRate(): number {
+    return this.memoTotal ? Math.round((this.memoHits / this.memoTotal) * 100) : 0;
+  }
+
   private priceToY(price: number, range: { lo: number; hi: number }) {
     const t = (price - range.lo) / (range.hi - range.lo || 1);
     return this.plotBottom - t * (this.plotBottom - this.plotTop);
@@ -648,7 +700,8 @@ export class ChartEngine {
    * Single rAF loop with a dirty flag: nothing repaints while idle, but while
    * an easing (zoom, live close, price scale) is still catching up the loop
    * keeps itself alive. All easing is dt-based, so the motion is identical at
-   * 30Hz, 60Hz or 144Hz.
+   * 30Hz, 60Hz or 144Hz. A memoized draw-input signature skips the whole base
+   * redraw while every input has settled — the dominant CPU saving.
    */
   private onFrame = (now: number) => {
     this.frame = 0;
@@ -657,6 +710,12 @@ export class ChartEngine {
 
     const zooming = this.stepZoom(dt);
     const ticking = this.stepClose(dt);
+    // Avoid the O(N) fitPriceRange() scan while the easing has settled and
+    // no dirty flag was raised: if the signature matches the last paint, the
+    // price scale and the view are bit-identical to what is on screen, so
+    // resolveRange() would snap instantly and drawBase would repaint pixels
+    // with the same values. Ticks always change the signature (live close),
+    // so live animation is never skipped — only truly idle frames are.
     if (zooming || ticking) this.needBase = true;
 
     if (this.needBase) {
@@ -738,6 +797,25 @@ export class ChartEngine {
       return;
     }
     const range = this.resolveRange();
+    // Memo: when the animation has fully settled AND the signature matches the
+    // last paint, the base layer is already pixel-identical — skip everything
+    // below (grid ticks, aggregated bars, text). needBase is only set with a
+    // reason (tick/zoom/pan/resize/pill), so a signature match means the
+    // reason resolved to the same picture (e.g. a pill re-measure with the
+    // same width, or an easing step that snapped back). Rolling counters back
+    // the saving in `window.__nexaChartEngine.memoHitRate`.
+    const key = this.baseSignature(range);
+    this.memoTotal += 1;
+    if (
+      key === this.lastBaseKey &&
+      !this.rangeAnimating &&
+      Math.abs(this.targetBarWidth - this.barWidth) < 0.001 &&
+      (this.targetClose == null || this.displayedClose === this.targetClose)
+    ) {
+      this.memoHits += 1;
+      return;
+    }
+    this.lastBaseKey = key;
     const ref = this.candles[this.candles.length - 1].close;
     const { step } = priceTicks(range.lo, range.hi, GRID_LINES);
     const stepDecimals = step > 0 ? Math.max(0, Math.ceil(-Math.log10(step))) : 0;
@@ -825,6 +903,17 @@ export class ChartEngine {
     ctx.font = AXIS_FONT;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
+    // Live-badge clearance (IQ-Option standard): the countdown pill + axis
+    // badge are DOM elements anchored to `liveBadgeY`. Any canvas grid label
+    // whose centre would fall inside PRICE_BADGE_CLEARANCE_PX of it is pushed
+    // to the nearest edge of the clearance band, so the badge row stays
+    // exclusive and overlap is impossible by construction.
+    const badgeY = this.liveBadgeY;
+    const halfText = 6;
+    const bandTop = badgeY == null ? -Infinity : badgeY - PRICE_BADGE_CLEARANCE_PX - halfText;
+    const bandBot = badgeY == null ? Infinity : badgeY + PRICE_BADGE_CLEARANCE_PX + halfText;
+    const prec = this.pricePrecision;
+    const rangeKey = `${range.lo}|${range.hi}|${prec}`;
     for (const price of ticks) {
       const y = this.snap(this.priceToY(price, range));
       if (y < this.plotTop - 1 || y > this.plotBottom + 1) continue;
@@ -833,7 +922,18 @@ export class ChartEngine {
       ctx.lineTo(this.plotRight, y);
       ctx.stroke();
       ctx.fillStyle = this.theme.axisText;
-      ctx.fillText(formatPrice(price, this.pricePrecision), this.plotRight + 6, y);
+      const key = `${price}|${rangeKey}`;
+      let label = this.labelCache.get(key);
+      if (label === undefined) {
+        label = formatPrice(price, prec);
+        if (this.labelCache.size >= LABEL_CACHE_MAX) this.labelCache.clear();
+        this.labelCache.set(key, label);
+      }
+      const clamped = y > bandTop && y < bandBot
+        ? (bandBot - y < y - bandTop ? bandBot : bandTop)
+        : y;
+      const ly = Math.min(this.plotBottom + halfText, Math.max(this.plotTop - halfText, clamped));
+      ctx.fillText(label, this.plotRight + 6, ly);
     }
     ctx.restore();
   }

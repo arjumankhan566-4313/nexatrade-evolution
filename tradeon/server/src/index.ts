@@ -19,6 +19,7 @@ import { recordApi } from './performance/collector';
 import { ensureEngine, stopEngine } from './otc/runner';
 import { bootstrapReferenceFeed, stopReferenceFeed } from './referenceFeed';
 import { startTradeEngine, stopTradeEngine, settleDue } from './trade/engine';
+import { startPayoutBroadcaster, stopPayoutBroadcaster } from './otc/payoutBroadcaster';
 import { bootstrapDatabase } from './config/bootstrap';
 
 const app = express();
@@ -76,12 +77,15 @@ httpServer.listen(env.port, '0.0.0.0', () => {
   );
   // Start the 1s settlement timer (legacy: tradeEngine.start).
   startTradeEngine();
+  // Live payout broadcast: every open terminal sees rate moves in ~1 step.
+  startPayoutBroadcaster();
 });
 
 process.on('SIGTERM', () => {
   // Graceful shutdown: stop the trade engine, reference feed, flush +
   // checkpoint the OTC engine, release leadership.
   stopTradeEngine();
+  stopPayoutBroadcaster();
   stopReferenceFeed();
   stopEngine().catch(() => {});
   close();

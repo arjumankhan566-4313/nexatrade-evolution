@@ -494,6 +494,18 @@ otcAdminRouter.get('/health', async (req, res) => {
 
     const engine = getEngine();
     if (engine?.running) await reloadSymbol(symbol).catch(() => {});
+    // Instant payout sync: when the base rate moved, push the freshly derived
+    // map immediately — the next broadcaster tick would take up to one full
+    // PAYOUT_STEP_MS, but an admin expects the board to move NOW.
+    if (changed.some((c) => String(c).toLowerCase().includes('payout'))) {
+      try {
+        const { livePayoutMap } = await import('../otc/payouts');
+        const { PAYOUT_STEP_MS } = await import('../otc/payouts');
+        publish('payouts', { payouts: livePayoutMap(), stepMs: PAYOUT_STEP_MS, serverTime: Date.now() });
+      } catch {
+        /* the scheduled broadcast still lands within one step */
+      }
+    }
 
     res.json({ instrument: row, changed });
   });

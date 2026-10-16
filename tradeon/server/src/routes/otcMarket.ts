@@ -17,11 +17,30 @@ import {
 } from '../otc/service';
 import { otcIconUrlVersioned } from '../otc/instrumentIcons';
 import { PAYOUT_STEP_MS } from '../otc/payouts';
+import { one } from '../config/db';
 
 export const otcMarketRouter = Router();
 
 const fail = (res: import('express').Response, message: string, status = 400) =>
   res.status(status).json({ error: message });
+
+/**
+ * GET /api/market/otc/config — public terminal/chart configuration the
+ * client reads once per terminal mount (chartConfigStore.loadFromServer).
+ * The admin-set timer pill colour lives in system_settings.chart_timer_bg;
+ * anything invalid falls back to the white default the client ships with.
+ */
+otcMarketRouter.get('/config', async (_req, res) => {
+  const row = await one<{ chart_timer_bg: string | null }>(
+    'SELECT chart_timer_bg FROM system_settings WHERE id = 1',
+  );
+  const color = row?.chart_timer_bg;
+  res.json({
+    chartTimerBg:
+      typeof color === 'string' && /^#[0-9a-fA-F]{6}$/.test(color) ? color : '#FFFFFF',
+    serverTime: Date.now(),
+  });
+});
 
 /* GET /api/market/otc/assets — the OTC instrument catalogue. */
 otcMarketRouter.get('/assets', async (_req, res) => {

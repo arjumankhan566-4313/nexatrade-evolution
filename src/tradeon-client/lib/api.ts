@@ -1,10 +1,10 @@
 /**
- * Same-origin API helper used by the auth stores.
+ * Same-origin API helper used by the auth stores and public data hooks.
  *
  * CONTRACT (differs from the `api()` in `lib/legacyInfra.tsx` — read before
  * importing):
  *  - NEVER throws — always resolves with `{ status, data }` (callers branch on
- *    `status`).
+ *    `status`). A 404/401 response is a NORMAL result, not an exception.
  *  - Automatically prefixes every path with `/api` (e.g. `api('/auth/me')`
  *    requests `/api/auth/me`).
  *

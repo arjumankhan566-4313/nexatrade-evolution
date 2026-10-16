@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import NotificationCenter from './NotificationCenter';
 import { api } from '../../lib/api';
+import { useAuthStore } from '../../stores/authStore';
 import '../../styles/alerts.css';
 
 interface Row {
@@ -43,18 +44,25 @@ interface Props {
 }
 
 export default function NotificationsBell({ buttonClassName = '', align = 'right' }: Props) {
+  const { status } = useAuthStore();
+  const isGuestOrLoading = status !== 'authenticated';
   const [rows, setRows] = useState<Row[]>([]);
 
   const load = useCallback(async () => {
+    // Genuine 401 on a public route (landing, /chart, …) is EXPECTED — the
+    // hook also mounts in the terminal topbar. Skip the fetch so the guest's
+    // console stays at zero errors; sign-in triggers a fresh mount anyway.
+    if (useAuthStore.getState().status !== 'authenticated') return;
     const res = await api<{ notifications: Row[] }>('/notifications');
     if (res.status === 200 && Array.isArray(res.data?.notifications)) setRows(res.data.notifications);
   }, []);
 
   useEffect(() => {
+    if (isGuestOrLoading) return;
     void load();
     const timer = setInterval(load, POLL_MS);
     return () => clearInterval(timer);
-  }, [load]);
+  }, [isGuestOrLoading, load]);
 
   const items = rows.map((r) => ({
     id: r.id,

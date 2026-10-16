@@ -21,7 +21,7 @@ import {
   type CurrentSnapshot,
   type OtcEngine,
 } from './runner';
-import { mergeCandles, timeframeMs, OTC_CANDLE_TIMEFRAMES, type Candle } from './candles';
+import { mergeCandles, sanitizeCandleSeries, timeframeMs, OTC_CANDLE_TIMEFRAMES, type Candle } from './candles';
 import {
   toAssetView,
   isOtcSymbol,
@@ -161,7 +161,7 @@ export async function getOtcCandles(symbol: string, timeframe = '1m', limit = 30
   const forming = engine ? currentCandle(engine, up, frame) : null;
   const finalized = engine?.runtimes.get(up)?.candles.get(frame)?.finalized || [];
   const merged = mergeCandles(history, [...finalized, ...(forming ? [forming] : [])]);
-  let result = merged.slice(-Math.min(Math.max(1, limit), 2000));
+  let result = sanitizeCandleSeries(merged.slice(-Math.min(Math.max(1, limit), 2000)));
 
   // Supplement with synthetic history if we don't have enough candles
   // (e.g. engine just started). This ensures the chart always has a full set.
@@ -220,7 +220,7 @@ export async function getOtcCandlesBefore(
   const nextCursor = merged.length ? merged[0].time : null;
 
   return {
-    candles: merged.slice(-limit),
+    candles: sanitizeCandleSeries(merged.slice(-limit)),
     nextCursor,
     hasMore: true, // Always more — infinite scrolling
   };

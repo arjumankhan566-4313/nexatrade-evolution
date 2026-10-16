@@ -3,8 +3,20 @@ import { env } from './env';
 
 // The stored DATABASE_URL may arrive wrapped in double quotes; normalise once,
 // here. Everything else imports from this module.
-const raw = env.databaseUrl.replace(/^"|"$/g, '');
-const isLocal = raw ? /^(localhost|127\.0\.0\.1|::1)/.test(raw) : true;
+const raw = env.databaseUrl.replace(/^"|"$/g, "");
+// A local host must NOT force TLS — but the URL always starts with the
+// `postgres(ql)://` scheme, so match on the HOSTNAME, not the URL head
+// (matching the head made every password-auth local TCP connection fail
+// with "The server does not support SSL connections").
+const isLocal = raw
+  ? (() => {
+      try {
+        return /^(localhost|127\.0\.0\.1|::1)$/.test(new URL(raw).hostname);
+      } catch {
+        return true;
+      }
+    })()
+  : true;
 
 export const pool = new Pool({
   connectionString: raw || undefined,
