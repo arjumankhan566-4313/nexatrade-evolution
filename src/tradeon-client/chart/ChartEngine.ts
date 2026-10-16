@@ -23,10 +23,10 @@
  *    stays under the pointer, derived from the stored start position (never by
  *    accumulating per-move deltas).
  */
-import type { Candle, ChartOverlays, ChartTheme, OverlayDot, OverlayLine } from './types';
-import { DEFAULT_THEME } from './types';
-import { formatAxisTime, formatDateTime, formatPrice, pricePrecision } from './format';
-import { priceTicks, timeStepMs } from './ticks';
+import type { Candle, ChartOverlays, ChartTheme, OverlayDot, OverlayLine } from "./types";
+import { DEFAULT_THEME } from "./types";
+import { formatAxisTime, formatDateTime, formatPrice, pricePrecision } from "./format";
+import { priceTicks, timeStepMs } from "./ticks";
 
 const RIGHT_GUTTER = 78;
 const BOTTOM_GUTTER = 24;
@@ -48,7 +48,7 @@ const PRICE_LINE_W = 2;
  */
 const PRICE_BADGE_CLEARANCE_PX = 14;
 const MIN_TIME_LABEL_PX = 88;
-const AXIS_FONT = '11px ui-monospace, SFMono-Regular, Menlo, monospace';
+const AXIS_FONT = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
 const TAG_H = 18;
 /**
  * When a candle's slot is narrower than this, consecutive candles are folded
@@ -82,7 +82,7 @@ const TICK_TAU_MS = 120;
 export const COUNTDOWN_GAP_PX = 14;
 
 /** How the series is painted — the bottom-left toolbar selects this. */
-export type ChartType = 'candles' | 'bars' | 'line';
+export type ChartType = "candles" | "bars" | "line";
 
 export interface CrosshairInfo {
   /** Price at the cursor's exact Y, through the chart's own price scale. */
@@ -132,7 +132,7 @@ export class ChartEngine {
   /** Index (float) anchored to the right edge of the plot. */
   private viewRight = 0;
   private autoFollow = true;
-  private chartType: ChartType = 'candles';
+  private chartType: ChartType = "candles";
 
   /** Fluid tick animation: the latest tick is the target; the drawn close
    *  eases toward it every frame instead of jumping. */
@@ -171,22 +171,26 @@ export class ChartEngine {
    * frame, so the full redraw is skipped — the biggest CPU saving for an
    * otherwise-static chart between ticks.
    */
-  private lastBaseKey = '';
+  private lastBaseKey = "";
   /** How many of the last 120 base paints were skipped by the memo (debug). */
   private memoHits = 0;
   private memoTotal = 0;
 
   private dprQuery: MediaQueryList | null = null;
-  private onCrosshair?: ChartEngineOptions['onCrosshair'];
-  private onNeedOlder?: ChartEngineOptions['onNeedOlder'];
-  private onPriceLineY?: ChartEngineOptions['onPriceLineY'];
+  private onCrosshair?: ChartEngineOptions["onCrosshair"];
+  private onNeedOlder?: ChartEngineOptions["onNeedOlder"];
+  private onPriceLineY?: ChartEngineOptions["onPriceLineY"];
 
-  constructor(base: HTMLCanvasElement, overlay: HTMLCanvasElement, options: ChartEngineOptions = {}) {
+  constructor(
+    base: HTMLCanvasElement,
+    overlay: HTMLCanvasElement,
+    options: ChartEngineOptions = {},
+  ) {
     this.base = base;
     this.overlay = overlay;
-    const bctx = base.getContext('2d', { alpha: false });
-    const octx = overlay.getContext('2d', { alpha: true });
-    if (!bctx || !octx) throw new Error('2D canvas context unavailable');
+    const bctx = base.getContext("2d", { alpha: false });
+    const octx = overlay.getContext("2d", { alpha: true });
+    if (!bctx || !octx) throw new Error("2D canvas context unavailable");
     this.baseCtx = bctx;
     this.overlayCtx = octx;
     if (options.theme) this.theme = { ...DEFAULT_THEME, ...options.theme };
@@ -249,9 +253,7 @@ export class ChartEngine {
     if (this.autoFollow) {
       // Stay at the live edge; keep whatever small right margin the user left.
       const margin =
-        prevLen > 0
-          ? Math.max(0, Math.min(RIGHT_MARGIN_SLOTS, this.viewRight - (prevLen - 1)))
-          : 0;
+        prevLen > 0 ? Math.max(0, Math.min(RIGHT_MARGIN_SLOTS, this.viewRight - (prevLen - 1))) : 0;
       this.viewRight = last + margin;
     } else if (prevLen) {
       // Re-anchor a panned window on the candle that was at the right edge, so
@@ -320,7 +322,7 @@ export class ChartEngine {
 
   // ── sizing ─────────────────────────────────────────────────────────────────
   private readDpr() {
-    const d = typeof window === 'undefined' ? 1 : window.devicePixelRatio;
+    const d = typeof window === "undefined" ? 1 : window.devicePixelRatio;
     return Number.isFinite(d) && d > 0 ? d : 1;
   }
 
@@ -346,9 +348,9 @@ export class ChartEngine {
   }
 
   private armDprWatch() {
-    if (this.dprQuery) this.dprQuery.removeEventListener('change', this.onDprChange);
+    if (this.dprQuery) this.dprQuery.removeEventListener("change", this.onDprChange);
     this.dprQuery = window.matchMedia(`(resolution: ${this.readDpr()}dppx)`);
-    this.dprQuery.addEventListener('change', this.onDprChange);
+    this.dprQuery.addEventListener("change", this.onDprChange);
   }
 
   // ── transforms ─────────────────────────────────────────────────────────────
@@ -487,12 +489,20 @@ export class ChartEngine {
     const tail = n ? this.candles[n - 1].time : 0;
     const live = n ? this.candles[n - 1].close : 0;
     return [
-      range.lo.toFixed(6), range.hi.toFixed(6),
-      this.viewRight.toFixed(3), this.barWidth.toFixed(3),
-      n, head, tail, live,
-      this.chartType, this.countdownInset,
-      this.cssW, this.cssH, this.dpr,
-    ].join('|');
+      range.lo.toFixed(6),
+      range.hi.toFixed(6),
+      this.viewRight.toFixed(3),
+      this.barWidth.toFixed(3),
+      n,
+      head,
+      tail,
+      live,
+      this.chartType,
+      this.countdownInset,
+      this.cssW,
+      this.cssH,
+      this.dpr,
+    ].join("|");
   }
 
   /** Rolling memo hit-rate for the last paints (0–100). */
@@ -539,25 +549,25 @@ export class ChartEngine {
   // ── input ──────────────────────────────────────────────────────────────────
   private bindEvents() {
     const c = this.base;
-    c.addEventListener('pointerdown', this.onPointerDown);
-    c.addEventListener('pointermove', this.onPointerMove);
-    c.addEventListener('pointerup', this.onPointerUp);
-    c.addEventListener('pointercancel', this.onPointerUp);
-    c.addEventListener('pointerleave', this.onPointerLeave);
-    c.addEventListener('wheel', this.onWheel, { passive: false });
-    window.addEventListener('resize', this.onWindowResize);
+    c.addEventListener("pointerdown", this.onPointerDown);
+    c.addEventListener("pointermove", this.onPointerMove);
+    c.addEventListener("pointerup", this.onPointerUp);
+    c.addEventListener("pointercancel", this.onPointerUp);
+    c.addEventListener("pointerleave", this.onPointerLeave);
+    c.addEventListener("wheel", this.onWheel, { passive: false });
+    window.addEventListener("resize", this.onWindowResize);
   }
 
   private unbindEvents() {
     const c = this.base;
-    c.removeEventListener('pointerdown', this.onPointerDown);
-    c.removeEventListener('pointermove', this.onPointerMove);
-    c.removeEventListener('pointerup', this.onPointerUp);
-    c.removeEventListener('pointercancel', this.onPointerUp);
-    c.removeEventListener('pointerleave', this.onPointerLeave);
-    c.removeEventListener('wheel', this.onWheel);
-    window.removeEventListener('resize', this.onWindowResize);
-    this.dprQuery?.removeEventListener('change', this.onDprChange);
+    c.removeEventListener("pointerdown", this.onPointerDown);
+    c.removeEventListener("pointermove", this.onPointerMove);
+    c.removeEventListener("pointerup", this.onPointerUp);
+    c.removeEventListener("pointercancel", this.onPointerUp);
+    c.removeEventListener("pointerleave", this.onPointerLeave);
+    c.removeEventListener("wheel", this.onWheel);
+    window.removeEventListener("resize", this.onWindowResize);
+    this.dprQuery?.removeEventListener("change", this.onDprChange);
     this.dprQuery = null;
   }
 
@@ -592,7 +602,7 @@ export class ChartEngine {
   };
 
   private onPointerDown = (e: PointerEvent) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     if (!this.candles.length || this.plotWidth <= 0) return;
     const rect = this.base.getBoundingClientRect();
     try {
@@ -759,7 +769,8 @@ export class ChartEngine {
   /** Keep the pivot's series point under the pivot's cursor X. */
   private anchorPivot() {
     if (!this.zoomPivot) return;
-    this.viewRight = this.zoomPivot.index + (this.plotRight - this.zoomPivot.x) / this.barWidth - 0.5;
+    this.viewRight =
+      this.zoomPivot.index + (this.plotRight - this.zoomPivot.x) / this.barWidth - 0.5;
   }
 
   /**
@@ -858,7 +869,14 @@ export class ChartEngine {
     if (clearsLiveBadge) {
       const label = formatPrice(this.yToPrice(y, range), this.pricePrecision);
       const cy = Math.min(Math.max(y, TAG_H / 2 + 2), this.cssH - TAG_H / 2 - 2);
-      this.drawTag(ctx, label, this.plotRight + 1, cy - TAG_H / 2, this.cssW - this.plotRight - 2, 'left');
+      this.drawTag(
+        ctx,
+        label,
+        this.plotRight + 1,
+        cy - TAG_H / 2,
+        this.cssW - this.plotRight - 2,
+        "left",
+      );
     }
 
     // ── time tooltip on the bottom axis (snapped candle) ──
@@ -868,7 +886,7 @@ export class ChartEngine {
       ctx.font = AXIS_FONT;
       const w = ctx.measureText(label).width + 14;
       const cx = Math.min(Math.max(snappedX, w / 2), Math.max(w / 2, this.plotRight - w / 2));
-      this.drawTag(ctx, label, cx - w / 2, this.plotBottom + 1, w, 'center');
+      this.drawTag(ctx, label, cx - w / 2, this.plotBottom + 1, w, "center");
     }
   }
 
@@ -879,18 +897,18 @@ export class ChartEngine {
     x: number,
     y: number,
     w: number,
-    align: 'left' | 'center'
+    align: "left" | "center",
   ) {
     ctx.fillStyle = this.theme.crosshair;
     ctx.fillRect(this.snapEdge(x), y, Math.max(1, w), TAG_H);
     ctx.fillStyle = this.theme.crosshairText;
     ctx.font = AXIS_FONT;
-    ctx.textBaseline = 'middle';
-    if (align === 'center') {
-      ctx.textAlign = 'center';
+    ctx.textBaseline = "middle";
+    if (align === "center") {
+      ctx.textAlign = "center";
       ctx.fillText(label, x + w / 2, y + TAG_H / 2);
     } else {
-      ctx.textAlign = 'left';
+      ctx.textAlign = "left";
       ctx.fillText(label, x + 6, y + TAG_H / 2);
     }
   }
@@ -901,8 +919,8 @@ export class ChartEngine {
     ctx.strokeStyle = this.theme.grid;
     ctx.lineWidth = this.hairline;
     ctx.font = AXIS_FONT;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
     // Live-badge clearance (IQ-Option standard): the countdown pill + axis
     // badge are DOM elements anchored to `liveBadgeY`. Any canvas grid label
     // whose centre would fall inside PRICE_BADGE_CLEARANCE_PX of it is pushed
@@ -929,9 +947,8 @@ export class ChartEngine {
         if (this.labelCache.size >= LABEL_CACHE_MAX) this.labelCache.clear();
         this.labelCache.set(key, label);
       }
-      const clamped = y > bandTop && y < bandBot
-        ? (bandBot - y < y - bandTop ? bandBot : bandTop)
-        : y;
+      const clamped =
+        y > bandTop && y < bandBot ? (bandBot - y < y - bandTop ? bandBot : bandTop) : y;
       const ly = Math.min(this.plotBottom + halfText, Math.max(this.plotTop - halfText, clamped));
       ctx.fillText(label, this.plotRight + 6, ly);
     }
@@ -949,8 +966,8 @@ export class ChartEngine {
     ctx.strokeStyle = this.theme.grid;
     ctx.lineWidth = this.hairline;
     ctx.font = AXIS_FONT;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
     ctx.fillStyle = this.theme.axisText;
     for (let i = i0; i <= i1; i++) {
       const t = this.candles[i].time;
@@ -968,7 +985,8 @@ export class ChartEngine {
   /** Spacing of the loaded series, used to scale the time axis. */
   private bucketMs(): number {
     if (this.candles.length < 2) return 60_000;
-    const dt = this.candles[this.candles.length - 1].time - this.candles[this.candles.length - 2].time;
+    const dt =
+      this.candles[this.candles.length - 1].time - this.candles[this.candles.length - 2].time;
     return dt > 0 ? dt : 60_000;
   }
 
@@ -982,7 +1000,7 @@ export class ChartEngine {
   }
 
   private drawCandles(ctx: CanvasRenderingContext2D, range: { lo: number; hi: number }) {
-    if (this.chartType === 'line') {
+    if (this.chartType === "line") {
       this.drawLine(ctx, range);
       return;
     }
@@ -999,13 +1017,14 @@ export class ChartEngine {
       const end = Math.min(i + step - 1, i1, last);
       // Only full blocks of finalized candles merge; the forming candle and any
       // leftover tail stay 1:1 so the live bar keeps its own resolution.
-      const merges = end > i && step > 1 && this.candles[i].finalized && this.candles[end].finalized;
+      const merges =
+        end > i && step > 1 && this.candles[i].finalized && this.candles[end].finalized;
       if (!merges) {
         const c = this.candles[i];
         // The forming candle is drawn from the EASED close (fluid tick
         // animation): body, wick extremes and close all follow displayedClose,
         // so a fast tick glides instead of jumping.
-        let open = c.open;
+        const open = c.open;
         let high = c.high;
         let low = c.low;
         let close = c.close;
@@ -1014,7 +1033,7 @@ export class ChartEngine {
           if (close > high) high = close;
           if (close < low) low = close;
         }
-        const paint = this.chartType === 'bars' ? this.paintOhlcBar : this.paintBar;
+        const paint = this.chartType === "bars" ? this.paintOhlcBar : this.paintBar;
         paint.call(this, ctx, range, open, high, low, close, this.indexToX(i), this.barWidth * 0.7);
         i += 1;
         continue;
@@ -1026,7 +1045,7 @@ export class ChartEngine {
         if (this.candles[k].low < low) low = this.candles[k].low;
       }
       const count = end - i + 1;
-      const paint = this.chartType === 'bars' ? this.paintOhlcBar : this.paintBar;
+      const paint = this.chartType === "bars" ? this.paintOhlcBar : this.paintBar;
       paint.call(
         this,
         ctx,
@@ -1036,7 +1055,7 @@ export class ChartEngine {
         low,
         this.candles[end].close,
         this.indexToX((i + end) / 2),
-        this.barWidth * count * 0.72
+        this.barWidth * count * 0.72,
       );
       i = end + 1;
     }
@@ -1052,7 +1071,7 @@ export class ChartEngine {
     low: number,
     close: number,
     cx: number,
-    bodyW: number
+    bodyW: number,
   ) {
     if (cx < -bodyW || cx > this.plotRight + bodyW) return;
     const dpr = this.dpr;
@@ -1092,7 +1111,7 @@ export class ChartEngine {
     low: number,
     close: number,
     cx: number,
-    bodyW: number
+    bodyW: number,
   ) {
     if (cx < -bodyW || cx > this.plotRight + bodyW) return;
     const dpr = this.dpr;
@@ -1131,7 +1150,7 @@ export class ChartEngine {
     if (i1 <= i0) return;
     ctx.save();
     ctx.lineWidth = 1.6;
-    ctx.lineJoin = 'round';
+    ctx.lineJoin = "round";
     ctx.strokeStyle = this.theme.up;
     ctx.beginPath();
     for (let i = i0; i <= i1; i++) {
@@ -1193,12 +1212,12 @@ export class ChartEngine {
       this.snapEdge(this.plotRight + 1),
       this.snapEdge(rawY - TAG_H / 2),
       this.cssW - this.plotRight - 1,
-      TAG_H
+      TAG_H,
     );
     ctx.fillStyle = this.theme.priceLabelText;
     ctx.font = AXIS_FONT;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(label, (this.plotRight + this.cssW) / 2, rawY);
   }
 
@@ -1217,13 +1236,13 @@ export class ChartEngine {
       ctx.setLineDash([]);
       // Right-gutter label badge
       const label = `${line.label} ${formatPrice(line.price, this.pricePrecision)}`;
-      ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
       const w = ctx.measureText(label).width + 10;
       ctx.fillStyle = line.color;
       ctx.fillRect(this.plotRight + 2, y - 8, w, 16);
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
       ctx.fillText(label, this.plotRight + 7, y);
     }
 
@@ -1245,7 +1264,7 @@ export class ChartEngine {
         ctx.fillStyle = dot.color;
         ctx.fill();
         ctx.lineWidth = 1.6;
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = "#ffffff";
         ctx.stroke();
       }
     }
@@ -1291,12 +1310,19 @@ export function buildSampleOverlays(candles: Candle[]): ChartOverlays {
   const entry = candles[entryIdx];
   const exit = candles[exitIdx];
   const lines: OverlayLine[] = [
-    { id: 'entry', price: entry.open, color: '#26a69a', label: 'ENTRY', dashed: true },
-    { id: 'exit', price: exit.close, color: '#ef5350', label: 'EXIT', dashed: true },
+    { id: "entry", price: entry.open, color: "#26a69a", label: "ENTRY", dashed: true },
+    { id: "exit", price: exit.close, color: "#ef5350", label: "EXIT", dashed: true },
   ];
   const dots: OverlayDot[] = [
-    { id: 'entry-dot', index: entryIdx, price: entry.open, color: '#26a69a', label: 'E' },
-    { id: 'exit-dot', index: exitIdx, price: exit.close, color: '#ef5350', hollow: true, label: 'X' },
+    { id: "entry-dot", index: entryIdx, price: entry.open, color: "#26a69a", label: "E" },
+    {
+      id: "exit-dot",
+      index: exitIdx,
+      price: exit.close,
+      color: "#ef5350",
+      hollow: true,
+      label: "X",
+    },
   ];
   return { lines, dots };
 }
