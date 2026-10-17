@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the standalone OTC server dependencies installed in `tradeon/server`; the web app forwards to that service rather than bundling it into the Worker runtime.
+- Escape the literal dot in the Socket.IO route filename and use no-trailing-slash polling for same-origin clients, because the web forwarder cannot upgrade WebSockets.

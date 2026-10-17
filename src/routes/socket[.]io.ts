@@ -5,17 +5,13 @@ import { createFileRoute } from "@tanstack/react-router";
 // falls back to polling, which works over plain HTTP requests.)
 // Origin resolution matches the /api forwarder: BACKEND_URL (server /
 // production), VITE_API_URL (dev), then a localhost default.
-const BACKEND =
-  (typeof process !== "undefined" ? process.env?.["BACKEND_URL"] : undefined) ||
-  import.meta.env["VITE_API_URL"] ||
-  "http://localhost:4000";
-
 // A dead backend must not hang the polling request forever.
 const FORWARD_TIMEOUT_MS = 15_000;
 
 async function forward({ request }: { request: Request }) {
+  const backend = process.env["BACKEND_URL"] || import.meta.env["VITE_API_URL"] || "http://localhost:4000";
   const url = new URL(request.url);
-  const target = BACKEND + url.pathname + url.search;
+  const target = backend.replace(/\/$/, "") + "/socket.io/" + url.search;
 
   const headers = new Headers(request.headers);
   headers.delete("host");
@@ -49,7 +45,7 @@ async function forward({ request }: { request: Request }) {
   return new Response(res.body, { status: res.status, headers: resHeaders });
 }
 
-export const Route = createFileRoute("/socket/io/$")({
+export const Route = createFileRoute("/socket.io")({
   server: {
     handlers: {
       GET: forward,

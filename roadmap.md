@@ -1,5 +1,12 @@
 # TRADEON — Lovable-এ পোর্ট রোডম্যাপ
 
+## GitHub update preview — 2026-10-17
+- [x] Latest GitHub default-branch commit verified present locally; chart source matches it.
+- [x] Install standalone server dependencies and start the OTC service for preview.
+- [x] Repair literal Socket.IO endpoint and same-origin polling connection.
+- [x] Live run: 65 samples, 9 upward and 9 downward moves, zero invalid OHLC, one rollover; Bitcoin/Ethereum history loads verified.
+- [x] Fix canvas memoization clearing the image before a skipped paint; verify chart remains visible after market switches.
+
 ## সম্পন্ন ✅
 - [x] পুরো প্রজেক্ট ফাইল এখানে আনা (ক্লায়েন্ট ১৭০, সার্ভার ১০৪, ৬৪৪ ছবি/আইকন)
 - [x] প্রিভিউতে ল্যান্ডিং পেজ চালু
