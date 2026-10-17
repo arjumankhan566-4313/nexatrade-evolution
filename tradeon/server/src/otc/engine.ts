@@ -14,7 +14,7 @@
  *   • gradual re-anchor toward a live reference price  • controlled shocks
  *   • hard safety clamps (per-tick min/max move, precision, validation)
  */
-import { uniform, gaussian, type SeedReference } from "./prng";
+import { uniform, gaussian, type SeedReference } from './prng';
 
 export interface OtcRegimeConfig {
   volMul: number;
@@ -39,7 +39,7 @@ export interface OtcConfig {
   mean_reversion: number;
   /** Gradual re-anchor rate toward a fresh real-market reference price. */
   reanchor_rate: number;
-  regimes: Record<"quiet" | "normal" | "active", OtcRegimeConfig>;
+  regimes: Record<'quiet' | 'normal' | 'active', OtcRegimeConfig>;
   /** Per-instrument drift bias (fraction per tick). Signed. */
   drift_bias: number;
 }
@@ -64,8 +64,8 @@ export const DEFAULT_OTC_CONFIG: OtcConfig = {
   drift_bias: 0,
 };
 
-export type RegimeName = "quiet" | "normal" | "active";
-const REGIME_NAMES: RegimeName[] = ["quiet", "normal", "active"];
+export type RegimeName = 'quiet' | 'normal' | 'active';
+const REGIME_NAMES: RegimeName[] = ['quiet', 'normal', 'active'];
 
 export interface EngineState {
   price: number;
@@ -110,18 +110,14 @@ export function roundTo(value: number, precision: number): number {
 export function validatePrice(price: number, config: Partial<OtcConfig> = {}) {
   const cfg = { ...DEFAULT_OTC_CONFIG, ...config };
   const value = Number(price);
-  if (!Number.isFinite(value)) return { ok: false, price: NaN, reason: "NON_FINITE" };
-  if (value <= 0) return { ok: false, price: value, reason: "NON_POSITIVE" };
+  if (!Number.isFinite(value)) return { ok: false, price: NaN, reason: 'NON_FINITE' };
+  if (value <= 0) return { ok: false, price: value, reason: 'NON_POSITIVE' };
   const rounded = roundTo(value, cfg.decimal_precision);
-  if (!Number.isFinite(rounded) || rounded <= 0)
-    return { ok: false, price: rounded, reason: "ROUND_INVALID" };
-  if (
-    cfg.minimum_price_step > 0 &&
-    Math.abs(rounded - value) > cfg.minimum_price_step * 0.5 + 1e-12
-  ) {
+  if (!Number.isFinite(rounded) || rounded <= 0) return { ok: false, price: rounded, reason: 'ROUND_INVALID' };
+  if (cfg.minimum_price_step > 0 && Math.abs(rounded - value) > cfg.minimum_price_step * 0.5 + 1e-12) {
     // Rounding moved the price further than one minimum step — treat as a
     // precision violation rather than silently accepting a drifty value.
-    return { ok: false, price: rounded, reason: "PRECISION_VIOLATION" };
+    return { ok: false, price: rounded, reason: 'PRECISION_VIOLATION' };
   }
   return { ok: true, price: rounded, reason: null };
 }
@@ -133,7 +129,7 @@ export function initialState(config: Partial<OtcConfig> = {}): EngineState {
   return {
     price,
     sequence: 0,
-    regime: "normal",
+    regime: 'normal',
     volatility: cfg.volatility,
     lastTickTime: null,
     referencePrice: null,
@@ -144,9 +140,9 @@ export function initialState(config: Partial<OtcConfig> = {}): EngineState {
 /** Roll the next regime label deterministically from the sequence number. */
 function nextRegime(seed: SeedReference, sequence: number, current: RegimeName): RegimeName {
   const roll = uniform(seed, sequence, 7);
-  if (current === "normal") return roll < 0.12 ? "quiet" : roll > 0.94 ? "active" : "normal";
-  if (current === "quiet") return roll < 0.1 ? "normal" : "quiet";
-  return roll < 0.25 ? "normal" : "active"; // active regimes decay quickly
+  if (current === 'normal') return roll < 0.12 ? 'quiet' : roll > 0.94 ? 'active' : 'normal';
+  if (current === 'quiet') return roll < 0.1 ? 'normal' : 'quiet';
+  return roll < 0.25 ? 'normal' : 'active'; // active regimes decay quickly
 }
 
 /**
@@ -159,7 +155,7 @@ function nextRegime(seed: SeedReference, sequence: number, current: RegimeName):
 export function nextTick(
   state: EngineState | null | undefined,
   config: Partial<OtcConfig> | null,
-  seed: SeedReference,
+  seed: SeedReference
 ): { tick: WireTick; state: EngineState; event: EngineEvent | null } {
   const cfg = { ...DEFAULT_OTC_CONFIG, ...(config || {}) };
   const previous = Number(state?.price);
@@ -171,11 +167,11 @@ export function nextTick(
     return {
       tick: buildTick(safe.price, cfg, seq, state?.lastTickTime ?? null),
       state: { ...safe, sequence: seq },
-      event: { kind: "STATE_RESET", reason: "INVALID_PREVIOUS_PRICE", sequence: seq },
+      event: { kind: 'STATE_RESET', reason: 'INVALID_PREVIOUS_PRICE', sequence: seq },
     };
   }
 
-  const regime = nextRegime(seed, seq, state?.regime || "normal");
+  const regime = nextRegime(seed, seq, state?.regime || 'normal');
   const regimeCfg = cfg.regimes?.[regime] || cfg.regimes?.normal || { volMul: 1, drift: 0 };
 
   // ── volatility clustering ────────────────────────────────────────────────
@@ -243,22 +239,14 @@ export function nextTick(
     const dir = uniform(seed, seq, 17) < 0.5 ? -1 : 1;
     const fallbackUnits = prevUnits + dir * Math.max(1, Math.min(stepUnits, Math.max(1, maxUnits)));
     const fallback = fallbackUnits / factor;
-    price =
-      Number.isFinite(fallback) && fallback > 0
-        ? fallback
-        : roundTo(previous, cfg.decimal_precision);
-    event = {
-      kind: "PRICE_REJECTED",
-      reason: checked.reason ?? undefined,
-      sequence: seq,
-      attempted: String(candidate),
-    };
+    price = Number.isFinite(fallback) && fallback > 0 ? fallback : roundTo(previous, cfg.decimal_precision);
+    event = { kind: 'PRICE_REJECTED', reason: checked.reason ?? undefined, sequence: seq, attempted: String(candidate) };
   } else {
     price = checked.price;
   }
 
   if (clamped && !event) {
-    event = { kind: "PRICE_CLAMPED", reason: "MAX_TICK_MOVE", sequence: seq };
+    event = { kind: 'PRICE_CLAMPED', reason: 'MAX_TICK_MOVE', sequence: seq };
   }
 
   const nextState: EngineState = {
@@ -279,7 +267,7 @@ export function buildTick(
   config: Partial<OtcConfig> = {},
   sequence: number,
   timestamp: number | null = null,
-  event: EngineEvent | null = null,
+  event: EngineEvent | null = null
 ): WireTick {
   const cfg = { ...DEFAULT_OTC_CONFIG, ...config };
   const half = (cfg.spread || 0) / 2;
@@ -299,7 +287,7 @@ export function advance(
   state: EngineState,
   config: Partial<OtcConfig> = {},
   seed: SeedReference,
-  steps = 0,
+  steps = 0
 ): { state: EngineState; events: EngineEvent[] } {
   let current = state;
   const events: EngineEvent[] = [];
