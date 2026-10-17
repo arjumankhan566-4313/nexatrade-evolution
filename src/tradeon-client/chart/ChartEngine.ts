@@ -789,9 +789,10 @@ export class ChartEngine {
   private drawBase() {
     const ctx = this.baseCtx;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    ctx.fillStyle = this.theme.bg;
-    ctx.fillRect(0, 0, this.cssW, this.cssH);
     if (!this.candles.length || this.plotWidth <= 0) {
+      ctx.fillStyle = this.theme.bg;
+      ctx.fillRect(0, 0, this.cssW, this.cssH);
+      this.lastBaseKey = '';
       this.liveBadgeY = null;
       this.onPriceLineY?.(null);
       return;
@@ -816,6 +817,8 @@ export class ChartEngine {
       return;
     }
     this.lastBaseKey = key;
+    ctx.fillStyle = this.theme.bg;
+    ctx.fillRect(0, 0, this.cssW, this.cssH);
     const ref = this.candles[this.candles.length - 1].close;
     const { step } = priceTicks(range.lo, range.hi, GRID_LINES);
     const stepDecimals = step > 0 ? Math.max(0, Math.ceil(-Math.log10(step))) : 0;

@@ -4,7 +4,8 @@
 - [x] Latest GitHub default-branch commit verified present locally; chart source matches it.
 - [x] Install standalone server dependencies and start the OTC service for preview.
 - [x] Repair literal Socket.IO endpoint and same-origin polling connection.
-- [ ] Verify live candle movement, OHLC bounds, rollover and market switching in preview.
+- [x] Live run: 65 samples, 9 upward and 9 downward moves, zero invalid OHLC, one rollover; Bitcoin/Ethereum history loads verified.
+- [x] Fix canvas memoization clearing the image before a skipped paint; verify chart remains visible after market switches.
 
 ## সম্পন্ন ✅
 - [x] পুরো প্রজেক্ট ফাইল এখানে আনা (ক্লায়েন্ট ১৭০, সার্ভার ১০৪, ৬৪৪ ছবি/আইকন)
