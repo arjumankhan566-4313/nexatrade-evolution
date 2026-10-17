@@ -1,7 +1,7 @@
 /**
  * Canonical socket.io client for the app.
  *
- * Same-origin by default: the forwarder in `src/routes/socket.io/$.ts` proxies
+ * Same-origin by default: the forwarder in `src/routes/socket[.]io.ts` proxies
  * /socket.io to the API. VITE_API_URL overrides this when the API is deployed
  * on a separate origin.
  *
@@ -11,7 +11,8 @@
 import { io } from "socket.io-client";
 export const socket = io(import.meta.env["VITE_API_URL"] ?? "/", {
   path: "/socket.io",
-  transports: ["websocket", "polling"],
+  addTrailingSlash: false,
+  transports: import.meta.env["VITE_API_URL"] ? ["websocket", "polling"] : ["polling"],
   autoConnect: true,
 });
 
@@ -25,7 +26,8 @@ export const socket = io(import.meta.env["VITE_API_URL"] ?? "/", {
 export function createSocket() {
   return io(import.meta.env["VITE_API_URL"] ?? "/", {
     path: "/socket.io",
-    transports: ["websocket", "polling"],
+    addTrailingSlash: false,
+    transports: import.meta.env["VITE_API_URL"] ? ["websocket", "polling"] : ["polling"],
     autoConnect: true,
   });
 }
