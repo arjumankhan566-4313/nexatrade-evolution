@@ -15,8 +15,8 @@ import { Route as ChartRouteImport } from './routes/chart'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as SocketDotioRouteImport } from './routes/socket[.]io'
 import { Route as StatusRouteImport } from './routes/status'
-import { Route as Char91socketIoChar93RouteImport } from './routes/[socket.io]'
 import { Route as AdminAuthedRouteImport } from './routes/admin._authed'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
@@ -75,14 +75,14 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SocketDotioRoute = SocketDotioRouteImport.update({
+  id: '/socket.io',
+  path: '/socket.io',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
   path: '/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Char91socketIoChar93Route = Char91socketIoChar93RouteImport.update({
-  id: '/[socket/io]',
-  path: '/[socket/io]',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuthedRoute = AdminAuthedRouteImport.update({
@@ -227,8 +227,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/socket.io': typeof SocketDotioRoute
   '/status': typeof StatusRoute
-  '/[socket/io]': typeof Char91socketIoChar93Route
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/dashboard/affiliate': typeof DashboardAffiliateRoute
@@ -262,8 +262,8 @@ export interface FileRoutesByTo {
   '/chart': typeof ChartRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/socket.io': typeof SocketDotioRoute
   '/status': typeof StatusRoute
-  '/[socket/io]': typeof Char91socketIoChar93Route
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
   '/dashboard/affiliate': typeof DashboardAffiliateRoute
@@ -298,8 +298,8 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/socket.io': typeof SocketDotioRoute
   '/status': typeof StatusRoute
-  '/[socket/io]': typeof Char91socketIoChar93Route
   '/admin/_authed': typeof AdminAuthedRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/api/$': typeof ApiSplatRoute
@@ -337,8 +337,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/socket.io'
     | '/status'
-    | '/[socket/io]'
     | '/admin/login'
     | '/api/$'
     | '/dashboard/affiliate'
@@ -372,8 +372,8 @@ export interface FileRouteTypes {
     | '/chart'
     | '/login'
     | '/register'
+    | '/socket.io'
     | '/status'
-    | '/[socket/io]'
     | '/admin/login'
     | '/api/$'
     | '/dashboard/affiliate'
@@ -407,8 +407,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/socket.io'
     | '/status'
-    | '/[socket/io]'
     | '/admin/_authed'
     | '/admin/login'
     | '/api/$'
@@ -445,8 +445,8 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  SocketDotioRoute: typeof SocketDotioRoute
   StatusRoute: typeof StatusRoute
-  Char91socketIoChar93Route: typeof Char91socketIoChar93Route
   ApiSplatRoute: typeof ApiSplatRoute
 }
 
@@ -494,18 +494,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/socket.io': {
+      id: '/socket.io'
+      path: '/socket.io'
+      fullPath: '/socket.io'
+      preLoaderRoute: typeof SocketDotioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/status': {
       id: '/status'
       path: '/status'
       fullPath: '/status'
       preLoaderRoute: typeof StatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/[socket/io]': {
-      id: '/[socket/io]'
-      path: '/[socket/io]'
-      fullPath: '/[socket/io]'
-      preLoaderRoute: typeof Char91socketIoChar93RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_authed': {
@@ -787,8 +787,8 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  SocketDotioRoute: SocketDotioRoute,
   StatusRoute: StatusRoute,
-  Char91socketIoChar93Route: Char91socketIoChar93Route,
   ApiSplatRoute: ApiSplatRoute,
 }
 export const routeTree = rootRouteImport
